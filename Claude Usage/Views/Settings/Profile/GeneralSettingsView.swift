@@ -203,25 +203,41 @@ struct GeneralSettingsView: View {
                                     }
                                 }
 
-                                // Custom thresholds
-                                Divider()
+                                // Custom thresholds (Pro only)
+                                if FeatureFlags.shared.isAvailable(FeatureFlags.shared.customThresholds) {
+                                    Divider()
 
-                                VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
-                                    Text("notifications.custom_thresholds".localized)
-                                        .font(DesignTokens.Typography.body)
-                                        .fontWeight(.medium)
-                                        .foregroundColor(.secondary)
+                                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
+                                        Text("notifications.custom_thresholds".localized)
+                                            .font(DesignTokens.Typography.body)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.secondary)
 
-                                    CustomThresholdsEditor(
-                                        thresholds: Binding(
-                                            get: { profile.notificationSettings.customThresholds },
-                                            set: { newValue in
-                                                var updated = profile
-                                                updated.notificationSettings.customThresholds = newValue
-                                                profileManager.updateProfile(updated)
-                                            }
+                                        CustomThresholdsEditor(
+                                            thresholds: Binding(
+                                                get: { profile.notificationSettings.customThresholds },
+                                                set: { newValue in
+                                                    var updated = profile
+                                                    updated.notificationSettings.customThresholds = newValue
+                                                    profileManager.updateProfile(updated)
+                                                }
+                                            )
                                         )
-                                    )
+                                    }
+                                } else {
+                                    Divider()
+
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "lock.fill")
+                                            .font(.system(size: 10))
+                                            .foregroundColor(.purple)
+
+                                        Text("Custom thresholds available on Pro")
+                                            .font(DesignTokens.Typography.caption)
+                                            .foregroundColor(.secondary)
+
+                                        Spacer()
+                                    }
                                 }
 
                                 // Sound picker

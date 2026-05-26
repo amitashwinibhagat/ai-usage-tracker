@@ -59,7 +59,23 @@ class ProfileManager: ObservableObject {
 
     // MARK: - Profile Operations
 
-    func createProfile(name: String? = nil, copySettingsFrom: Profile? = nil) -> Profile {
+    /// Checks if a new profile can be created based on license tier limits
+    var canCreateProfile: Bool {
+        FeatureFlags.shared.canCreateProfile
+    }
+
+    /// Number of profiles the current tier allows (2 for Free, unlimited for Pro/Team)
+    var maxProfiles: Int {
+        FeatureFlags.shared.maxProfiles
+    }
+
+    func createProfile(name: String? = nil, copySettingsFrom: Profile? = nil) -> Profile? {
+        // Enforce profile limit for free tier
+        guard canCreateProfile else {
+            LoggingService.shared.log("Profile creation blocked: free tier limit reached (\(profiles.count)/\(maxProfiles))")
+            return nil
+        }
+
         let usedNames = profiles.map { $0.name }
         let profileName = name ?? FunnyNameGenerator.getRandomName(excluding: usedNames)
 
@@ -388,6 +404,268 @@ class ProfileManager: ObservableObject {
     /// Loads API usage data for a specific profile
     func loadAPIUsage(for profileId: UUID) -> APIUsage? {
         return profiles.first(where: { $0.id == profileId })?.apiUsage
+    }
+
+    // MARK: - Multi-AI Provider Usage Data
+
+    /// Saves Codex usage data for a specific profile
+    func saveCodexUsage(_ usage: CodexUsage, for profileId: UUID) {
+        guard let index = profiles.firstIndex(where: { $0.id == profileId }) else { return }
+        profiles[index].codexUsage = usage
+        if activeProfile?.id == profileId { activeProfile = profiles[index] }
+        profileStore.saveProfiles(profiles)
+        LoggingService.shared.log("Saved Codex usage for profile: \(profiles[index].name)")
+    }
+
+    /// Loads Codex usage data for a specific profile
+    func loadCodexUsage(for profileId: UUID) -> CodexUsage? {
+        return profiles.first(where: { $0.id == profileId })?.codexUsage
+    }
+
+    /// Saves Gemini usage data for a specific profile
+    func saveGeminiUsage(_ usage: GeminiUsage, for profileId: UUID) {
+        guard let index = profiles.firstIndex(where: { $0.id == profileId }) else { return }
+        profiles[index].geminiUsage = usage
+        if activeProfile?.id == profileId { activeProfile = profiles[index] }
+        profileStore.saveProfiles(profiles)
+        LoggingService.shared.log("Saved Gemini usage for profile: \(profiles[index].name)")
+    }
+
+    /// Loads Gemini usage data for a specific profile
+    func loadGeminiUsage(for profileId: UUID) -> GeminiUsage? {
+        return profiles.first(where: { $0.id == profileId })?.geminiUsage
+    }
+
+    /// Saves Copilot usage data for a specific profile
+    func saveCopilotUsage(_ usage: CopilotUsage, for profileId: UUID) {
+        guard let index = profiles.firstIndex(where: { $0.id == profileId }) else { return }
+        profiles[index].copilotUsage = usage
+        if activeProfile?.id == profileId { activeProfile = profiles[index] }
+        profileStore.saveProfiles(profiles)
+        LoggingService.shared.log("Saved Copilot usage for profile: \(profiles[index].name)")
+    }
+
+    /// Loads Copilot usage data for a specific profile
+    func loadCopilotUsage(for profileId: UUID) -> CopilotUsage? {
+        return profiles.first(where: { $0.id == profileId })?.copilotUsage
+    }
+
+    /// Saves Kimi usage data for a specific profile
+    func saveKimiUsage(_ usage: KimiUsage, for profileId: UUID) {
+        guard let index = profiles.firstIndex(where: { $0.id == profileId }) else { return }
+        profiles[index].kimiUsage = usage
+        if activeProfile?.id == profileId { activeProfile = profiles[index] }
+        profileStore.saveProfiles(profiles)
+        LoggingService.shared.log("Saved Kimi usage for profile: \(profiles[index].name)")
+    }
+
+    /// Saves DeepSeek usage data for a specific profile
+    func saveDeepSeekUsage(_ usage: DeepSeekUsage, for profileId: UUID) {
+        guard let index = profiles.firstIndex(where: { $0.id == profileId }) else { return }
+        profiles[index].deepseekUsage = usage
+        if activeProfile?.id == profileId { activeProfile = profiles[index] }
+        profileStore.saveProfiles(profiles)
+        LoggingService.shared.log("Saved DeepSeek usage for profile: \(profiles[index].name)")
+    }
+
+    /// Saves GLM usage data for a specific profile
+    func saveGLMUsage(_ usage: GLMUsage, for profileId: UUID) {
+        guard let index = profiles.firstIndex(where: { $0.id == profileId }) else { return }
+        profiles[index].glmUsage = usage
+        if activeProfile?.id == profileId { activeProfile = profiles[index] }
+        profileStore.saveProfiles(profiles)
+        LoggingService.shared.log("Saved GLM usage for profile: \(profiles[index].name)")
+    }
+
+    /// Saves Qwen usage data for a specific profile
+    func saveQwenUsage(_ usage: QwenUsage, for profileId: UUID) {
+        guard let index = profiles.firstIndex(where: { $0.id == profileId }) else { return }
+        profiles[index].qwenUsage = usage
+        if activeProfile?.id == profileId { activeProfile = profiles[index] }
+        profileStore.saveProfiles(profiles)
+        LoggingService.shared.log("Saved Qwen usage for profile: \(profiles[index].name)")
+    }
+
+    /// Saves MiniMax usage data for a specific profile
+    func saveMiniMaxUsage(_ usage: MiniMaxUsage, for profileId: UUID) {
+        guard let index = profiles.firstIndex(where: { $0.id == profileId }) else { return }
+        profiles[index].minimaxUsage = usage
+        if activeProfile?.id == profileId { activeProfile = profiles[index] }
+        profileStore.saveProfiles(profiles)
+        LoggingService.shared.log("Saved MiniMax usage for profile: \(profiles[index].name)")
+    }
+
+    // MARK: - Multi-AI Provider Credentials
+
+    /// Updates Codex credentials for a profile
+    func updateCodexCredentials(apiKey: String?, organizationId: String?, for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].codexApiKey = apiKey
+            profiles[index].codexOrganizationId = organizationId
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Updated Codex credentials for profile: \(profiles[index].name)")
+        }
+    }
+
+    /// Removes Codex credentials for a profile
+    func removeCodexCredentials(for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].codexApiKey = nil
+            profiles[index].codexOrganizationId = nil
+            profiles[index].codexUsage = nil
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Removed Codex credentials for profile \(profileId)")
+        }
+    }
+
+    /// Updates Gemini credentials for a profile
+    func updateGeminiCredentials(apiKey: String?, projectId: String?, for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].geminiApiKey = apiKey
+            profiles[index].geminiProjectId = projectId
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Updated Gemini credentials for profile: \(profiles[index].name)")
+        }
+    }
+
+    /// Removes Gemini credentials for a profile
+    func removeGeminiCredentials(for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].geminiApiKey = nil
+            profiles[index].geminiProjectId = nil
+            profiles[index].geminiUsage = nil
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Removed Gemini credentials for profile \(profileId)")
+        }
+    }
+
+    /// Updates Copilot credentials for a profile
+    func updateCopilotCredentials(accessToken: String?, username: String?, for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].copilotAccessToken = accessToken
+            profiles[index].copilotUsername = username
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Updated Copilot credentials for profile: \(profiles[index].name)")
+        }
+    }
+
+    /// Removes Copilot credentials for a profile
+    func removeCopilotCredentials(for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].copilotAccessToken = nil
+            profiles[index].copilotUsername = nil
+            profiles[index].copilotUsage = nil
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Removed Copilot credentials for profile \(profileId)")
+        }
+    }
+
+    // MARK: - Kimi
+
+    func updateKimiCredentials(apiKey: String?, for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].kimiApiKey = apiKey
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Updated Kimi credentials for profile: \(profiles[index].name)")
+        }
+    }
+
+    func removeKimiCredentials(for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].kimiApiKey = nil
+            profiles[index].kimiUsage = nil
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+        }
+    }
+
+    // MARK: - DeepSeek
+
+    func updateDeepSeekCredentials(apiKey: String?, for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].deepseekApiKey = apiKey
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Updated DeepSeek credentials for profile: \(profiles[index].name)")
+        }
+    }
+
+    func removeDeepSeekCredentials(for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].deepseekApiKey = nil
+            profiles[index].deepseekUsage = nil
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+        }
+    }
+
+    // MARK: - GLM
+
+    func updateGLMCredentials(apiKey: String?, for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].glmApiKey = apiKey
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Updated GLM credentials for profile: \(profiles[index].name)")
+        }
+    }
+
+    func removeGLMCredentials(for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].glmApiKey = nil
+            profiles[index].glmUsage = nil
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+        }
+    }
+
+    // MARK: - Qwen
+
+    func updateQwenCredentials(apiKey: String?, for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].qwenApiKey = apiKey
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Updated Qwen credentials for profile: \(profiles[index].name)")
+        }
+    }
+
+    func removeQwenCredentials(for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].qwenApiKey = nil
+            profiles[index].qwenUsage = nil
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+        }
+    }
+
+    // MARK: - MiniMax
+
+    func updateMiniMaxCredentials(apiKey: String?, groupId: String?, for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].minimaxApiKey = apiKey
+            profiles[index].minimaxGroupId = groupId
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Updated MiniMax credentials for profile: \(profiles[index].name)")
+        }
+    }
+
+    func removeMiniMaxCredentials(for profileId: UUID) {
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            profiles[index].minimaxApiKey = nil
+            profiles[index].minimaxGroupId = nil
+            profiles[index].minimaxUsage = nil
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+        }
     }
 
     // MARK: - Profile Settings

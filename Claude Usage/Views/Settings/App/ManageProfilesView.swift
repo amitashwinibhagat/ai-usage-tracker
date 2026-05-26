@@ -36,12 +36,25 @@ struct ManageProfilesView: View {
                     }
                 }
 
-                // Create New Profile Button
-                SettingsButton(
-                    title: "profiles.create_new".localized,
-                    icon: "plus.circle.fill"
-                ) {
-                    showingCreateProfile = true
+                // Create New Profile Button (gated for free tier)
+                if profileManager.canCreateProfile {
+                    SettingsButton(
+                        title: "profiles.create_new".localized,
+                        icon: "plus.circle.fill"
+                    ) {
+                        showingCreateProfile = true
+                    }
+                } else {
+                    // Upsell prompt for free tier users at limit
+                    ProUpsellCard(
+                        title: "Upgrade to Pro for Unlimited Profiles",
+                        message: "You've reached the free tier limit of 2 profiles. Pro users can track unlimited Claude accounts and API keys.",
+                        actionTitle: "Upgrade for $4.99/mo"
+                    ) {
+                        if let url = LicenseManager.shared.proCheckoutURL {
+                            NSWorkspace.shared.open(url)
+                        }
+                    }
                 }
 
                 // Multi-Profile Display Section
@@ -339,7 +352,10 @@ struct ManageProfilesView: View {
 
     private func createNewProfile() {
         let name = newProfileName.isEmpty ? nil : newProfileName
-        _ = profileManager.createProfile(name: name)
+        let profile = profileManager.createProfile(name: name)
+        if profile == nil {
+            errorMessage = "Profile limit reached. Upgrade to Pro for unlimited profiles."
+        }
         showingCreateProfile = false
         newProfileName = ""
     }

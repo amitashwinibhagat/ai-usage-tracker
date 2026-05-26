@@ -21,6 +21,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         // Load profiles into ProfileManager (synchronously)
         ProfileManager.shared.loadProfiles()
 
+        // Validate license on launch (async, non-blocking)
+        Task {
+            await LicenseManager.shared.validateIfNeeded()
+        }
+
         // Initialize update manager to enable automatic update checks
         _ = UpdateManager.shared
 

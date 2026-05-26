@@ -273,9 +273,23 @@ class UsageHistoryService {
 
     // MARK: - Export
 
-    /// Exports history to file in specified format
-    func exportToFile(for profileId: UUID, resetType: ResetType? = nil, format: ExportFormat = .json) {
-        let history = loadHistory(for: profileId)
+    /// Exports history to file in specified format, optionally filtered by date range
+    func exportToFile(
+        for profileId: UUID,
+        resetType: ResetType? = nil,
+        format: ExportFormat = .json,
+        startDate: Date? = nil,
+        endDate: Date? = nil
+    ) {
+        var history = loadHistory(for: profileId)
+
+        // Apply date range filter if provided
+        if let start = startDate, let end = endDate {
+            history.snapshots = history.snapshots.filter {
+                $0.timestamp >= start && $0.timestamp <= end
+            }
+        }
+
         let content: String
         let fileExtension: String
 

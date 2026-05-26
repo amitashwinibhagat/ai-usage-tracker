@@ -36,6 +36,30 @@ struct Profile: Codable, Identifiable, Equatable {
     var claudeUsage: ClaudeUsage?
     var apiUsage: APIUsage?
 
+    // MARK: - Multi-AI Provider Usage Data (Per-Profile, Pro)
+    var codexUsage: CodexUsage?
+    var geminiUsage: GeminiUsage?
+    var copilotUsage: CopilotUsage?
+    var kimiUsage: KimiUsage?
+    var deepseekUsage: DeepSeekUsage?
+    var glmUsage: GLMUsage?
+    var qwenUsage: QwenUsage?
+    var minimaxUsage: MiniMaxUsage?
+
+    // MARK: - Multi-AI Provider Credentials (Per-Profile, Pro)
+    var codexApiKey: String?
+    var codexOrganizationId: String?
+    var geminiApiKey: String?
+    var geminiProjectId: String?
+    var copilotAccessToken: String?
+    var copilotUsername: String?
+    var kimiApiKey: String?
+    var deepseekApiKey: String?
+    var glmApiKey: String?
+    var qwenApiKey: String?
+    var minimaxApiKey: String?
+    var minimaxGroupId: String?
+
     // MARK: - Appearance Settings (Per-Profile)
     var iconConfig: MenuBarIconConfiguration
 
@@ -71,6 +95,26 @@ struct Profile: Codable, Identifiable, Equatable {
         oauthAccountJSON: String? = nil,
         claudeUsage: ClaudeUsage? = nil,
         apiUsage: APIUsage? = nil,
+        codexUsage: CodexUsage? = nil,
+        geminiUsage: GeminiUsage? = nil,
+        copilotUsage: CopilotUsage? = nil,
+        kimiUsage: KimiUsage? = nil,
+        deepseekUsage: DeepSeekUsage? = nil,
+        glmUsage: GLMUsage? = nil,
+        qwenUsage: QwenUsage? = nil,
+        minimaxUsage: MiniMaxUsage? = nil,
+        codexApiKey: String? = nil,
+        codexOrganizationId: String? = nil,
+        geminiApiKey: String? = nil,
+        geminiProjectId: String? = nil,
+        copilotAccessToken: String? = nil,
+        copilotUsername: String? = nil,
+        kimiApiKey: String? = nil,
+        deepseekApiKey: String? = nil,
+        glmApiKey: String? = nil,
+        qwenApiKey: String? = nil,
+        minimaxApiKey: String? = nil,
+        minimaxGroupId: String? = nil,
         iconConfig: MenuBarIconConfiguration = .default,
         refreshInterval: TimeInterval = 30.0,
         autoStartSessionEnabled: Bool = false,
@@ -94,6 +138,26 @@ struct Profile: Codable, Identifiable, Equatable {
         self.oauthAccountJSON = oauthAccountJSON
         self.claudeUsage = claudeUsage
         self.apiUsage = apiUsage
+        self.codexUsage = codexUsage
+        self.geminiUsage = geminiUsage
+        self.copilotUsage = copilotUsage
+        self.kimiUsage = kimiUsage
+        self.deepseekUsage = deepseekUsage
+        self.glmUsage = glmUsage
+        self.qwenUsage = qwenUsage
+        self.minimaxUsage = minimaxUsage
+        self.codexApiKey = codexApiKey
+        self.codexOrganizationId = codexOrganizationId
+        self.geminiApiKey = geminiApiKey
+        self.geminiProjectId = geminiProjectId
+        self.copilotAccessToken = copilotAccessToken
+        self.copilotUsername = copilotUsername
+        self.kimiApiKey = kimiApiKey
+        self.deepseekApiKey = deepseekApiKey
+        self.glmApiKey = glmApiKey
+        self.qwenApiKey = qwenApiKey
+        self.minimaxApiKey = minimaxApiKey
+        self.minimaxGroupId = minimaxGroupId
         self.iconConfig = iconConfig
         self.refreshInterval = refreshInterval
         self.autoStartSessionEnabled = autoStartSessionEnabled
@@ -128,6 +192,88 @@ struct Profile: Codable, Identifiable, Equatable {
 
     var hasAnyCredentials: Bool {
         hasClaudeAI || hasAPIConsole || cliCredentialsJSON != nil
+    }
+
+    // MARK: - Multi-AI Provider Credentials
+
+    var hasCodexCredentials: Bool {
+        codexApiKey != nil && !codexApiKey!.isEmpty
+    }
+
+    var hasGeminiCredentials: Bool {
+        geminiApiKey != nil && !geminiApiKey!.isEmpty
+    }
+
+    var hasCopilotCredentials: Bool {
+        copilotAccessToken != nil && !copilotAccessToken!.isEmpty
+    }
+
+    var hasKimiCredentials: Bool {
+        kimiApiKey != nil && !kimiApiKey!.isEmpty
+    }
+
+    var hasDeepSeekCredentials: Bool {
+        deepseekApiKey != nil && !deepseekApiKey!.isEmpty
+    }
+
+    var hasGLMCredentials: Bool {
+        glmApiKey != nil && !glmApiKey!.isEmpty
+    }
+
+    var hasQwenCredentials: Bool {
+        qwenApiKey != nil && !qwenApiKey!.isEmpty
+    }
+
+    var hasMiniMaxCredentials: Bool {
+        minimaxApiKey != nil && !minimaxApiKey!.isEmpty
+    }
+
+    /// Returns true if the profile has credentials for any non-Claude provider
+    var hasMultiAICredentials: Bool {
+        hasCodexCredentials || hasGeminiCredentials || hasCopilotCredentials ||
+        hasKimiCredentials || hasDeepSeekCredentials || hasGLMCredentials ||
+        hasQwenCredentials || hasMiniMaxCredentials
+    }
+
+    /// Returns the set of providers this profile has credentials for
+    var configuredProviders: [AIProvider] {
+        var providers: [AIProvider] = []
+        if hasClaudeAI || hasAPIConsole || hasValidCLIOAuth {
+            providers.append(.claude)
+        }
+        if hasCodexCredentials { providers.append(.codex) }
+        if hasGeminiCredentials { providers.append(.gemini) }
+        if hasCopilotCredentials { providers.append(.copilot) }
+        if hasKimiCredentials { providers.append(.kimi) }
+        if hasDeepSeekCredentials { providers.append(.deepseek) }
+        if hasGLMCredentials { providers.append(.glm) }
+        if hasQwenCredentials { providers.append(.qwen) }
+        if hasMiniMaxCredentials { providers.append(.minimax) }
+        return providers
+    }
+
+    /// Returns usage for a specific provider (if available)
+    func usage(for provider: AIProvider) -> (any ProviderUsage)? {
+        switch provider {
+        case .claude:
+            return nil // ClaudeUsage does not conform to ProviderUsage
+        case .codex:
+            return codexUsage
+        case .gemini:
+            return geminiUsage
+        case .copilot:
+            return copilotUsage
+        case .kimi:
+            return kimiUsage
+        case .deepseek:
+            return deepseekUsage
+        case .glm:
+            return glmUsage
+        case .qwen:
+            return qwenUsage
+        case .minimax:
+            return minimaxUsage
+        }
     }
 }
 

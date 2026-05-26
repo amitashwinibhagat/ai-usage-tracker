@@ -1276,6 +1276,9 @@ class MenuBarManager: NSObject, ObservableObject {
                         // Record periodic snapshots for history charts
                         UsageHistoryService.shared.recordSessionPeriodic(for: profileId, usage: newUsage)
                         UsageHistoryService.shared.recordWeeklyPeriodic(for: profileId, usage: newUsage)
+
+                        // Record conversation breakdown (Pro)
+                        ConversationBreakdownService.shared.recordUsageCheck(profileId: profileId, currentUsage: newUsage)
                     }
 
                     self.usage = newUsage
@@ -1394,6 +1397,13 @@ class MenuBarManager: NSObject, ObservableObject {
 
                     LoggingService.shared.log("MenuBarManager: Failed to fetch API usage - [\(appError.code.rawValue)] \(appError.message)")
                 }
+            }
+
+            // Fetch multi-AI provider usage (Pro feature)
+            if let profile = await MainActor.run(body: { self.profileManager.activeProfile }),
+               FeatureFlags.shared.isAvailable(FeatureFlags.shared.multiAI),
+               profile.hasMultiAICredentials {
+                _ = await MultiAIService.shared.fetchAllUsage(for: profile)
             }
 
             // Clear loading state

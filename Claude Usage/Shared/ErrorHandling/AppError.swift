@@ -167,6 +167,7 @@ enum ErrorCode: String, CaseIterable {
     case apiBadRequest = "E3005"
     case apiServiceUnavailable = "E3006"
     case apiParsingFailed = "E3007"
+    case apiForbidden = "E3008"
     case apiGenericError = "E3099"
 
     // MARK: - URL Construction Errors (4000-4099)

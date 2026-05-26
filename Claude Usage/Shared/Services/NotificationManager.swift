@@ -154,24 +154,47 @@ class NotificationManager: NotificationServiceProtocol {
         let thresholds = settings.sortedThresholds
         for threshold in thresholds.reversed() {
             if sessionPercentage >= Double(threshold) {
-                let alertType: AlertType
-                switch threshold {
-                case 95...:
-                    alertType = .sessionCritical
-                case 90..<95:
-                    alertType = .sessionWarning
-                default:
-                    alertType = .sessionInfo
+                // Use smart notifications if Pro, otherwise fall back to basic
+                if FeatureFlags.shared.isAvailable(FeatureFlags.shared.smartNotifications) {
+                    sendSmartNotification(
+                        usage: usage,
+                        percentage: sessionPercentage,
+                        thresholdLevel: threshold,
+                        profileName: profileName,
+                        soundName: settings.soundName
+                    )
+                } else {
+                    let alertType: AlertType
+                    switch threshold {
+                    case 95...:
+                        alertType = .sessionCritical
+                    case 90..<95:
+                        alertType = .sessionWarning
+                    default:
+                        alertType = .sessionInfo
+                    }
+                    sendProfileAlert(
+                        profileName: profileName,
+                        type: alertType,
+                        percentage: sessionPercentage,
+                        thresholdLevel: threshold,
+                        resetTime: usage.sessionResetTime,
+                        soundName: settings.soundName
+                    )
                 }
-                sendProfileAlert(
-                    profileName: profileName,
-                    type: alertType,
-                    percentage: sessionPercentage,
-                    thresholdLevel: threshold,
-                    resetTime: usage.sessionResetTime,
-                    soundName: settings.soundName
-                )
                 break
+            }
+        }
+
+        // Pro: Weekly limit smart notification
+        if FeatureFlags.shared.isAvailable(FeatureFlags.shared.smartNotifications) {
+            if let smartNotif = SmartNotificationGenerator.shared.weeklyLimitNotification(
+                usage: usage,
+                profileName: profileName
+            ) {
+                let identifier = "\(profileName)_weekly_smart_\(Int(usage.weeklyPercentage))"
+                guard !sentNotifications.contains(identifier) else { return }
+                sendSmartAlert(smartNotif, identifier: identifier)
             }
         }
     }
@@ -247,6 +270,97 @@ class NotificationManager: NotificationServiceProtocol {
                 }
 
                 // Mark this notification as sent
+                var updated = self?.sentNotifications ?? []
+                updated.insert(identifier)
+                self?.sentNotifications = updated
+            }
+        }
+    }
+
+    // MARK: - Smart Notifications (Pro)
+
+    /// Sends a smart contextual notification based on usage pattern
+    private func sendSmartNotification(
+        usage: ClaudeUsage,
+        percentage: Double,
+        thresholdLevel: Int,
+        profileName: String,
+        soundName: String
+    ) {
+        let smartNotif = SmartNotificationGenerator.shared.thresholdNotification(
+            percentage: percentage,
+            resetTime: usage.sessionResetTime,
+            profileName: profileName,
+            usage: usage
+        )
+
+        let identifier = "\(profileName)_smart_\(thresholdLevel)"
+
+        guard !sentNotifications.contains(identifier) else {
+            return
+        }
+
+        let content = UNMutableNotificationContent()
+        content.title = smartNotif.title
+        content.body = smartNotif.body
+        content.categoryIdentifier = "SMART_\(smartNotif.category.rawValue.uppercased())"
+
+        // Apply sound setting
+        let customSoundName: String? = {
+            switch soundName {
+            case "none":
+                return nil
+            case "default":
+                content.sound = .default
+                return nil
+            default:
+                return soundName
+            }
+        }()
+
+        let request = UNNotificationRequest(
+            identifier: identifier,
+            content: content,
+            trigger: nil
+        )
+
+        UNUserNotificationCenter.current().add(request) { [weak self] error in
+            if error == nil {
+                if let name = customSoundName {
+                    DispatchQueue.main.async {
+                        if let sound = NSSound(named: NSSound.Name(name)) {
+                            sound.play()
+                        } else {
+                            NSSound.beep()
+                        }
+                    }
+                }
+
+                var updated = self?.sentNotifications ?? []
+                updated.insert(identifier)
+                self?.sentNotifications = updated
+            }
+        }
+    }
+
+    /// Sends a pre-built smart notification
+    private func sendSmartAlert(_ smartNotif: SmartNotification, identifier: String) {
+        guard !sentNotifications.contains(identifier) else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = smartNotif.title
+        content.body = smartNotif.body
+        content.categoryIdentifier = "SMART_\(smartNotif.category.rawValue.uppercased())"
+        content.sound = smartNotif.priority == .critical || smartNotif.priority == .high ? .default : nil
+
+        let request = UNNotificationRequest(
+            identifier: identifier,
+            content: content,
+            trigger: nil
+        )
+
+        UNUserNotificationCenter.current().add(request) { [weak self] error in
+            if error == nil {
                 var updated = self?.sentNotifications ?? []
                 updated.insert(identifier)
                 self?.sentNotifications = updated

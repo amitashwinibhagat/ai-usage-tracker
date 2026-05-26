@@ -190,6 +190,70 @@ struct PopoverContentView: View {
             // Usage
             SmartUsageDashboard(usage: displayUsage, apiUsage: displayAPIUsage)
 
+            // Conversation Breakdown (Pro)
+            if FeatureFlags.shared.isAvailable(FeatureFlags.shared.perSessionBreakdown),
+               let profile = profileManager.activeProfile,
+               let breakdown = ConversationBreakdownService.shared.getBreakdown(for: profile.id),
+               !breakdown.conversations.isEmpty {
+                PopoverDivider()
+                ConversationBreakdownCard(breakdown: breakdown)
+            }
+
+            // Burn Rate Predictor (Pro)
+            if FeatureFlags.shared.isAvailable(FeatureFlags.shared.burnRatePredictor),
+               let profile = profileManager.activeProfile {
+                PopoverDivider()
+                BurnRateCard(usage: displayUsage, profileId: profile.id)
+            }
+
+            // Cost Transparency (Pro)
+            if FeatureFlags.shared.isAvailable(FeatureFlags.shared.costTransparency) {
+                if let costBreakdown = CostTransparency.shared.calculate(usage: displayUsage) {
+                    PopoverDivider()
+                    CostTransparencyCard(breakdown: costBreakdown)
+                }
+            }
+
+            // Cross-Profile Unified Dashboard (Pro)
+            if FeatureFlags.shared.isAvailable(FeatureFlags.shared.crossProfileDashboard),
+               profileManager.profiles.count > 1 {
+                PopoverDivider()
+                CrossProfileDashboard()
+            }
+
+            // Context Window Tracker (Pro)
+            if FeatureFlags.shared.isAvailable(FeatureFlags.shared.contextWindowTracker),
+               displayUsage.sessionTokensUsed > 0 {
+                let contextUsage = ContextWindowTracker.shared.estimateContextWindow(sessionTokens: displayUsage.sessionTokensUsed)
+                if contextUsage.usagePercentage > 50 {
+                    PopoverDivider()
+                    ContextWindowCard(usage: contextUsage)
+                }
+            }
+
+            // Predictive Throttling Alert (Pro)
+            if FeatureFlags.shared.isAvailable(FeatureFlags.shared.predictiveThrottling),
+               let profile = profileManager.activeProfile,
+               let prediction = PredictiveThrottlingService.shared.predict(for: profile.id, currentUsage: displayUsage),
+               prediction.willHitSessionLimit || prediction.willHitWeeklyLimit {
+                PopoverDivider()
+                PredictiveThrottlingCard(prediction: prediction)
+            }
+
+            // Multi-AI Dashboard (Pro)
+            if FeatureFlags.shared.isProOrHigher,
+               let profile = profileManager.activeProfile,
+               profile.hasMultiAICredentials {
+                PopoverDivider()
+                MultiAIDashboard(profile: profile)
+            }
+
+            // Pro Upsell Banner (Free tier, when usage > 80% or always visible as preview)
+            if FeatureFlags.shared.isFree {
+                PopoverDivider()
+                ProUpsellBanner(usage: displayUsage)
+            }
+
             // Session Overlap Card
             if let activeProfile = profileManager.activeProfile,
                let settings = activeProfile.sessionPlanningSettings,
@@ -1382,5 +1446,622 @@ struct StatusBannerView: View {
         .padding(.horizontal, 10)
         .padding(.top, 4)
         .onTapGesture { onTap?() }
+    }
+}
+
+// MARK: - Burn Rate Card (Pro)
+
+struct BurnRateCard: View {
+    let usage: ClaudeUsage
+    let profileId: UUID
+    @State private var prediction: BurnRatePrediction?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Image(systemName: "flame.fill")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.orange)
+
+                Text("Burn Rate")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.primary)
+
+                Spacer()
+
+                if let prediction = prediction, prediction.isReliable {
+                    Image(systemName: prediction.trend.icon)
+                        .font(.system(size: 10))
+                        .foregroundColor(trendColor(prediction.trend))
+                }
+            }
+
+            if let prediction = prediction {
+                if prediction.isReliable, let minutes = prediction.minutesToLimit {
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Text("Hit limit in")
+                            .font(.system(size: 11))
+                            .foregroundColor(.secondary)
+
+                        Text(prediction.timeToLimitText)
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                            .foregroundColor(minutes < 15 ? .red : .orange)
+                    }
+
+                    Text(prediction.trend.description)
+                        .font(.system(size: 9))
+                        .foregroundColor(.secondary)
+                } else {
+                    Text(prediction.timeToLimitText)
+                        .font(.system(size: 11))
+                        .foregroundColor(.secondary)
+                }
+            } else {
+                Text("Calculating...")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(Color.orange.opacity(0.2), lineWidth: 0.5)
+        )
+        .padding(.horizontal, 10)
+        .onAppear {
+            prediction = BurnRatePredictor.shared.quickPredict(currentUsage: usage)
+        }
+        .onChange(of: usage.sessionTokensUsed) { _, _ in
+            prediction = BurnRatePredictor.shared.quickPredict(currentUsage: usage)
+        }
+    }
+
+    private func trendColor(_ trend: BurnTrend) -> Color {
+        switch trend {
+        case .accelerating: return .red
+        case .steady: return .orange
+        case .decelerating: return .green
+        case .unknown: return .secondary
+        }
+    }
+}
+
+// MARK: - Cost Transparency Card (Pro)
+
+struct CostTransparencyCard: View {
+    let breakdown: CostBreakdown
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Image(systemName: "dollarsign.circle.fill")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.green)
+
+                Text("API Cost Equivalent")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.primary)
+
+                Spacer()
+            }
+
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(breakdown.formattedTotalCost)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundColor(.primary)
+
+                Text("today at API rates")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            }
+
+            if let savings = breakdown.formattedSavings {
+                Text("Saved \(savings) vs API pricing today")
+                    .font(.system(size: 9))
+                    .foregroundColor(.green)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(Color.green.opacity(0.2), lineWidth: 0.5)
+        )
+        .padding(.horizontal, 10)
+    }
+}
+
+// MARK: - Conversation Breakdown Card (Pro)
+
+struct ConversationBreakdownCard: View {
+    let breakdown: SessionConversationBreakdown
+    @State private var isExpanded = true
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Button(action: { withAnimation(.easeInOut(duration: 0.2)) { isExpanded.toggle() } }) {
+                HStack(spacing: 6) {
+                    Image(systemName: "text.bubble.fill")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.cyan)
+
+                    Text("This Session")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.primary)
+
+                    Spacer()
+
+                    Text("\(breakdown.conversations.count) interactions")
+                        .font(.system(size: 9))
+                        .foregroundColor(.secondary)
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(.secondary)
+                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                }
+            }
+            .buttonStyle(.plain)
+
+            if isExpanded {
+                VStack(spacing: 4) {
+                    ForEach(breakdown.sortedByCost.prefix(5)) { conversation in
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(conversation.isHighCost ? Color.red.opacity(0.6) : Color.cyan.opacity(0.4))
+                                .frame(width: 6, height: 6)
+
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(conversation.title)
+                                    .font(.system(size: 10, weight: .medium))
+                                    .lineLimit(1)
+
+                                Text("\(conversation.tokensUsed.formatted()) tokens")
+                                    .font(.system(size: 9))
+                                    .foregroundColor(.secondary)
+                            }
+
+                            Spacer()
+
+                            if conversation.isHighCost {
+                                Text("\(Int(conversation.percentageOfSession))%")
+                                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                                    .foregroundColor(.red)
+                            }
+                        }
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color.primary.opacity(0.03))
+                        )
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(Color.cyan.opacity(0.2), lineWidth: 0.5)
+        )
+        .padding(.horizontal, 10)
+    }
+}
+
+// MARK: - Context Window Card (Pro)
+
+struct ContextWindowCard: View {
+    let usage: ContextWindowUsage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Image(systemName: "window.horizontal")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.purple)
+
+                Text("Context Window")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.primary)
+
+                Spacer()
+            }
+
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text("\(Int(usage.usagePercentage))%")
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .foregroundColor(usage.isCritical ? .red : (usage.isNearCompaction ? .orange : .purple))
+
+                Text("(\(usage.currentTokens.formatted()) / 200K tokens)")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            }
+
+            if let warning = ContextWindowTracker.shared.contextWarning(usage: usage) {
+                Text(warning)
+                    .font(.system(size: 9))
+                    .foregroundColor(.orange)
+                    .lineLimit(2)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(Color.purple.opacity(0.2), lineWidth: 0.5)
+        )
+        .padding(.horizontal, 10)
+    }
+}
+
+// MARK: - Predictive Throttling Card (Pro)
+
+struct PredictiveThrottlingCard: View {
+    let prediction: ThrottlingPrediction
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Image(systemName: "chart.line.uptrend.xyaxis")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.blue)
+
+                Text("Usage Forecast")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.primary)
+
+                Spacer()
+            }
+
+            Text(prediction.advice)
+                .font(.system(size: 10))
+                .foregroundColor(prediction.willHitSessionLimit || prediction.willHitWeeklyLimit ? .orange : .secondary)
+                .lineLimit(3)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(Color.blue.opacity(0.2), lineWidth: 0.5)
+        )
+        .padding(.horizontal, 10)
+    }
+}
+
+// MARK: - Multi-AI Dashboard (Pro)
+
+struct MultiAIDashboard: View {
+    let profile: Profile
+    @State private var isExpanded = true
+
+    private var providers: [(AIProvider, (any ProviderUsage)?)] {
+        AIProvider.allCases.compactMap { provider in
+            guard profile.configuredProviders.contains(provider) else { return nil }
+            return (provider, profile.usage(for: provider))
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Button(action: { withAnimation(.easeInOut(duration: 0.2)) { isExpanded.toggle() } }) {
+                HStack(spacing: 6) {
+                    Image(systemName: "cpu")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.secondary)
+
+                    Text("All Providers")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.primary)
+
+                    Spacer()
+
+                    Text("\(providers.count) connected")
+                        .font(.system(size: 9))
+                        .foregroundColor(.secondary)
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(.secondary)
+                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                }
+            }
+            .buttonStyle(.plain)
+
+            if isExpanded {
+                VStack(spacing: 6) {
+                    ForEach(providers, id: \.0) { provider, usage in
+                        ProviderUsageRow(provider: provider, usage: usage)
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
+        )
+        .padding(.horizontal, 10)
+    }
+}
+
+struct ProviderUsageRow: View {
+    let provider: AIProvider
+    let usage: (any ProviderUsage)?
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: provider.icon)
+                .font(.system(size: 11))
+                .foregroundColor(provider.brandColor)
+                .frame(width: 16)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(provider.shortName)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.primary)
+
+                if let subtitle = subtitleText {
+                    Text(subtitle)
+                        .font(.system(size: 9))
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer()
+
+            providerMetrics
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.primary.opacity(0.03))
+        )
+    }
+
+    private var subtitleText: String? {
+        guard let usage = usage else { return nil }
+
+        switch provider {
+        case .claude:
+            return nil
+        case .codex:
+            if let codex = usage as? CodexUsage, let model = codex.model {
+                return model
+            }
+            return nil
+        case .gemini:
+            if let gemini = usage as? GeminiUsage {
+                if gemini.isFreeTier == true { return "Free tier" }
+                if let model = gemini.model { return model }
+            }
+            return nil
+        case .copilot:
+            if let copilot = usage as? CopilotUsage, let plan = copilot.planType {
+                return plan.displayName
+            }
+            return nil
+        case .kimi:
+            if let kimi = usage as? KimiUsage, let model = kimi.model { return model }
+            return nil
+        case .deepseek:
+            if let ds = usage as? DeepSeekUsage {
+                if let balance = ds.balance { return "Balance: $\(String(format: "%.2f", balance))" }
+                if let model = ds.model { return model }
+            }
+            return nil
+        case .glm:
+            if let glm = usage as? GLMUsage, let model = glm.model { return model }
+            return nil
+        case .qwen:
+            if let qwen = usage as? QwenUsage, let model = qwen.model { return model }
+            return nil
+        case .minimax:
+            if let mm = usage as? MiniMaxUsage, let group = mm.groupId { return "Group: \(group)" }
+            return nil
+        }
+    }
+
+    @ViewBuilder
+    private var providerMetrics: some View {
+        if let usage = usage, usage.isValid {
+            VStack(alignment: .trailing, spacing: 1) {
+                switch provider {
+                case .claude:
+                    EmptyView()
+                case .codex:
+                    codexMetrics(usage)
+                case .gemini:
+                    geminiMetrics(usage)
+                case .copilot:
+                    copilotMetrics(usage)
+                case .kimi:
+                    genericConnectedMetrics(usage)
+                case .deepseek:
+                    deepseekMetrics(usage)
+                case .glm:
+                    genericConnectedMetrics(usage)
+                case .qwen:
+                    genericConnectedMetrics(usage)
+                case .minimax:
+                    genericConnectedMetrics(usage)
+                }
+            }
+        } else {
+            Text("No data")
+                .font(.system(size: 10))
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private func codexMetrics(_ usage: any ProviderUsage) -> some View {
+        let codex = usage as? CodexUsage
+        return Group {
+            if let cost = usage.estimatedCost, cost > 0 {
+                Text("$\(String(format: "%.2f", cost))")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundColor(.primary)
+            } else if usage.tokensUsed > 0 {
+                Text("\(usage.tokensUsed.formatted()) tokens")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            } else if codex != nil {
+                Text("Connected")
+                    .font(.system(size: 10))
+                    .foregroundColor(.green)
+            }
+        }
+    }
+
+    private func geminiMetrics(_ usage: any ProviderUsage) -> some View {
+        let gemini = usage as? GeminiUsage
+        return Group {
+            if let requests = gemini?.requestsCount, requests > 0 {
+                Text("\(requests.formatted()) requests")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            } else if gemini?.isFreeTier == true {
+                Text("Free tier")
+                    .font(.system(size: 10))
+                    .foregroundColor(.green)
+            } else {
+                Text("Connected")
+                    .font(.system(size: 10))
+                    .foregroundColor(.green)
+            }
+        }
+    }
+
+    private func copilotMetrics(_ usage: any ProviderUsage) -> some View {
+        let copilot = usage as? CopilotUsage
+        return Group {
+            if let accepted = copilot?.suggestionsAccepted, let shown = copilot?.suggestionsShown, shown > 0 {
+                let rate = Double(accepted) / Double(shown) * 100
+                Text("\(Int(rate))% acceptance")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            } else if let cost = usage.estimatedCost, cost > 0 {
+                Text("$\(String(format: "%.2f", cost))/mo")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            } else if copilot != nil {
+                Text("Connected")
+                    .font(.system(size: 10))
+                    .foregroundColor(.green)
+            }
+        }
+    }
+
+    private func deepseekMetrics(_ usage: any ProviderUsage) -> some View {
+        let ds = usage as? DeepSeekUsage
+        return Group {
+            if let balance = ds?.balance, balance > 0 {
+                Text("$\(String(format: "%.2f", balance))")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundColor(.primary)
+            } else {
+                Text("Connected")
+                    .font(.system(size: 10))
+                    .foregroundColor(.green)
+            }
+        }
+    }
+
+    private func genericConnectedMetrics(_ usage: any ProviderUsage) -> some View {
+        Group {
+            if usage.tokensUsed > 0 {
+                Text("\(usage.tokensUsed.formatted()) tokens")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            } else {
+                Text("Connected")
+                    .font(.system(size: 10))
+                    .foregroundColor(.green)
+            }
+        }
+    }
+
+    private func usageColor(_ percentage: Double) -> Color {
+        switch percentage {
+        case 0..<50: return .adaptiveGreen
+        case 50..<80: return .orange
+        default: return .red
+        }
+    }
+}
+
+// MARK: - Pro Upsell Banner (Free Tier)
+
+struct ProUpsellBanner: View {
+    let usage: ClaudeUsage
+    @State private var isHovered = false
+
+    private var shouldShow: Bool {
+        // Show when usage > 60% or always as a gentle upsell
+        usage.effectiveSessionPercentage > 60 || usage.weeklyPercentage > 50
+    }
+
+    private var message: String {
+        if usage.effectiveSessionPercentage >= 90 {
+            return "Pro shows time-to-limit prediction. Upgrade to never be surprised again."
+        } else if usage.effectiveSessionPercentage >= 75 {
+            return "Pro users get burn rate predictions and cost transparency."
+        } else {
+            return "Upgrade to Pro for predictions, cost tracking, and unlimited profiles."
+        }
+    }
+
+    var body: some View {
+        if shouldShow {
+            Button(action: {
+                if let url = LicenseManager.shared.proCheckoutURL {
+                    NSWorkspace.shared.open(url)
+                }
+            }) {
+                HStack(spacing: 8) {
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 11))
+                        .foregroundColor(.purple)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Upgrade to Pro")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.primary)
+
+                        Text(message)
+                            .font(.system(size: 9))
+                            .foregroundColor(.secondary)
+                            .lineLimit(2)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 9))
+                        .foregroundColor(.purple)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.purple.opacity(0.08))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .strokeBorder(Color.purple.opacity(0.15), lineWidth: 0.5)
+                )
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(isHovered ? Color.purple.opacity(0.04) : Color.clear)
+                )
+            }
+            .buttonStyle(.plain)
+            .onHover { isHovered = $0 }
+            .padding(.horizontal, 10)
+        }
     }
 }

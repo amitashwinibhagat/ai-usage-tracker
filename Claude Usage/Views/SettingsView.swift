@@ -276,6 +276,12 @@ struct SettingsView: View {
                     GeneralSettingsView()
                 case .history:
                     UsageHistoryView()
+                case .proFeatures:
+                    ProFeaturesView()
+
+                // AI Providers
+                case .aiProviders:
+                    AIProvidersSettingsView()
 
                 // Shared Settings
                 case .appSettings:
@@ -529,6 +535,12 @@ enum SettingsSection: String, CaseIterable {
     case general
     case history
 
+    // Pro Features
+    case proFeatures
+
+    // AI Providers
+    case aiProviders
+
     // Shared Settings
     case appSettings
     case manageProfiles
@@ -550,6 +562,8 @@ enum SettingsSection: String, CaseIterable {
         case .appearance: return "section.appearance_title".localized
         case .general: return "section.general_title".localized
         case .history: return "section.history_title".localized
+        case .proFeatures: return "Pro Features"
+        case .aiProviders: return "AI Providers"
         case .appSettings: return "section.app_settings_title".localized
         case .manageProfiles: return "section.manage_profiles_title".localized
         case .language: return "language.title".localized
@@ -572,6 +586,8 @@ enum SettingsSection: String, CaseIterable {
         case .appearance: return "paintbrush.fill"
         case .general: return "gearshape.fill"
         case .history: return "chart.bar.xaxis"
+        case .proFeatures: return "star.fill"
+        case .aiProviders: return "cpu.fill"
         case .appSettings: return "gearshape.2.fill"
         case .manageProfiles: return "person.2.fill"
         case .language: return "globe"
@@ -594,6 +610,8 @@ enum SettingsSection: String, CaseIterable {
         case .appearance: return "section.appearance_desc".localized
         case .general: return "section.general_desc".localized
         case .history: return "section.history_desc".localized
+        case .proFeatures: return "Unlock Pro features and manage your subscription"
+        case .aiProviders: return "Manage credentials for Claude, Codex, Gemini, and Copilot"
         case .appSettings: return "section.app_settings_desc".localized
         case .manageProfiles: return "section.manage_profiles_desc".localized
         case .language: return "language.subtitle".localized
@@ -629,6 +647,15 @@ enum SettingsSection: String, CaseIterable {
     var isProfileSetting: Bool {
         switch self {
         case .appearance, .general, .history:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isProFeature: Bool {
+        switch self {
+        case .proFeatures, .aiProviders:
             return true
         default:
             return false
