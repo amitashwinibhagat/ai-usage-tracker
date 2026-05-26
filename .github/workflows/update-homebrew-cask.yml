@@ -51,7 +51,7 @@ jobs:
       - name: Checkout homebrew-claude-usage tap
         uses: actions/checkout@v4
         with:
-          repository: hamed-elfayome/homebrew-claude-usage
+          repository: amitashwinibhagat/homebrew-claude-usage
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
           path: homebrew-tap
 

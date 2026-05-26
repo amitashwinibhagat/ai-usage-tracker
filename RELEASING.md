@@ -78,7 +78,7 @@ The tag push triggers three automated workflows:
 3. **Update Homebrew Cask workflow** (triggers after release)
    - Automatically updates Homebrew formula
 
-Monitor at: `https://github.com/hamed-elfayome/Claude-Usage-Tracker/actions`
+Monitor at: `https://github.com/amitashwinibhagat/claude-usage-tracker-private/actions`
 
 ### 6. Verify Release
 

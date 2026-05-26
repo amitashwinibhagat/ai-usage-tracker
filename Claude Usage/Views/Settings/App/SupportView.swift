@@ -116,31 +116,31 @@ struct SupportView: View {
                         .foregroundColor(.secondary.opacity(0.7))
                 }
 
-                // GitHub star
+                // Pro upgrade CTA
                 VStack(spacing: 12) {
-                    Text("support.also_support".localized)
+                    Text("Unlock more features")
                         .font(.system(size: 12))
                         .foregroundColor(.secondary)
 
                     Button(action: {
-                        if let url = URL(string: "https://github.com/hamed-elfayome/Claude-Usage-Tracker") {
+                        if let url = LicenseManager.shared.proCheckoutURL {
                             NSWorkspace.shared.open(url)
                         }
                     }) {
                         HStack(spacing: 8) {
                             Image(systemName: "star.fill")
                                 .font(.system(size: 14))
-                            Text("support.star_github".localized)
+                            Text("Upgrade to Pro")
                                 .font(.system(size: 13, weight: .medium))
                         }
-                        .foregroundColor(.primary)
+                        .foregroundColor(.purple)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(DesignTokens.Colors.cardBackground)
+                        .background(Color.purple.opacity(0.08))
                         .cornerRadius(6)
                         .overlay(
                             RoundedRectangle(cornerRadius: 6)
-                                .stroke(DesignTokens.Colors.cardBorder, lineWidth: 1)
+                                .stroke(Color.purple.opacity(0.2), lineWidth: 1)
                         )
                     }
                     .buttonStyle(.plain)

@@ -14,7 +14,7 @@
 
   <sub>🇬🇧 English • 🇪🇸 Español • 🇫🇷 Français • 🇩🇪 Deutsch • 🇮🇹 Italiano • 🇵🇹 Português • 🇧🇷 Português (BR) • 🇯🇵 日本語 • 🇰🇷 한국어 • 🇨🇳 简体中文 • 🇹🇼 繁體中文 • 🇹🇷 Türkçe • 🇺🇦 Українська</sub>
 
-  ### [Download Latest Release (v3.1.1)](https://github.com/hamed-elfayome/Claude-Usage-Tracker/releases/latest/download/Claude-Usage.zip)
+  ### [Download Latest Release (v3.1.1)](https://github.com/amitashwinibhagat/claude-usage-tracker-private/releases/latest/download/Claude-Usage.zip)
 
   <sub>macOS 14.0+ (Sonoma) | ~6 MB | Native Swift/SwiftUI | Officially Signed</sub>
 
@@ -139,7 +139,7 @@ home.packages = with pkgs; [
 
 #### Option 3: Direct Download
 
-**[Download Claude-Usage.zip](https://github.com/hamed-elfayome/Claude-Usage-Tracker/releases/latest/download/Claude-Usage.zip)**
+**[Download Claude-Usage.zip](https://github.com/amitashwinibhagat/claude-usage-tracker-private/releases/latest/download/Claude-Usage.zip)**
 
 1. Download the `.zip` file from the link above
 2. Extract the zip file (double-click or use Archive Utility)
@@ -154,7 +154,7 @@ home.packages = with pkgs; [
 
 ```bash
 # Clone the repository
-git clone https://github.com/hamed-elfayome/Claude-Usage-Tracker.git
+git clone https://github.com/amitashwinibhagat/claude-usage-tracker-private.git
 cd Claude-Usage-Tracker
 
 # Open in Xcode
@@ -782,7 +782,7 @@ If automatic updates aren't working:
 
 ## Contributors
 
-<img src="https://contrib.rocks/image?repo=hamed-elfayome/Claude-Usage-Tracker" alt="Contributors" height="30px" />
+<img src="https://contrib.rocks/image?repo=amitashwinibhagat/claude-usage-tracker-private" alt="Contributors" height="30px" />
 
 This project is built for the community — everyone is welcome
 

@@ -68,7 +68,7 @@ struct AboutView: View {
                         .font(DesignTokens.Typography.sectionTitle)
 
                     Button(action: {
-                        if let url = URL(string: "https://github.com/hamed-elfayome") {
+                        if let url = URL(string: "https://github.com/amitashwinibhagat") {
                             NSWorkspace.shared.open(url)
                         }
                     }) {
@@ -148,13 +148,13 @@ struct AboutView: View {
 
                     VStack(spacing: DesignTokens.Spacing.small) {
                         LinkButton(title: "about.star_github".localized, icon: "star.fill") {
-                            if let url = URL(string: "https://github.com/hamed-elfayome/Claude-Usage-Tracker") {
+                            if let url = URL(string: "https://github.com/amitashwinibhagat/claude-usage-tracker-private") {
                                 NSWorkspace.shared.open(url)
                             }
                         }
 
                         LinkButton(title: "about.report_issue".localized, icon: "exclamationmark.triangle") {
-                            if let url = URL(string: "https://github.com/hamed-elfayome/Claude-Usage-Tracker/issues") {
+                            if let url = URL(string: "https://github.com/amitashwinibhagat/claude-usage-tracker-private/issues") {
                                 NSWorkspace.shared.open(url)
                             }
                         }

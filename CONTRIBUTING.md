@@ -60,7 +60,7 @@ Before you begin, ensure you have the following installed:
 
 3. **Add upstream remote**
    ```bash
-   git remote add upstream https://github.com/hamed-elfayome/Claude-Usage-Tracker.git
+   git remote add upstream https://github.com/amitashwinibhagat/claude-usage-tracker-private.git
    ```
 
 4. **Open in Xcode**
@@ -119,7 +119,7 @@ Claude Usage/
 ### Reporting Bugs
 
 Before submitting a bug report:
-1. Check existing [issues](https://github.com/hamed-elfayome/Claude-Usage-Tracker/issues) to avoid duplicates
+1. Check existing [issues](https://github.com/amitashwinibhagat/claude-usage-tracker-private/issues) to avoid duplicates
 2. Ensure you're running the latest version
 
 **When reporting a bug, include:**
@@ -338,8 +338,8 @@ git push origin main --tags
 
 ## Getting Help
 
-- **Questions?** Open a [Discussion](https://github.com/hamed-elfayome/Claude-Usage-Tracker/discussions)
-- **Found a bug?** Open an [Issue](https://github.com/hamed-elfayome/Claude-Usage-Tracker/issues)
+- **Questions?** Open a [Discussion](https://github.com/amitashwinibhagat/claude-usage-tracker-private/discussions)
+- **Found a bug?** Open an [Issue](https://github.com/amitashwinibhagat/claude-usage-tracker-private/issues)
 - **Want to chat?** Reach out to maintainers
 
 ---

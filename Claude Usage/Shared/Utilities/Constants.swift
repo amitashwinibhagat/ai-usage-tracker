@@ -140,7 +140,7 @@ enum Constants {
     }
 
     // GitHub repository
-    static let githubRepoURL = "https://github.com/hamed-elfayome/Claude-Usage-Tracker"
+    static let githubRepoURL = "https://github.com/amitashwinibhagat/claude-usage-tracker-private"
 
     // GitHub star prompt timing (in seconds)
     enum GitHubPromptTiming {

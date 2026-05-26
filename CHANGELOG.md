@@ -1578,7 +1578,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
   - Smooth animations for status transitions
 
 ### Contributors
-- [@hamed-elfayome](https://github.com/hamed-elfayome) (Hamed Elfayome) - Project creator and maintainer
+- [@hamed-elfayome](https://github.com/amitashwinibhagat) (Hamed Elfayome) - Project creator and maintainer
 - [@ggfevans](https://github.com/ggfevans) - Claude status indicator, detachable popover, outside click fix, dynamic version, issue templates, contributing guide
 
 ---
@@ -1767,26 +1767,26 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 - Detailed usage dashboard with countdown timers
 - Support for macOS 14.0+ (Sonoma and later)
 
-[3.1.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v3.0.3...v3.1.0
-[3.0.3]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v3.0.2...v3.0.3
-[3.0.2]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v3.0.1...v3.0.2
-[3.0.1]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v3.0.0...v3.0.1
-[3.0.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.3.0...v3.0.0
-[2.3.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.2.3...v2.3.0
-[2.2.3]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.2.2...v2.2.3
-[2.2.2]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.2.1...v2.2.2
-[2.2.1]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.2.0...v2.2.1
-[2.2.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.1.2...v2.2.0
-[2.1.2]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.1.1...v2.1.2
-[2.1.1]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.1.0...v2.1.1
-[2.1.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.0.0...v2.1.0
-[2.0.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.6.2...v2.0.0
-[1.6.2]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.6.1...v1.6.2
-[1.6.1]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.6.0...v1.6.1
-[1.6.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.5.0...v1.6.0
-[1.5.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.4.0...v1.5.0
-[1.4.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.3.0...v1.4.0
-[1.3.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.2.0...v1.3.0
-[1.2.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/releases/tag/v1.0.0
+[3.1.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v3.0.3...v3.1.0
+[3.0.3]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v3.0.2...v3.0.3
+[3.0.2]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v3.0.1...v3.0.2
+[3.0.1]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v3.0.0...v3.0.1
+[3.0.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v2.3.0...v3.0.0
+[2.3.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v2.2.3...v2.3.0
+[2.2.3]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v2.2.2...v2.2.3
+[2.2.2]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v2.2.1...v2.2.2
+[2.2.1]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v2.2.0...v2.2.1
+[2.2.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v2.1.2...v2.2.0
+[2.1.2]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v2.1.1...v2.1.2
+[2.1.1]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v2.1.0...v2.1.1
+[2.1.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v1.6.2...v2.0.0
+[1.6.2]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v1.6.1...v1.6.2
+[1.6.1]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v1.6.0...v1.6.1
+[1.6.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v1.5.0...v1.6.0
+[1.5.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v1.4.0...v1.5.0
+[1.4.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/amitashwinibhagat/claude-usage-tracker-private/releases/tag/v1.0.0
