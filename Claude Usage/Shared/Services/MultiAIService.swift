@@ -98,9 +98,14 @@ final class MultiAIService {
 
         // Fetch Gemini usage
         var geminiUsage: GeminiUsage?
-        if profile.hasGeminiCredentials, let apiKey = profile.geminiApiKey {
+        if profile.hasGeminiCredentials {
             do {
-                let credentials = GeminiCredentials(apiKey: apiKey, projectId: profile.geminiProjectId)
+                let oauthToken = OAuthTokenStore.shared.load(provider: .gemini, profileId: profile.id)
+                let credentials = GeminiCredentials(
+                    apiKey: profile.geminiApiKey,
+                    projectId: profile.geminiProjectId,
+                    oauthAccessToken: oauthToken?.accessToken
+                )
                 geminiUsage = try await geminiService.fetchUsage(credentials: credentials)
                 ProfileManager.shared.saveGeminiUsage(geminiUsage!, for: profile.id)
             } catch {
@@ -111,9 +116,14 @@ final class MultiAIService {
 
         // Fetch Copilot usage
         var copilotUsage: CopilotUsage?
-        if profile.hasCopilotCredentials, let token = profile.copilotAccessToken {
+        if profile.hasCopilotCredentials {
             do {
-                let credentials = CopilotCredentials(accessToken: token, username: profile.copilotUsername)
+                let oauthToken = OAuthTokenStore.shared.load(provider: .copilot, profileId: profile.id)
+                let credentials = CopilotCredentials(
+                    accessToken: profile.copilotAccessToken,
+                    username: profile.copilotUsername,
+                    oauthAccessToken: oauthToken?.accessToken
+                )
                 copilotUsage = try await copilotService.fetchUsage(credentials: credentials)
                 ProfileManager.shared.saveCopilotUsage(copilotUsage!, for: profile.id)
             } catch {
@@ -222,12 +232,22 @@ final class MultiAIService {
             let credentials = CodexCredentials(apiKey: apiKey, organizationId: profile.codexOrganizationId)
             return try? await codexService.fetchUsage(credentials: credentials)
         case .gemini:
-            guard let apiKey = profile.geminiApiKey else { return nil }
-            let credentials = GeminiCredentials(apiKey: apiKey, projectId: profile.geminiProjectId)
+            guard profile.hasGeminiCredentials else { return nil }
+            let oauthToken = OAuthTokenStore.shared.load(provider: .gemini, profileId: profile.id)
+            let credentials = GeminiCredentials(
+                apiKey: profile.geminiApiKey,
+                projectId: profile.geminiProjectId,
+                oauthAccessToken: oauthToken?.accessToken
+            )
             return try? await geminiService.fetchUsage(credentials: credentials)
         case .copilot:
-            guard let token = profile.copilotAccessToken else { return nil }
-            let credentials = CopilotCredentials(accessToken: token, username: profile.copilotUsername)
+            guard profile.hasCopilotCredentials else { return nil }
+            let oauthToken = OAuthTokenStore.shared.load(provider: .copilot, profileId: profile.id)
+            let credentials = CopilotCredentials(
+                accessToken: profile.copilotAccessToken,
+                username: profile.copilotUsername,
+                oauthAccessToken: oauthToken?.accessToken
+            )
             return try? await copilotService.fetchUsage(credentials: credentials)
         case .kimi:
             guard let apiKey = profile.kimiApiKey else { return nil }

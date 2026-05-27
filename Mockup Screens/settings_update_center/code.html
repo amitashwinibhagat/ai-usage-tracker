@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Monitor - Updates</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#10131b",
+                        "surface-container-high": "#272a32",
+                        "on-primary-fixed-variant": "#004493",
+                        "surface-container": "#1c2028",
+                        "surface-variant": "#31353d",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-highest": "#31353d",
+                        "outline-variant": "#414755",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0b0e16",
+                        "on-surface-variant": "#c1c6d7",
+                        "error-container": "#93000a",
+                        "background": "#10131b",
+                        "surface-bright": "#363942",
+                        "surface-tint": "#adc6ff",
+                        "surface-container-low": "#181c23",
+                        "on-tertiary": "#571e00",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "secondary-fixed-dim": "#e8b3ff",
+                        "on-secondary-fixed": "#310048",
+                        "on-tertiary-fixed": "#351000",
+                        "on-tertiary-container": "#4c1a00",
+                        "tertiary": "#ffb595",
+                        "secondary-container": "#7508a5",
+                        "tertiary-fixed-dim": "#ffb595",
+                        "on-surface": "#e0e2ed",
+                        "inverse-surface": "#e0e2ed",
+                        "on-secondary-fixed-variant": "#7201a2",
+                        "inverse-primary": "#005bc1",
+                        "secondary": "#e8b3ff",
+                        "on-background": "#e0e2ed",
+                        "primary-container": "#4b8eff",
+                        "outline": "#8b90a0",
+                        "on-error": "#690005",
+                        "tertiary-fixed": "#ffdbcc",
+                        "secondary-fixed": "#f6d9ff",
+                        "on-primary-fixed": "#001a41",
+                        "tertiary-container": "#ef6719",
+                        "on-primary": "#002e69",
+                        "primary-fixed": "#d8e2ff",
+                        "primary": "#adc6ff",
+                        "on-primary-container": "#00285c",
+                        "surface-dim": "#10131b",
+                        "on-secondary-container": "#e19fff",
+                        "on-secondary": "#510074",
+                        "inverse-on-surface": "#2d3039"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "lg": "24px",
+                        "xxs": "4px",
+                        "md": "16px",
+                        "gutter": "12px",
+                        "xl": "32px",
+                        "margin": "16px",
+                        "sm": "12px"
+                    },
+                    "fontFamily": {
+                        "key-mono": ["JetBrains Mono"],
+                        "body-semibold": ["Inter"],
+                        "body": ["Inter"],
+                        "section-header": ["Inter"],
+                        "caption": ["Inter"],
+                        "page-title": ["Inter"]
+                    },
+                    "fontSize": {
+                        "key-mono": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-semibold": ["13px", { "lineHeight": "18px", "fontWeight": "600" }],
+                        "body": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+                        "section-header": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "caption": ["11px", { "lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "page-title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background h-screen w-full flex overflow-hidden antialiased selection:bg-primary/30 selection:text-primary">
+<aside class="hidden md:flex flex-col h-full w-64 flex-shrink-0 bg-surface-container-low border-r border-outline-variant p-md space-y-xs left-0 top-0">
+<div class="mb-sm px-xs pt-xs">
+<h1 class="font-section-header text-section-header text-on-surface">AI Usage</h1>
+<p class="font-caption text-caption text-on-surface-variant mt-xxs">v1.4.2</p>
+</div>
+<button class="w-full bg-primary text-on-primary font-body-semibold text-body-semibold py-sm rounded-lg mb-sm hover:opacity-90 active:scale-95 transition-all shadow-sm">
+            New Request
+        </button>
+<nav class="flex-1 flex flex-col space-y-xxs overflow-y-auto">
+<a class="flex items-center space-x-sm px-sm py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-body text-body">Dashboard</span>
+</a>
+<a class="flex items-center space-x-sm px-sm py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">neurology</span>
+<span class="font-body text-body">Models</span>
+</a>
+<a class="flex items-center space-x-sm px-sm py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">history</span>
+<span class="font-body text-body">Usage History</span>
+</a>
+<a class="flex items-center space-x-sm px-sm py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">vpn_key</span>
+<span class="font-body text-body">API Keys</span>
+</a>
+<a class="flex items-center space-x-sm px-sm py-sm bg-primary-container text-on-primary-container rounded-lg cursor-pointer active:opacity-80 transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-body text-body font-medium">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-sm border-t border-outline-variant flex flex-col space-y-xxs">
+<a class="flex items-center space-x-sm px-sm py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">help_outline</span>
+<span class="font-body text-body">Support</span>
+</a>
+<a class="flex items-center space-x-sm px-sm py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">terminal</span>
+<span class="font-body text-body">Logs</span>
+</a>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-full bg-background relative overflow-y-auto">
+<header class="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-outline-variant px-lg py-sm flex items-center h-[52px]">
+<h2 class="font-section-header text-section-header text-on-surface">Settings</h2>
+</header>
+<div class="p-lg lg:px-xl xl:px-32 max-w-4xl mx-auto w-full pt-xl">
+<div class="flex items-center space-x-lg border-b border-outline-variant mb-xl">
+<a class="font-body text-body text-on-surface-variant hover:text-on-surface pb-sm transition-colors" href="#">General</a>
+<a class="font-body text-body text-on-surface-variant hover:text-on-surface pb-sm transition-colors" href="#">Account</a>
+<a class="font-body-semibold text-body-semibold text-primary border-b-[3px] border-primary pb-sm -mb-[2px]" href="#">Updates</a>
+<a class="font-body text-body text-on-surface-variant hover:text-on-surface pb-sm transition-colors" href="#">Advanced</a>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg overflow-hidden flex flex-col">
+<div class="flex items-center justify-between p-md hover:bg-surface-variant/30 transition-colors">
+<div class="pr-md">
+<p class="font-body-semibold text-body-semibold text-on-surface">Automatically check for updates</p>
+<p class="font-caption text-caption text-on-surface-variant mt-xxs">AI Monitor will silently check for updates in the background.</p>
+</div>
+<button aria-checked="true" class="bg-primary relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background" role="switch" type="button">
+<span aria-hidden="true" class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-on-primary shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+<div class="h-px w-full bg-outline-variant"></div>
+<div class="flex items-center justify-between p-md hover:bg-surface-variant/30 transition-colors">
+<div class="pr-md">
+<p class="font-body-semibold text-body-semibold text-on-surface">Check for updates</p>
+<p class="font-caption text-caption text-on-surface-variant mt-xxs">Last checked: Today at 10:42 AM</p>
+</div>
+<button class="bg-surface-variant border border-outline-variant text-on-surface hover:bg-surface-bright active:scale-95 px-sm py-xxs rounded transition-all font-body text-body flex items-center space-x-xs whitespace-nowrap">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+<span>Check Now...</span>
+</button>
+</div>
+<div class="h-px w-full bg-outline-variant"></div>
+<div class="flex items-center justify-between p-md hover:bg-surface-variant/30 transition-colors">
+<div class="pr-md">
+<p class="font-body-semibold text-body-semibold text-on-surface">Update Channel</p>
+<p class="font-caption text-caption text-on-surface-variant mt-xxs">Receive early access to new features by switching to the Beta channel.</p>
+</div>
+<div class="relative">
+<select class="appearance-none bg-surface-variant border border-outline-variant text-on-surface font-body text-body rounded pl-sm pr-8 py-xxs focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer">
+<option value="stable">Stable</option>
+<option value="beta">Beta</option>
+<option value="nightly">Nightly</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+<div class="mt-xl pt-xl flex flex-col items-center justify-center text-center">
+<div class="w-20 h-20 bg-surface border border-outline-variant rounded-2xl flex items-center justify-center mb-md shadow-lg shadow-black/20">
+<span class="material-symbols-outlined text-[40px] text-primary" style="font-variation-settings: 'FILL' 1;">neurology</span>
+</div>
+<h3 class="font-page-title text-page-title text-on-surface">AI Monitor</h3>
+<p class="font-body text-body text-on-surface mt-xxs">Version 1.4.2 (1420)</p>
+<div class="mt-md px-sm py-xxs bg-surface-variant rounded-full border border-outline-variant flex items-center space-x-xs">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">auto_awesome</span>
+<span class="font-key-mono text-key-mono text-on-surface-variant uppercase tracking-wider">Sparkle Framework</span>
+</div>
+</div>
+</div>
+</main>
+</body></html>

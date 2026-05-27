@@ -1,0 +1,28 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#AF52DE;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7D3CB5;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background Circle (Dark Utility Base) -->
+  <circle cx="100" cy="100" r="90" fill="#10131b" />
+  
+  <!-- Outer Gauge Ring -->
+  <path d="M 40 140 A 70 70 0 1 1 160 140" fill="none" stroke="#363942" stroke-width="12" stroke-linecap="round" />
+  
+  <!-- Active Gauge Segment (Pro Purple) -->
+  <path d="M 40 140 A 70 70 0 1 1 145 75" fill="none" stroke="url(#purpleGrad)" stroke-width="12" stroke-linecap="round" />
+  
+  <!-- Abstract 'C' Shape / Inner Gauge -->
+  <path d="M 135 100 A 35 35 0 1 0 100 135 L 100 115 A 15 15 0 1 1 115 100" fill="#ffffff" />
+  
+  <!-- Gauge Needle -->
+  <line x1="100" y1="100" x2="140" y2="60" stroke="#AF52DE" stroke-width="6" stroke-linecap="round">
+    <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="5 100 100" dur="2s" repeatCount="indefinite" additive="sum" />
+  </line>
+  
+  <!-- Needle Hub -->
+  <circle cx="100" cy="100" r="8" fill="#ffffff" />
+  <circle cx="100" cy="100" r="4" fill="#AF52DE" />
+</svg>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Claude Tracker - Usage History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#ffb595",
+                    "secondary-container": "#7508a5",
+                    "on-secondary-container": "#e19fff",
+                    "on-primary-fixed-variant": "#004493",
+                    "secondary-fixed-dim": "#e8b3ff",
+                    "error": "#ffb4ab",
+                    "background": "#10131b",
+                    "surface-variant": "#31353d",
+                    "surface-tint": "#adc6ff",
+                    "surface-bright": "#363942",
+                    "on-secondary-fixed-variant": "#7201a2",
+                    "on-tertiary-fixed": "#351000",
+                    "primary-container": "#4b8eff",
+                    "on-tertiary": "#571e00",
+                    "inverse-surface": "#e0e2ed",
+                    "secondary-fixed": "#f6d9ff",
+                    "surface-dim": "#10131b",
+                    "surface-container": "#1c2028",
+                    "primary-fixed": "#d8e2ff",
+                    "error-container": "#93000a",
+                    "inverse-primary": "#005bc1",
+                    "on-surface": "#e0e2ed",
+                    "on-primary": "#002e69",
+                    "on-error-container": "#ffdad6",
+                    "inverse-on-surface": "#2d3039",
+                    "on-tertiary-container": "#4c1a00",
+                    "primary-fixed-dim": "#adc6ff",
+                    "surface-container-high": "#272a32",
+                    "outline": "#8b90a0",
+                    "tertiary-fixed": "#ffdbcc",
+                    "tertiary-container": "#ef6719",
+                    "on-tertiary-fixed-variant": "#7c2e00",
+                    "on-primary-fixed": "#001a41",
+                    "surface-container-highest": "#31353d",
+                    "outline-variant": "#414755",
+                    "on-secondary-fixed": "#310048",
+                    "surface": "#10131b",
+                    "secondary": "#e8b3ff",
+                    "surface-container-lowest": "#0b0e16",
+                    "on-primary-container": "#00285c",
+                    "on-error": "#690005",
+                    "tertiary-fixed-dim": "#ffb595",
+                    "on-background": "#e0e2ed",
+                    "surface-container-low": "#181c23",
+                    "on-surface-variant": "#c1c6d7",
+                    "primary": "#adc6ff",
+                    "on-secondary": "#510074"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xxs": "4px",
+                    "xl": "32px",
+                    "margin": "16px",
+                    "md": "16px",
+                    "xs": "8px",
+                    "sm": "12px",
+                    "gutter": "12px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "section-header": [
+                            "Inter"
+                    ],
+                    "key-mono": [
+                            "JetBrains Mono"
+                    ],
+                    "body": [
+                            "Inter"
+                    ],
+                    "page-title": [
+                            "Inter"
+                    ],
+                    "caption": [
+                            "Inter"
+                    ],
+                    "body-semibold": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "section-header": [
+                            "13px",
+                            {
+                                    "lineHeight": "18px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "key-mono": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body": [
+                            "13px",
+                            {
+                                    "lineHeight": "18px",
+                                    "letterSpacing": "-0.005em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "page-title": [
+                            "18px",
+                            {
+                                    "lineHeight": "24px",
+                                    "letterSpacing": "-0.015em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "caption": [
+                            "11px",
+                            {
+                                    "lineHeight": "14px",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-semibold": [
+                            "13px",
+                            {
+                                    "lineHeight": "18px",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #1E1E1E; /* Hardcoded from spec: Level 0 */
+            color: #e0e2ed; /* on-surface */
+        }
+        .card-level-1 {
+            background-color: #2D2D2D;
+            border: 1px solid #3D3D3D;
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #414755; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8b90a0; 
+        }
+    </style>
+</head>
+<body class="font-body text-body min-h-screen flex antialiased">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-full p-md bg-surface-container-low dark:bg-surface-container-low h-screen w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant z-20">
+<div class="mb-xl flex items-center gap-sm px-xs pt-xs">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container font-page-title text-page-title font-bold">C</div>
+<div>
+<div class="font-page-title text-page-title text-on-surface dark:text-on-surface leading-tight">Claude Tracker</div>
+<div class="font-caption text-caption text-on-surface-variant">Pro Account</div>
+</div>
+</div>
+<div class="flex-1 space-y-xs">
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">vpn_key</span>
+<span>Credentials</span>
+</a>
+<a class="flex items-center gap-sm bg-secondary-container dark:bg-secondary-container text-on-secondary-container dark:text-on-secondary-container rounded-lg px-3 py-2 font-body-semibold text-body-semibold group transform hover:scale-[0.98] transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">history</span>
+<span>History</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">credit_card</span>
+<span>Billing</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<div class="mt-auto pt-margin border-t border-outline-variant">
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">help</span>
+<span>Help</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen relative pb-8">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center h-14 px-lg w-full bg-surface dark:bg-surface docked full-width top-0 sticky border-b border-outline-variant dark:border-outline-variant z-10">
+<div class="font-page-title text-page-title font-semibold text-on-surface dark:text-on-surface">Usage Monitor</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors hover:opacity-80 transition-opacity flex items-center justify-center p-1 rounded">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors hover:opacity-80 transition-opacity flex items-center justify-center p-1 rounded">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<button class="flex items-center gap-xs px-3 py-1.5 rounded-lg bg-surface-container-high border border-outline-variant hover:bg-surface-container-highest transition-colors font-body-semibold text-body-semibold text-on-surface">
+<span class="material-symbols-outlined text-[16px]">download</span>
+                    Export CSV
+                </button>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="p-margin max-w-[1200px] w-full mx-auto space-y-md">
+<!-- Header & Controls -->
+<div class="flex justify-between items-end mb-sm">
+<div>
+<h1 class="font-page-title text-page-title text-on-surface">Token History</h1>
+<p class="font-caption text-caption text-on-surface-variant mt-1">Detailed breakdown of input and output token consumption.</p>
+</div>
+<!-- Time Scale Picker -->
+<div class="flex p-1 rounded-lg bg-surface-container border border-outline-variant">
+<button class="px-3 py-1 rounded font-body text-body text-on-surface-variant hover:text-on-surface transition-colors">5h</button>
+<button class="px-3 py-1 rounded font-body text-body text-on-surface-variant hover:text-on-surface transition-colors">24h</button>
+<button class="px-3 py-1 rounded font-body-semibold text-body-semibold bg-surface-container-highest text-on-surface shadow-sm transition-colors border border-outline-variant">7d</button>
+<button class="px-3 py-1 rounded font-body text-body text-on-surface-variant hover:text-on-surface transition-colors">30d</button>
+</div>
+</div>
+<!-- Stats Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-sm">
+<!-- Total Tokens -->
+<div class="card-level-1 rounded-lg p-sm flex flex-col justify-between min-h-[100px]">
+<div class="flex justify-between items-start">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Total Tokens</span>
+<span class="material-symbols-outlined text-primary text-[18px]">data_usage</span>
+</div>
+<div class="mt-2">
+<div class="font-page-title text-page-title text-on-surface text-xl">1.24M</div>
+<div class="font-caption text-caption text-tertiary flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> +12% vs last 7d
+                        </div>
+</div>
+</div>
+<!-- Avg Per Day -->
+<div class="card-level-1 rounded-lg p-sm flex flex-col justify-between min-h-[100px]">
+<div class="flex justify-between items-start">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Avg / Day</span>
+<span class="material-symbols-outlined text-secondary text-[18px]">calendar_today</span>
+</div>
+<div class="mt-2">
+<div class="font-page-title text-page-title text-on-surface text-xl">177.1K</div>
+<div class="font-caption text-caption text-on-surface-variant flex items-center gap-1 mt-1">
+                            Mostly Claude 3.5 Sonnet
+                        </div>
+</div>
+</div>
+<!-- Peak Usage -->
+<div class="card-level-1 rounded-lg p-sm flex flex-col justify-between min-h-[100px]">
+<div class="flex justify-between items-start">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Peak Usage</span>
+<span class="material-symbols-outlined text-error text-[18px]">bolt</span>
+</div>
+<div class="mt-2">
+<div class="font-page-title text-page-title text-on-surface text-xl">342K</div>
+<div class="font-caption text-caption text-on-surface-variant flex items-center gap-1 mt-1">
+                            On Oct 24, 2:00 PM
+                        </div>
+</div>
+</div>
+<!-- Estimated Cost -->
+<div class="card-level-1 rounded-lg p-sm flex flex-col justify-between min-h-[100px]">
+<div class="flex justify-between items-start">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Est. Cost</span>
+<span class="material-symbols-outlined text-surface-tint text-[18px]">payments</span>
+</div>
+<div class="mt-2">
+<div class="font-page-title text-page-title text-on-surface text-xl">$14.82</div>
+<div class="font-caption text-caption text-primary flex items-center gap-1 mt-1">
+                            Well under $50 limit
+                        </div>
+</div>
+</div>
+</div>
+<!-- Main Chart Area -->
+<div class="card-level-1 rounded-lg p-md mt-md">
+<div class="flex justify-between items-center mb-md border-b border-outline-variant pb-xs">
+<h2 class="font-section-header text-section-header text-on-surface">Usage Trend (Tokens)</h2>
+<div class="flex items-center gap-sm">
+<div class="flex items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="font-caption text-caption text-on-surface-variant">Input</span>
+</div>
+<div class="flex items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="font-caption text-caption text-on-surface-variant">Output</span>
+</div>
+</div>
+</div>
+<!-- Mock Chart Visualization (CSS based to avoid images) -->
+<div class="h-[300px] w-full relative flex items-end">
+<!-- Y-Axis Labels -->
+<div class="absolute left-0 top-0 h-full flex flex-col justify-between text-caption font-key-mono text-on-surface-variant pr-2 text-right w-12 border-r border-outline-variant pb-6">
+<span>400k</span>
+<span>300k</span>
+<span>200k</span>
+<span>100k</span>
+<span>0</span>
+</div>
+<!-- Chart Grid Lines -->
+<div class="absolute left-12 right-0 top-0 h-[calc(100%-24px)] flex flex-col justify-between pointer-events-none">
+<div class="w-full border-t border-outline-variant/30"></div>
+<div class="w-full border-t border-outline-variant/30"></div>
+<div class="w-full border-t border-outline-variant/30"></div>
+<div class="w-full border-t border-outline-variant/30"></div>
+<div class="w-full border-t border-outline-variant/50"></div>
+</div>
+<!-- Mock Bars/Area for visual representation -->
+<div class="ml-12 w-full h-[calc(100%-24px)] flex items-end justify-around pb-0 relative">
+<!-- Simulated Area fill using gradient -->
+<div class="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent opacity-50 z-0 pointer-events-none"></div>
+<!-- Data Points (Days) -->
+<div class="w-8 flex flex-col justify-end h-full gap-1 z-10 group relative">
+<div class="w-full bg-secondary rounded-t-sm h-[10%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-primary rounded-t-sm h-[30%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface-container-high border border-outline-variant rounded p-1 hidden group-hover:block whitespace-nowrap z-20">
+<span class="font-key-mono text-caption text-on-surface">120k Total</span>
+</div>
+</div>
+<div class="w-8 flex flex-col justify-end h-full gap-1 z-10 group relative">
+<div class="w-full bg-secondary rounded-t-sm h-[15%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-primary rounded-t-sm h-[45%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="w-8 flex flex-col justify-end h-full gap-1 z-10 group relative">
+<div class="w-full bg-secondary rounded-t-sm h-[8%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-primary rounded-t-sm h-[20%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="w-8 flex flex-col justify-end h-full gap-1 z-10 group relative">
+<div class="w-full bg-secondary rounded-t-sm h-[25%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-primary rounded-t-sm h-[85%] opacity-80 group-hover:opacity-100 transition-opacity shadow-[0_0_10px_rgba(173,198,255,0.3)]"></div>
+</div>
+<div class="w-8 flex flex-col justify-end h-full gap-1 z-10 group relative">
+<div class="w-full bg-secondary rounded-t-sm h-[12%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-primary rounded-t-sm h-[50%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="w-8 flex flex-col justify-end h-full gap-1 z-10 group relative">
+<div class="w-full bg-secondary rounded-t-sm h-[18%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-primary rounded-t-sm h-[60%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="w-8 flex flex-col justify-end h-full gap-1 z-10 group relative">
+<div class="w-full bg-secondary rounded-t-sm h-[5%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-primary rounded-t-sm h-[15%] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+</div>
+</div>
+<!-- X-Axis Labels -->
+<div class="absolute bottom-0 left-12 right-0 h-6 flex justify-around items-end font-key-mono text-caption text-on-surface-variant">
+<span>Mon</span>
+<span>Tue</span>
+<span>Wed</span>
+<span>Thu</span>
+<span>Fri</span>
+<span>Sat</span>
+<span>Sun</span>
+</div>
+</div>
+</div>
+<!-- Recent Activity List -->
+<div class="card-level-1 rounded-lg p-0 mt-md overflow-hidden">
+<div class="p-sm border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<h3 class="font-section-header text-section-header text-on-surface">Recent API Calls</h3>
+<button class="font-caption text-caption text-primary hover:text-primary-fixed transition-colors">View All</button>
+</div>
+<div class="divide-y divide-outline-variant/50">
+<div class="p-sm flex justify-between items-center hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-surface-container flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">terminal</span>
+</div>
+<div>
+<div class="font-body-semibold text-body-semibold text-on-surface">claude-3-5-sonnet-20241022</div>
+<div class="font-caption text-caption text-on-surface-variant">Messages API • Project: Alpha</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-key-mono text-key-mono text-on-surface">45,210 tokens</div>
+<div class="font-caption text-caption text-on-surface-variant">10 mins ago</div>
+</div>
+</div>
+<div class="p-sm flex justify-between items-center hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-surface-container flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">terminal</span>
+</div>
+<div>
+<div class="font-body-semibold text-body-semibold text-on-surface">claude-3-opus-20240229</div>
+<div class="font-caption text-caption text-on-surface-variant">Messages API • Project: Alpha</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-key-mono text-key-mono text-on-surface">12,050 tokens</div>
+<div class="font-caption text-caption text-on-surface-variant">2 hours ago</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="fixed bottom-0 right-0 left-64 h-8 bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline-variant flex justify-between items-center px-md z-10">
+<div class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant">Last updated: 2 mins ago • Version 1.0.4</div>
+<div class="flex gap-md">
+<a class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary transition-colors duration-200" href="#">System Status</a>
+<a class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary transition-colors duration-200" href="#">API Health</a>
+</div>
+</footer>
+</main>
+</body></html>

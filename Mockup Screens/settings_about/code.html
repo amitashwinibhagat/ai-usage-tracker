@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>About Settings - Claude Tracker</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb595",
+                        "on-secondary": "#510074",
+                        "inverse-on-surface": "#2d3039",
+                        "surface-tint": "#adc6ff",
+                        "primary-container": "#4b8eff",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#181c23",
+                        "on-surface-variant": "#c1c6d7",
+                        "on-primary-fixed": "#001a41",
+                        "on-primary": "#002e69",
+                        "surface-container-high": "#272a32",
+                        "surface-dim": "#10131b",
+                        "secondary": "#e8b3ff",
+                        "on-tertiary-container": "#4c1a00",
+                        "tertiary-fixed": "#ffdbcc",
+                        "on-tertiary-fixed": "#351000",
+                        "tertiary": "#ffb595",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "on-secondary-fixed": "#310048",
+                        "surface-variant": "#31353d",
+                        "surface-container": "#1c2028",
+                        "on-background": "#e0e2ed",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-tertiary": "#571e00",
+                        "surface": "#10131b",
+                        "surface-container-lowest": "#0b0e16",
+                        "primary": "#adc6ff",
+                        "secondary-container": "#7508a5",
+                        "background": "#10131b",
+                        "secondary-fixed": "#f6d9ff",
+                        "surface-bright": "#363942",
+                        "on-secondary-container": "#e19fff",
+                        "secondary-fixed-dim": "#e8b3ff",
+                        "on-primary-container": "#00285c",
+                        "outline-variant": "#414755",
+                        "outline": "#8b90a0",
+                        "surface-container-highest": "#31353d",
+                        "on-primary-fixed-variant": "#004493",
+                        "inverse-surface": "#e0e2ed",
+                        "inverse-primary": "#005bc1",
+                        "tertiary-container": "#ef6719",
+                        "on-error": "#690005",
+                        "primary-fixed": "#d8e2ff",
+                        "on-surface": "#e0e2ed",
+                        "on-secondary-fixed-variant": "#7201a2",
+                        "error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "gutter": "12px",
+                        "xxs": "4px",
+                        "sm": "12px",
+                        "margin": "16px"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "body-semibold": ["Inter"],
+                        "body": ["Inter"],
+                        "section-header": ["Inter"],
+                        "page-title": ["Inter"],
+                        "key-mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "caption": ["11px", { "lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "body-semibold": ["13px", { "lineHeight": "18px", "fontWeight": "600" }],
+                        "body": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+                        "section-header": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "page-title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+                        "key-mono": ["12px", { "lineHeight": "16px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #1E1E1E; /* Level 0 canvas */
+        }
+        .mac-card {
+            background-color: #2D2D2D; /* Level 1 card */
+            border: 1px solid #3D3D3D;
+        }
+        .mac-input {
+            background-color: #1E1E1E;
+            border: 1px solid #3D3D3D;
+        }
+        .mac-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #adc6ff; /* Primary color ring */
+        }
+        .glass-panel {
+            background: rgba(45, 45, 45, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid #4D4D4D;
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #414755;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8b90a0;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased flex h-screen overflow-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar (Suppressed due to intent: linear/transactional or deep settings page relative to global nav) -->
+<!-- However, the JSON and instructions imply this is a settings sub-page. Wait, if it's "Settings" tab active, we show it. The prompt says "An 'About' settings screen". So Settings is active. -->
+<nav class="bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant dark:border-outline-variant h-screen w-64 fixed left-0 top-0 flex flex-col p-md hidden md:flex z-40">
+<div class="flex items-center gap-sm mb-lg px-2">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-container to-secondary-container flex items-center justify-center overflow-hidden shrink-0">
+<!-- Fallback icon if no image -->
+<span class="material-symbols-outlined text-on-primary-container text-[20px]" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<div>
+<h1 class="font-page-title text-page-title text-on-surface dark:text-on-surface leading-tight">Claude Tracker</h1>
+<p class="font-caption text-caption text-on-surface-variant">Pro Account</p>
+</div>
+</div>
+<ul class="flex-1 flex flex-col gap-xs">
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors flex items-center gap-sm rounded-lg hover:scale-[0.98] duration-150 group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface transition-colors">dashboard</span>
+<span class="font-body text-body">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors flex items-center gap-sm rounded-lg hover:scale-[0.98] duration-150 group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface transition-colors">vpn_key</span>
+<span class="font-body text-body">Credentials</span>
+</a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors flex items-center gap-sm rounded-lg hover:scale-[0.98] duration-150 group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface transition-colors">history</span>
+<span class="font-body text-body">History</span>
+</a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors flex items-center gap-sm rounded-lg hover:scale-[0.98] duration-150 group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface transition-colors">credit_card</span>
+<span class="font-body text-body">Billing</span>
+</a>
+</li>
+<li>
+<a class="bg-secondary-container dark:bg-secondary-container text-on-secondary-container dark:text-on-secondary-container rounded-lg px-3 py-2 font-body-semibold text-body-semibold flex items-center gap-sm hover:scale-[0.98] transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span>Settings</span>
+</a>
+</li>
+<li class="mt-auto">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors flex items-center gap-sm rounded-lg hover:scale-[0.98] duration-150 group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface transition-colors">help</span>
+<span class="font-body text-body">Help</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col ml-0 md:ml-64 relative min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface border-b border-outline-variant dark:border-outline-variant docked full-width top-0 sticky z-30 flex justify-between items-center h-14 px-lg w-full">
+<div class="flex items-center gap-md">
+<h2 class="font-page-title text-page-title font-semibold text-on-surface dark:text-on-surface tracking-tight">Usage Monitor</h2>
+</div>
+<div class="flex items-center gap-md">
+<!-- Search on right per JSON -->
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px]">search</span>
+<input class="mac-input rounded-md pl-8 pr-3 py-1 text-body font-body text-on-surface placeholder-on-surface-variant/50 w-48 focus:w-64 transition-all duration-200" placeholder="Search settings..." type="text"/>
+</div>
+<div class="flex items-center gap-sm border-l border-outline-variant pl-md ml-xs">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors hover:opacity-80 p-1 rounded-md hover:bg-surface-container">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors hover:opacity-80 p-1 rounded-md hover:bg-surface-container">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="flex-1 overflow-y-auto p-margin md:p-lg flex justify-center">
+<div class="max-w-3xl w-full flex flex-col gap-lg pb-xl">
+<!-- Settings Navigation Tabs (In-page) -->
+<div class="flex gap-md border-b border-outline-variant/50 pb-2 mb-sm">
+<button class="font-body text-body text-on-surface-variant hover:text-on-surface transition-colors px-2 py-1">General</button>
+<button class="font-body text-body text-on-surface-variant hover:text-on-surface transition-colors px-2 py-1">API Keys</button>
+<button class="font-body text-body text-on-surface-variant hover:text-on-surface transition-colors px-2 py-1">Appearance</button>
+<button class="font-body-semibold text-body-semibold text-primary border-b-2 border-primary px-2 py-1 -mb-[10px]">About</button>
+</div>
+<!-- Hero / App Info Card -->
+<section class="mac-card rounded-xl p-xl flex flex-col items-center text-center relative overflow-hidden group">
+<!-- Subtle background glow -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-container/10 rounded-full blur-3xl group-hover:bg-primary-container/20 transition-all duration-700"></div>
+<div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary-container to-secondary-container flex items-center justify-center mb-md shadow-lg border border-outline-variant/30 relative z-10">
+<span class="material-symbols-outlined text-on-primary-container text-[48px]" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<h2 class="font-page-title text-[24px] leading-tight font-bold text-on-surface mb-xs relative z-10">Claude Tracker Pro</h2>
+<p class="font-key-mono text-key-mono text-on-surface-variant bg-surface-container-highest px-3 py-1 rounded-full mb-lg relative z-10">Version 1.0.4 (Build 2403)</p>
+<div class="flex gap-md relative z-10">
+<button class="bg-primary-container text-on-primary-container hover:brightness-110 font-body-semibold text-body-semibold px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">update</span>
+                            Check for Updates
+                        </button>
+<button class="bg-surface-container hover:bg-surface-container-high border border-outline-variant text-on-surface font-body-semibold text-body-semibold px-4 py-2 rounded-lg transition-all duration-200">
+                            Release Notes
+                        </button>
+</div>
+</section>
+<!-- Grid Layout for Details -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Links & Resources -->
+<section class="mac-card rounded-xl p-md flex flex-col gap-sm">
+<h3 class="font-section-header text-section-header text-on-surface border-b border-outline-variant/50 pb-2 mb-2">Resources</h3>
+<a class="flex items-center justify-between p-2 rounded-lg hover:bg-surface-container-highest transition-colors group" href="#">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">code</span>
+<span class="font-body text-body text-on-surface">GitHub Repository</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<a class="flex items-center justify-between p-2 rounded-lg hover:bg-surface-container-highest transition-colors group" href="#">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">menu_book</span>
+<span class="font-body text-body text-on-surface">Documentation</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<a class="flex items-center justify-between p-2 rounded-lg hover:bg-surface-container-highest transition-colors group" href="#">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">bug_report</span>
+<span class="font-body text-body text-on-surface">Report an Issue</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:translate-x-1 transition-transform">open_in_new</span>
+</a>
+</section>
+<!-- Legal / System Info -->
+<section class="mac-card rounded-xl p-md flex flex-col gap-sm">
+<h3 class="font-section-header text-section-header text-on-surface border-b border-outline-variant/50 pb-2 mb-2">System</h3>
+<div class="flex justify-between items-center py-1">
+<span class="font-caption text-caption text-on-surface-variant">Architecture</span>
+<span class="font-key-mono text-key-mono text-on-surface">arm64 (Apple Silicon)</span>
+</div>
+<div class="flex justify-between items-center py-1">
+<span class="font-caption text-caption text-on-surface-variant">Environment</span>
+<span class="font-key-mono text-key-mono text-on-surface">Production</span>
+</div>
+<div class="flex justify-between items-center py-1">
+<span class="font-caption text-caption text-on-surface-variant">License</span>
+<span class="font-key-mono text-key-mono text-on-surface flex items-center gap-1">
+                                MIT <span class="material-symbols-outlined text-[14px] text-primary">verified</span>
+</span>
+</div>
+<div class="mt-auto pt-4 flex gap-4">
+<a class="font-caption text-caption text-on-surface-variant hover:text-on-surface underline decoration-outline-variant underline-offset-2" href="#">Privacy Policy</a>
+<a class="font-caption text-caption text-on-surface-variant hover:text-on-surface underline decoration-outline-variant underline-offset-2" href="#">Terms of Service</a>
+</div>
+</section>
+</div>
+<!-- Contributors Bento Grid -->
+<section class="mac-card rounded-xl p-md">
+<h3 class="font-section-header text-section-header text-on-surface border-b border-outline-variant/50 pb-2 mb-4">Core Contributors</h3>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-sm">
+<!-- Contributor 1 -->
+<div class="bg-surface-container hover:bg-surface-container-high border border-outline-variant/50 rounded-lg p-3 flex flex-col items-center text-center transition-colors cursor-default">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed-dim text-on-tertiary-fixed flex items-center justify-center font-page-title mb-2">
+                                JD
+                            </div>
+<span class="font-body-semibold text-body-semibold text-on-surface truncate w-full">Jane Doe</span>
+<span class="font-caption text-caption text-on-surface-variant">Lead Design</span>
+</div>
+<!-- Contributor 2 -->
+<div class="bg-surface-container hover:bg-surface-container-high border border-outline-variant/50 rounded-lg p-3 flex flex-col items-center text-center transition-colors cursor-default">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed-dim text-on-secondary-fixed flex items-center justify-center font-page-title mb-2">
+                                AS
+                            </div>
+<span class="font-body-semibold text-body-semibold text-on-surface truncate w-full">Alex Smith</span>
+<span class="font-caption text-caption text-on-surface-variant">Engineering</span>
+</div>
+<!-- Contributor 3 -->
+<div class="bg-surface-container hover:bg-surface-container-high border border-outline-variant/50 rounded-lg p-3 flex flex-col items-center text-center transition-colors cursor-default">
+<div class="w-12 h-12 rounded-full bg-primary-fixed-dim text-on-primary-fixed flex items-center justify-center font-page-title mb-2">
+                                MK
+                            </div>
+<span class="font-body-semibold text-body-semibold text-on-surface truncate w-full">Maria Kim</span>
+<span class="font-caption text-caption text-on-surface-variant">Data Viz</span>
+</div>
+<!-- Contributor 4 -->
+<div class="bg-surface-container hover:bg-surface-container-high border border-outline-variant/50 rounded-lg p-3 flex flex-col items-center text-center transition-colors cursor-default">
+<div class="w-12 h-12 rounded-full bg-surface-variant text-on-surface flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-[20px]">group</span>
+</div>
+<span class="font-body-semibold text-body-semibold text-on-surface truncate w-full">+12 Others</span>
+<span class="font-caption text-caption text-on-surface-variant">Open Source</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline-variant fixed bottom-0 right-0 left-0 md:left-64 h-8 flex justify-between items-center px-md w-auto z-20">
+<span class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant">Last updated: 2 mins ago • Version 1.0.4</span>
+<div class="flex gap-md">
+<a class="font-caption text-caption text-on-surface-variant hover:text-primary dark:hover:text-primary transition-colors duration-200" href="#">System Status</a>
+<a class="font-caption text-caption text-on-surface-variant hover:text-primary dark:hover:text-primary transition-colors duration-200" href="#">API Health</a>
+</div>
+</footer>
+</main>
+</body></html>

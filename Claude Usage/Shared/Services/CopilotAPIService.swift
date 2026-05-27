@@ -110,13 +110,16 @@ final class CopilotAPIService {
 
     /// Fetches usage data from GitHub Copilot API
     func fetchUsage(credentials: CopilotCredentials) async throws -> CopilotUsage {
-        guard credentials.isValid, let token = credentials.accessToken else {
+        guard credentials.isValid else {
             throw AppError(
                 code: .sessionKeyNotFound,
-                message: "GitHub access token not configured",
+                message: "GitHub credentials not configured",
                 isRecoverable: false
             )
         }
+
+        // Use OAuth token if available, otherwise fall back to PAT
+        let token = credentials.oauthAccessToken ?? credentials.accessToken!
 
         // Step 1: Validate token and get user info
         let user = try await fetchUser(token: token)
@@ -181,7 +184,7 @@ final class CopilotAPIService {
         )
     }
 
-    /// Validates a GitHub access token
+    /// Validates a GitHub access token or OAuth token
     func validateToken(_ token: String) async -> Bool {
         do {
             _ = try await fetchUser(token: token)

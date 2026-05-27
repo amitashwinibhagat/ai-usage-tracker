@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Monitor - API Keys</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#2d3039",
+                        "primary-container": "#4b8eff",
+                        "on-tertiary-fixed": "#351000",
+                        "secondary-container": "#7508a5",
+                        "surface-variant": "#31353d",
+                        "primary": "#adc6ff",
+                        "background": "#10131b",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "on-surface": "#e0e2ed",
+                        "on-primary-fixed": "#001a41",
+                        "tertiary-fixed": "#ffdbcc",
+                        "on-secondary-fixed": "#310048",
+                        "surface": "#10131b",
+                        "surface-bright": "#363942",
+                        "tertiary-fixed-dim": "#ffb595",
+                        "surface-container": "#1c2028",
+                        "outline-variant": "#414755",
+                        "surface-container-lowest": "#0b0e16",
+                        "primary-fixed": "#d8e2ff",
+                        "error": "#ffb4ab",
+                        "on-secondary-container": "#e19fff",
+                        "on-tertiary-container": "#4c1a00",
+                        "inverse-surface": "#e0e2ed",
+                        "tertiary-container": "#ef6719",
+                        "surface-container-low": "#181c23",
+                        "on-tertiary": "#571e00",
+                        "on-background": "#e0e2ed",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-error": "#690005",
+                        "error-container": "#93000a",
+                        "surface-dim": "#10131b",
+                        "secondary-fixed-dim": "#e8b3ff",
+                        "on-primary-container": "#00285c",
+                        "secondary-fixed": "#f6d9ff",
+                        "secondary": "#e8b3ff",
+                        "on-secondary-fixed-variant": "#7201a2",
+                        "outline": "#8b90a0",
+                        "surface-container-highest": "#31353d",
+                        "on-secondary": "#510074",
+                        "on-surface-variant": "#c1c6d7",
+                        "on-primary-fixed-variant": "#004493",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-high": "#272a32",
+                        "tertiary": "#ffb595",
+                        "surface-tint": "#adc6ff",
+                        "inverse-primary": "#005bc1",
+                        "on-primary": "#002e69"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "sm": "12px",
+                        "margin": "16px",
+                        "gutter": "12px",
+                        "xxs": "4px",
+                        "lg": "24px",
+                        "xs": "8px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "page-title": ["Inter"],
+                        "key-mono": ["JetBrains Mono"],
+                        "body": ["Inter"],
+                        "section-header": ["Inter"],
+                        "caption": ["Inter"],
+                        "body-semibold": ["Inter"]
+                    },
+                    "fontSize": {
+                        "page-title": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+                        "key-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "400"}],
+                        "section-header": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "caption": ["11px", {"lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "body-semibold": ["13px", {"lineHeight": "18px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        .glass-panel { background: rgba(45, 45, 45, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid theme('colors.outline-variant'); }
+        .input-glow:focus { outline: none; box-shadow: 0 0 0 2px theme('colors.primary-container'); border-color: theme('colors.primary'); }
+        /* Step transition animations */
+        .step-content { display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .step-content.active { display: block; opacity: 1; }
+        .step-indicator.active { color: theme('colors.primary'); border-color: theme('colors.primary'); }
+        .step-indicator.completed { color: theme('colors.primary'); border-color: theme('colors.primary'); background-color: theme('colors.primary-container'); color: theme('colors.on-primary-container'); }
+        .step-line.completed { background-color: theme('colors.primary'); }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden antialiased">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-full p-md space-y-xs bg-surface-container-low dark:bg-surface-container-low h-screen w-64 left-0 top-0 border-r border-outline-variant hidden md:flex shrink-0">
+<div class="mb-lg px-xs">
+<h1 class="font-section-header text-section-header text-on-surface">AI Monitor</h1>
+<p class="font-caption text-caption text-on-surface-variant">v1.4.2</p>
+</div>
+<button class="w-full mb-md bg-primary-container text-on-primary-container hover:bg-primary-fixed transition-colors py-sm px-md rounded-lg font-body-semibold flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+            New Request
+        </button>
+<nav class="flex-1 space-y-xxs">
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80 font-body text-body" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80 font-body text-body" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">neurology</span>
+                Models
+            </a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80 font-body text-body" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">history</span>
+                Usage History
+            </a>
+<a class="flex items-center gap-sm px-md py-sm bg-primary-container text-on-primary-container rounded-lg cursor-pointer active:opacity-80 font-body text-body" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px; font-variation-settings: 'FILL' 1;">vpn_key</span>
+                API Keys
+            </a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80 font-body text-body" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="mt-auto space-y-xxs pt-md border-t border-outline-variant">
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80 font-body text-body" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">help_outline</span>
+                Support
+            </a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80 font-body text-body" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">terminal</span>
+                Logs
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-background">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-50 flex justify-between items-center px-lg py-sm w-full bg-surface/80 dark:bg-surface/80 backdrop-blur-xl border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<span class="md:hidden font-page-title text-page-title text-on-surface tracking-tight">AI Monitor</span>
+<h2 class="hidden md:block font-page-title text-page-title text-primary">API Console Settings</h2>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex gap-sm">
+<button class="p-xs rounded-full text-on-surface-variant hover:bg-surface-variant/50 transition-colors active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-size: 20px;">sync</span>
+</button>
+<button class="p-xs rounded-full text-on-surface-variant hover:bg-surface-variant/50 transition-colors active:scale-95 transition-transform relative">
+<span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+</div>
+<div class="h-4 w-px bg-outline-variant mx-xs"></div>
+<button class="font-body-semibold text-body-semibold text-primary hover:text-primary-fixed transition-colors">Upgrade</button>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A small, circular avatar image showing a professional headshot, used as a user profile picture in a dark-themed UI. The image is clear and high-contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDltN9vbJuNlCX9tDXhvr-XMq-uW7JhVfGHwDgORLdsJDAIKrZTS4daf1Ng40B8gQqBs2yyuUuggXbmQwq9ruY6NTQrn_WI7uBve-cHA27nz9PNr-wuEYypjHybaJNZ82ZbFmCW71MpPXn2f8ozFdRgNfYDCe-ykCOBQKnWM3dftphARbP6bWZa-MviEltRw-mRzyzaQXUE4MATONCOBwx7LwdX6aHf1PLONYVzzh0f0LDVHYARrlmN_sqaxTubqx_6QNO7Q3RP4sRS"/>
+</div>
+</header>
+<!-- Canvas -->
+<div class="flex-1 overflow-y-auto p-margin lg:p-xl flex justify-center items-start">
+<div class="w-full max-w-2xl mt-lg">
+<div class="mb-xl">
+<h1 class="font-page-title text-page-title text-on-surface mb-xs">Configure API Credentials</h1>
+<p class="font-body text-body text-on-surface-variant">Connect your AI provider console to enable real-time monitoring and usage tracking.</p>
+</div>
+<!-- Wizard Progress -->
+<div class="flex items-center mb-xl px-xs">
+<div class="flex items-center">
+<div class="step-indicator active w-8 h-8 rounded-full border-2 flex items-center justify-center font-body-semibold text-caption transition-colors border-outline-variant text-on-surface-variant" id="step-1-indicator">1</div>
+<div class="font-section-header text-section-header ml-sm text-on-surface">Authentication</div>
+</div>
+<div class="step-line flex-1 h-px bg-outline-variant mx-md transition-colors" id="line-1"></div>
+<div class="flex items-center">
+<div class="step-indicator w-8 h-8 rounded-full border-2 flex items-center justify-center font-body-semibold text-caption transition-colors border-outline-variant text-on-surface-variant" id="step-2-indicator">2</div>
+<div class="font-section-header text-section-header ml-sm text-on-surface-variant">Project</div>
+</div>
+<div class="step-line flex-1 h-px bg-outline-variant mx-md transition-colors" id="line-2"></div>
+<div class="flex items-center">
+<div class="step-indicator w-8 h-8 rounded-full border-2 flex items-center justify-center font-body-semibold text-caption transition-colors border-outline-variant text-on-surface-variant" id="step-3-indicator">3</div>
+<div class="font-section-header text-section-header ml-sm text-on-surface-variant">Review</div>
+</div>
+</div>
+<!-- Wizard Cards -->
+<div class="glass-panel rounded-xl p-0 overflow-hidden relative shadow-lg">
+<!-- Step 1: Input -->
+<div class="step-content active p-lg" id="step-1">
+<div class="mb-md">
+<label class="block font-section-header text-section-header text-on-surface mb-xs">API Console Session Key</label>
+<p class="font-caption text-caption text-on-surface-variant mb-sm">Requires read-only billing permissions.</p>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline" style="font-size: 18px;">key</span>
+<input class="w-full bg-surface-container border border-outline-variant rounded-lg py-sm pl-xl pr-sm font-key-mono text-key-mono text-on-surface input-glow transition-shadow" id="api-key-input" placeholder="sk-..." type="password" value="sk-proj-a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"/>
+<button class="absolute right-sm top-1/2 -translate-y-1/2 text-primary hover:text-primary-fixed transition-colors font-body text-caption">Show</button>
+</div>
+</div>
+<!-- Warning Card -->
+<div class="bg-error-container/20 border border-error/30 rounded-lg p-sm flex items-start gap-sm mb-lg">
+<span class="material-symbols-outlined text-error mt-0.5" style="font-size: 18px;">warning</span>
+<div>
+<h4 class="font-body-semibold text-body-semibold text-error mb-xxs">Expiry Date Warning</h4>
+<p class="font-caption text-caption text-on-error-container">This key is set to expire in 4 days (Oct 28). We recommend generating a new long-lived key for uninterrupted monitoring.</p>
+</div>
+</div>
+<div class="flex justify-end gap-sm mt-xl border-t border-outline-variant pt-md">
+<button class="px-md py-sm rounded-lg font-body-semibold text-body-semibold text-on-surface-variant hover:bg-surface-variant transition-colors">Cancel</button>
+<button class="px-md py-sm rounded-lg font-body-semibold text-body-semibold bg-primary-container text-on-primary-container hover:bg-primary-fixed transition-colors flex items-center gap-xs" onclick="nextStep(2)">
+                                Test Connection
+                                <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Step 2: Project Selection -->
+<div class="step-content p-lg" id="step-2">
+<div class="mb-md">
+<label class="block font-section-header text-section-header text-on-surface mb-xs">Select Target Project</label>
+<p class="font-caption text-caption text-on-surface-variant mb-md">Choose the organization and project to monitor.</p>
+<div class="space-y-sm">
+<!-- Option 1 -->
+<label class="flex items-start gap-sm p-sm rounded-lg border border-primary bg-primary/5 cursor-pointer transition-colors relative">
+<input checked="" class="mt-1 w-4 h-4 text-primary bg-surface border-outline-variant focus:ring-primary focus:ring-offset-surface" name="project" type="radio"/>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-xxs">
+<span class="font-body-semibold text-body-semibold text-on-surface">Production Core</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-key-mono text-[10px]">org-9x8Y</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant">Active usage: 450K tokens today</p>
+</div>
+</label>
+<!-- Option 2 -->
+<label class="flex items-start gap-sm p-sm rounded-lg border border-outline-variant hover:border-outline bg-surface-container-lowest cursor-pointer transition-colors">
+<input class="mt-1 w-4 h-4 text-primary bg-surface border-outline-variant focus:ring-primary focus:ring-offset-surface" name="project" type="radio"/>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-xxs">
+<span class="font-body-semibold text-body-semibold text-on-surface">Staging Env</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-key-mono text-[10px]">org-9x8Y</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant">Active usage: 12K tokens today</p>
+</div>
+</label>
+</div>
+</div>
+<div class="flex justify-between mt-xl border-t border-outline-variant pt-md">
+<button class="px-md py-sm rounded-lg font-body-semibold text-body-semibold text-on-surface-variant hover:bg-surface-variant transition-colors flex items-center gap-xs" onclick="prevStep(1)">
+<span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
+                                Back
+                            </button>
+<button class="px-md py-sm rounded-lg font-body-semibold text-body-semibold bg-primary-container text-on-primary-container hover:bg-primary-fixed transition-colors" onclick="nextStep(3)">
+                                Continue
+                            </button>
+</div>
+</div>
+<!-- Step 3: Review -->
+<div class="step-content p-lg" id="step-3">
+<div class="mb-md">
+<h3 class="font-section-header text-section-header text-on-surface mb-md">Review Configuration</h3>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm space-y-sm">
+<div class="flex justify-between items-center pb-sm border-b border-outline-variant/50">
+<span class="font-caption text-caption text-on-surface-variant">Status</span>
+<span class="flex items-center gap-xs font-body-semibold text-caption text-primary">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                                        Connection Verified
+                                    </span>
+</div>
+<div class="flex justify-between items-center pb-sm border-b border-outline-variant/50">
+<span class="font-caption text-caption text-on-surface-variant">Target Project</span>
+<span class="font-body-semibold text-body-semibold text-on-surface">Production Core</span>
+</div>
+<div class="flex justify-between items-center pb-sm border-b border-outline-variant/50">
+<span class="font-caption text-caption text-on-surface-variant">Key Prefix</span>
+<span class="font-key-mono text-key-mono text-on-surface">sk-proj-...</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-caption text-caption text-error">Warning</span>
+<span class="font-caption text-caption text-error">Expires Oct 28</span>
+</div>
+</div>
+</div>
+<div class="flex justify-between mt-xl border-t border-outline-variant pt-md">
+<button class="px-md py-sm rounded-lg font-body-semibold text-body-semibold text-on-surface-variant hover:bg-surface-variant transition-colors flex items-center gap-xs" onclick="prevStep(2)">
+<span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
+                                Back
+                            </button>
+<button class="px-md py-sm rounded-lg font-body-semibold text-body-semibold bg-primary-container text-on-primary-container hover:bg-primary-fixed transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined" style="font-size: 16px;">save</span>
+                                Review &amp; Save
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        function nextStep(step) {
+            // Hide all
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            // Show target
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            // Update indicators
+            for(let i=1; i<step; i++) {
+                document.getElementById(`step-${i}-indicator`).classList.add('completed');
+                document.getElementById(`step-${i}-indicator`).classList.remove('active');
+                if(document.getElementById(`line-${i}`)) {
+                    document.getElementById(`line-${i}`).classList.add('completed');
+                }
+            }
+            document.getElementById(`step-${step}-indicator`).classList.add('active');
+            document.getElementById(`step-${step}-indicator`).classList.remove('completed');
+            
+            // Text color updates
+            document.getElementById(`step-${step}-indicator`).nextElementSibling.classList.add('text-on-surface');
+            document.getElementById(`step-${step}-indicator`).nextElementSibling.classList.remove('text-on-surface-variant');
+        }
+
+        function prevStep(step) {
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            document.getElementById(`step-${step+1}-indicator`).classList.remove('active');
+            document.getElementById(`step-${step+1}-indicator`).nextElementSibling.classList.remove('text-on-surface');
+            document.getElementById(`step-${step+1}-indicator`).nextElementSibling.classList.add('text-on-surface-variant');
+            
+            if(document.getElementById(`line-${step}`)) {
+                document.getElementById(`line-${step}`).classList.remove('completed');
+            }
+            document.getElementById(`step-${step}-indicator`).classList.remove('completed');
+            document.getElementById(`step-${step}-indicator`).classList.add('active');
+        }
+    </script>
+</body></html>

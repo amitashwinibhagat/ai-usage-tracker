@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Monitor - Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#10131b",
+                    "surface-container-high": "#272a32",
+                    "on-primary-fixed-variant": "#004493",
+                    "surface-container": "#1c2028",
+                    "surface-variant": "#31353d",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-highest": "#31353d",
+                    "outline-variant": "#414755",
+                    "error": "#ffb4ab",
+                    "surface-container-lowest": "#0b0e16",
+                    "on-surface-variant": "#c1c6d7",
+                    "error-container": "#93000a",
+                    "background": "#10131b",
+                    "surface-bright": "#363942",
+                    "surface-tint": "#adc6ff",
+                    "surface-container-low": "#181c23",
+                    "on-tertiary": "#571e00",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-tertiary-fixed-variant": "#7c2e00",
+                    "secondary-fixed-dim": "#e8b3ff",
+                    "on-secondary-fixed": "#310048",
+                    "on-tertiary-fixed": "#351000",
+                    "on-tertiary-container": "#4c1a00",
+                    "tertiary": "#ffb595",
+                    "secondary-container": "#7508a5",
+                    "tertiary-fixed-dim": "#ffb595",
+                    "on-surface": "#e0e2ed",
+                    "inverse-surface": "#e0e2ed",
+                    "on-secondary-fixed-variant": "#7201a2",
+                    "inverse-primary": "#005bc1",
+                    "secondary": "#e8b3ff",
+                    "on-background": "#e0e2ed",
+                    "primary-container": "#4b8eff",
+                    "outline": "#8b90a0",
+                    "on-error": "#690005",
+                    "tertiary-fixed": "#ffdbcc",
+                    "secondary-fixed": "#f6d9ff",
+                    "on-primary-fixed": "#001a41",
+                    "tertiary-container": "#ef6719",
+                    "on-primary": "#002e69",
+                    "primary-fixed": "#d8e2ff",
+                    "primary": "#adc6ff",
+                    "on-primary-container": "#00285c",
+                    "surface-dim": "#10131b",
+                    "on-secondary-container": "#e19fff",
+                    "on-secondary": "#510074",
+                    "inverse-on-surface": "#2d3039"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "8px",
+                    "lg": "24px",
+                    "xxs": "4px",
+                    "md": "16px",
+                    "gutter": "12px",
+                    "xl": "32px",
+                    "margin": "16px",
+                    "sm": "12px"
+            },
+            "fontFamily": {
+                    "key-mono": [
+                            "JetBrains Mono"
+                    ],
+                    "body-semibold": [
+                            "Inter"
+                    ],
+                    "body": [
+                            "Inter"
+                    ],
+                    "section-header": [
+                            "Inter"
+                    ],
+                    "caption": [
+                            "Inter"
+                    ],
+                    "page-title": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "key-mono": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-semibold": [
+                            "13px",
+                            {
+                                    "lineHeight": "18px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body": [
+                            "13px",
+                            {
+                                    "lineHeight": "18px",
+                                    "letterSpacing": "-0.005em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "section-header": [
+                            "13px",
+                            {
+                                    "lineHeight": "18px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "caption": [
+                            "11px",
+                            {
+                                    "lineHeight": "14px",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "page-title": [
+                            "18px",
+                            {
+                                    "lineHeight": "24px",
+                                    "letterSpacing": "-0.015em",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+        },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom Toggle Switch Styles for macOS feel */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #4b8eff; /* primary-container */
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4b8eff; /* primary-container */
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row antialiased">
+<!-- SideNavBar (Hidden on Mobile) -->
+<nav class="hidden md:flex flex-col h-screen w-64 left-0 top-0 border-r border-outline-variant bg-surface-container-low dark:bg-surface-container-low p-md space-y-xs">
+<div class="flex items-center gap-sm px-sm py-sm mb-md">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">neurology</span>
+</div>
+<div>
+<div class="font-section-header text-section-header text-on-surface">AI Usage</div>
+<div class="font-caption text-caption text-on-surface-variant">v1.4.2</div>
+</div>
+</div>
+<button class="w-full mb-md px-sm py-sm bg-primary-container text-on-primary-container font-body-semibold text-body-semibold rounded-lg hover:bg-surface-bright transition-colors flex items-center justify-center gap-xs cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            New Request
+        </button>
+<div class="flex-1 space-y-xs">
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant font-body text-body hover:bg-surface-variant hover:text-on-surface transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant font-body text-body hover:bg-surface-variant hover:text-on-surface transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">neurology</span>
+                Models
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant font-body text-body hover:bg-surface-variant hover:text-on-surface transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">history</span>
+                Usage History
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant font-body text-body hover:bg-surface-variant hover:text-on-surface transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">vpn_key</span>
+                API Keys
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg bg-primary-container text-on-primary-container font-body-semibold text-body-semibold cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+                Settings
+            </a>
+</div>
+<div class="mt-auto space-y-xs pt-md border-t border-outline-variant">
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant font-body text-body hover:bg-surface-variant hover:text-on-surface transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">help_outline</span>
+                Support
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant font-body text-body hover:bg-surface-variant hover:text-on-surface transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+                Logs
+            </a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col min-w-0 bg-background relative">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-50 flex justify-between items-center px-lg py-sm w-full bg-surface/80 dark:bg-surface/80 backdrop-blur-xl border-b border-outline-variant">
+<div class="font-page-title text-page-title text-on-surface tracking-tight">AI Monitor</div>
+<div class="flex items-center gap-md">
+<div class="hidden md:flex items-center space-x-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors active:scale-95 transition-transform"><span class="material-symbols-outlined">sync</span></button>
+<button class="text-on-surface-variant hover:text-primary transition-colors active:scale-95 transition-transform"><span class="material-symbols-outlined">notifications</span></button>
+</div>
+<button class="bg-surface-variant/50 hover:bg-surface-bright text-primary font-body-semibold text-body-semibold px-sm py-xxs rounded border border-outline-variant transition-colors active:scale-95">Upgrade</button>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPJ3R_ZW-D0C0fmgsQCteGssGS8FTSXqrYv7SPg0foG8EmgbmlaiYSiqg-4c0Se73Oe5kjI9GJCJocD0D6YIq5MKsne-981GKqZq80q_fr13pXO20kFqEW0mEy-V8h--CaShNsfyMtPpxsRhxMStq0HPVYwBFkpxHFmheeezL8Pos24UEt6eg3fdNFvr_UI6Ncgsn-GAKvO1jYchMJsCAEroemDmZ8DHXfcs3Siwsp_T-o-Qgbv3WJ2hChvAEfaQ90WrG8T0r3CnMU"/>
+</div>
+</header>
+<div class="p-lg max-w-4xl mx-auto w-full space-y-xl">
+<!-- Page Header -->
+<div>
+<h1 class="font-page-title text-page-title text-on-surface mb-xxs">Appearance Settings</h1>
+<p class="font-body text-body text-on-surface-variant">Customize how AI Monitor looks in your menu bar.</p>
+</div>
+<!-- Bento Grid Layout for Settings -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Left Column: Toggles (Spans 7 cols on desktop) -->
+<div class="md:col-span-7 flex flex-col gap-gutter">
+<!-- Display Toggles Card -->
+<div class="bg-surface-container-high rounded-xl border border-outline-variant p-md">
+<h2 class="font-section-header text-section-header text-on-surface mb-sm pb-xs border-b border-outline-variant">Menu Bar Display</h2>
+<div class="space-y-sm mt-sm">
+<!-- Toggle Item 1 -->
+<div class="flex items-center justify-between">
+<div>
+<div class="font-body-semibold text-body-semibold text-on-surface">Monochrome</div>
+<div class="font-caption text-caption text-on-surface-variant">Match system standard menu bar icon style</div>
+</div>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-outline-variant top-0 right-5 bottom-0 m-auto focus:ring-0 focus:outline-none" id="toggle1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-surface-variant cursor-pointer" for="toggle1"></label>
+</div>
+</div>
+<div class="w-full h-px bg-outline-variant/30"></div>
+<!-- Toggle Item 2 -->
+<div class="flex items-center justify-between">
+<div>
+<div class="font-body-semibold text-body-semibold text-on-surface">Show icon labels</div>
+<div class="font-caption text-caption text-on-surface-variant">Display provider initials next to icons</div>
+</div>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-outline-variant top-0 right-5 bottom-0 m-auto focus:ring-0 focus:outline-none" id="toggle2" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-surface-variant cursor-pointer" for="toggle2"></label>
+</div>
+</div>
+<div class="w-full h-px bg-outline-variant/30"></div>
+<!-- Toggle Item 3 -->
+<div class="flex items-center justify-between">
+<div>
+<div class="font-body-semibold text-body-semibold text-on-surface">Show remaining percentage</div>
+<div class="font-caption text-caption text-on-surface-variant">Show token capacity as a number</div>
+</div>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-outline-variant top-0 right-5 bottom-0 m-auto focus:ring-0 focus:outline-none" id="toggle3" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-surface-variant cursor-pointer" for="toggle3"></label>
+</div>
+</div>
+</div>
+</div>
+<!-- Icon Style Picker Card -->
+<div class="bg-surface-container-high rounded-xl border border-outline-variant p-md">
+<div class="flex items-center justify-between mb-sm pb-xs border-b border-outline-variant">
+<h2 class="font-section-header text-section-header text-on-surface">Icon Style</h2>
+</div>
+<div class="grid grid-cols-3 gap-sm mt-sm">
+<!-- Style 1: Default (Selected) -->
+<button class="flex flex-col items-center justify-center p-md rounded-lg border-2 border-primary bg-primary-container/10 cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-primary mb-xs" style="font-size: 28px;">circle</span>
+<span class="font-body-semibold text-body-semibold text-on-surface">Minimal</span>
+</button>
+<!-- Style 2: Pro Locked -->
+<button class="flex flex-col items-center justify-center p-md rounded-lg border border-outline-variant bg-surface hover:bg-surface-variant/50 cursor-pointer transition-colors relative group">
+<span class="material-symbols-outlined text-on-surface-variant mb-xs" style="font-size: 28px;">trip_origin</span>
+<span class="font-body text-body text-on-surface-variant">Ring</span>
+<div class="absolute top-2 right-2 bg-secondary-container text-on-secondary-container font-caption text-[9px] px-1.5 py-0.5 rounded shadow-sm opacity-80 group-hover:opacity-100 transition-opacity">PRO</div>
+</button>
+<!-- Style 3: Pro Locked -->
+<button class="flex flex-col items-center justify-center p-md rounded-lg border border-outline-variant bg-surface hover:bg-surface-variant/50 cursor-pointer transition-colors relative group">
+<span class="material-symbols-outlined text-on-surface-variant mb-xs icon-fill" style="font-size: 28px;">donut_large</span>
+<span class="font-body text-body text-on-surface-variant">Gauge</span>
+<div class="absolute top-2 right-2 bg-secondary-container text-on-secondary-container font-caption text-[9px] px-1.5 py-0.5 rounded shadow-sm opacity-80 group-hover:opacity-100 transition-opacity">PRO</div>
+</button>
+</div>
+</div>
+</div>
+<!-- Right Column: Live Preview (Spans 5 cols on desktop) -->
+<div class="md:col-span-5">
+<div class="bg-surface-container-high rounded-xl border border-outline-variant overflow-hidden sticky top-xl">
+<div class="p-md border-b border-outline-variant bg-surface-bright flex items-center justify-between">
+<h2 class="font-section-header text-section-header text-on-surface">Live Preview</h2>
+<span class="flex items-center gap-1 font-caption text-caption text-on-surface-variant bg-surface px-2 py-1 rounded border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">desktop_mac</span>
+                                Menu Bar
+                            </span>
+</div>
+<div class="p-lg flex items-center justify-center bg-[#1a1b26] min-h-[200px]">
+<!-- Simulated Menu Bar Snippet -->
+<div class="bg-black/40 border border-white/10 rounded px-3 py-1.5 flex items-center gap-3 backdrop-blur-md shadow-lg">
+<!-- Status Item 1 -->
+<div class="flex items-center gap-1.5">
+<div class="relative w-4 h-4 flex items-center justify-center">
+<svg class="w-full h-full text-outline-variant" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+</svg>
+<svg class="w-full h-full text-on-surface absolute inset-0 -rotate-90" fill="none" stroke="currentColor" stroke-dasharray="62.8" stroke-dashoffset="15.7" stroke-width="3" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+</svg>
+</div>
+<span class="font-key-mono text-key-mono text-on-surface">75%</span>
+</div>
+<div class="w-px h-3 bg-white/20"></div>
+<!-- Status Item 2 -->
+<div class="flex items-center gap-1.5">
+<div class="relative w-4 h-4 flex items-center justify-center">
+<svg class="w-full h-full text-outline-variant" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+</svg>
+<svg class="w-full h-full text-on-surface absolute inset-0 -rotate-90" fill="none" stroke="currentColor" stroke-dasharray="62.8" stroke-dashoffset="45.2" stroke-width="3" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+</svg>
+</div>
+<span class="font-key-mono text-key-mono text-on-surface">28%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple toggle interactivity for checkboxes
+        document.querySelectorAll('.toggle-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // Add any logic needed when toggles change, e.g., updating the preview
+                console.log(this.id + ' changed to ' + this.checked);
+            });
+        });
+    </script>
+</body></html>

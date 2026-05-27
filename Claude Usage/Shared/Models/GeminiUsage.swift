@@ -100,8 +100,11 @@ struct GeminiCredentials: ProviderCredentials {
     /// Project ID (for GCP-based usage)
     var projectId: String?
 
+    /// OAuth access token (alternative to API key for Cloud Monitoring)
+    var oauthAccessToken: String?
+
     var isValid: Bool {
-        apiKey != nil && !apiKey!.isEmpty
+        (apiKey != nil && !apiKey!.isEmpty) || (oauthAccessToken != nil && !oauthAccessToken!.isEmpty)
     }
 
     var statusDescription: String {

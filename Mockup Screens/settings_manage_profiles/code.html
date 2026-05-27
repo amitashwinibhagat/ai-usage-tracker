@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - Profile Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "tertiary-fixed-dim": "#ffb595",
+                            "on-secondary": "#510074",
+                            "inverse-on-surface": "#2d3039",
+                            "surface-tint": "#adc6ff",
+                            "primary-container": "#4b8eff",
+                            "error": "#ffb4ab",
+                            "surface-container-low": "#181c23",
+                            "on-surface-variant": "#c1c6d7",
+                            "on-primary-fixed": "#001a41",
+                            "on-primary": "#002e69",
+                            "surface-container-high": "#272a32",
+                            "surface-dim": "#10131b",
+                            "secondary": "#e8b3ff",
+                            "on-tertiary-container": "#4c1a00",
+                            "tertiary-fixed": "#ffdbcc",
+                            "on-tertiary-fixed": "#351000",
+                            "tertiary": "#ffb595",
+                            "on-error-container": "#ffdad6",
+                            "on-tertiary-fixed-variant": "#7c2e00",
+                            "on-secondary-fixed": "#310048",
+                            "surface-variant": "#31353d",
+                            "surface-container": "#1c2028",
+                            "on-background": "#e0e2ed",
+                            "primary-fixed-dim": "#adc6ff",
+                            "on-tertiary": "#571e00",
+                            "surface": "#10131b",
+                            "surface-container-lowest": "#0b0e16",
+                            "primary": "#adc6ff",
+                            "secondary-container": "#7508a5",
+                            "background": "#10131b",
+                            "secondary-fixed": "#f6d9ff",
+                            "surface-bright": "#363942",
+                            "on-secondary-container": "#e19fff",
+                            "secondary-fixed-dim": "#e8b3ff",
+                            "on-primary-container": "#00285c",
+                            "outline-variant": "#414755",
+                            "outline": "#8b90a0",
+                            "surface-container-highest": "#31353d",
+                            "on-primary-fixed-variant": "#004493",
+                            "inverse-surface": "#e0e2ed",
+                            "inverse-primary": "#005bc1",
+                            "tertiary-container": "#ef6719",
+                            "on-error": "#690005",
+                            "primary-fixed": "#d8e2ff",
+                            "on-surface": "#e0e2ed",
+                            "on-secondary-fixed-variant": "#7201a2",
+                            "error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "xs": "8px",
+                            "lg": "24px",
+                            "xl": "32px",
+                            "md": "16px",
+                            "gutter": "12px",
+                            "xxs": "4px",
+                            "sm": "12px",
+                            "margin": "16px"
+                    },
+                    "fontFamily": {
+                            "caption": ["Inter"],
+                            "body-semibold": ["Inter"],
+                            "body": ["Inter"],
+                            "section-header": ["Inter"],
+                            "page-title": ["Inter"],
+                            "key-mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                            "caption": ["11px", {"lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                            "body-semibold": ["13px", {"lineHeight": "18px", "fontWeight": "600"}],
+                            "body": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "400"}],
+                            "section-header": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                            "page-title": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+                            "key-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="bg-surface-container-low dark:bg-surface-container-low h-screen w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant flat no shadows z-20">
+<div class="flex flex-col h-full p-md gap-lg">
+<div class="flex flex-col gap-xs">
+<span class="font-page-title text-page-title text-on-surface dark:text-on-surface font-semibold tracking-tight">Claude Tracker</span>
+<span class="font-caption text-caption text-on-surface-variant">Pro Account</span>
+</div>
+<nav class="flex flex-col gap-xs flex-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface transition-colors">dashboard</span>
+<span class="font-body text-body group-hover:text-on-surface transition-colors">Dashboard</span>
+</a>
+<!-- Credentials -->
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface transition-colors">vpn_key</span>
+<span class="font-body text-body group-hover:text-on-surface transition-colors">Credentials</span>
+</a>
+<!-- History -->
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface transition-colors">history</span>
+<span class="font-body text-body group-hover:text-on-surface transition-colors">History</span>
+</a>
+<!-- Billing -->
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface transition-colors">credit_card</span>
+<span class="font-body text-body group-hover:text-on-surface transition-colors">Billing</span>
+</a>
+<!-- Settings (ACTIVE) -->
+<a class="flex items-center gap-sm bg-secondary-container dark:bg-secondary-container text-on-secondary-container dark:text-on-secondary-container rounded-lg px-3 py-2 font-body-semibold text-body-semibold Active: scale 0.98x transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span>Settings</span>
+</a>
+<!-- Help -->
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group mt-auto" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface transition-colors">help</span>
+<span class="font-body text-body group-hover:text-on-surface transition-colors">Help</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col ml-64 min-h-screen relative">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface border-b border-outline-variant dark:border-outline-variant flat no shadows docked full-width top-0 sticky z-10">
+<div class="flex justify-between items-center h-14 px-lg w-full">
+<div class="flex items-center gap-sm">
+<span class="font-page-title text-page-title font-semibold text-on-surface dark:text-on-surface tracking-tight">Usage Monitor</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors hover:opacity-80 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors hover:opacity-80 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-lg pb-24 flex flex-col gap-lg">
+<!-- Page Header & Preferences -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-md border-b border-outline-variant pb-md">
+<div class="flex flex-col gap-xxs">
+<h1 class="font-page-title text-page-title text-on-surface">Profile Management</h1>
+<p class="font-body text-body text-on-surface-variant">Manage your active workspaces and monitor API consumption across contexts.</p>
+</div>
+<div class="flex items-center gap-sm bg-surface-container px-sm py-xs rounded-lg border border-outline-variant">
+<span class="font-body text-body text-on-surface">Multi-profile display</span>
+<label class="relative inline-flex items-center cursor-pointer ml-sm">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:border-outline-variant after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</section>
+<!-- Profiles Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
+<!-- Profile Card: Work -->
+<div class="bg-surface-container border border-outline-variant rounded-xl p-md flex flex-col gap-md relative overflow-hidden group hover:border-outline transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-primary-container/20 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[18px]">work</span>
+</div>
+<h2 class="font-section-header text-section-header text-on-surface">Work</h2>
+</div>
+<span class="bg-primary/10 text-primary font-caption text-caption px-2 py-0.5 rounded-full border border-primary/20">Primary</span>
+</div>
+<div class="flex flex-col gap-xs mt-sm">
+<div class="flex justify-between items-baseline">
+<span class="font-caption text-caption text-on-surface-variant">Tokens (MTD)</span>
+<span class="font-key-mono text-key-mono text-on-surface">4.2M / 5M</span>
+</div>
+<div class="w-full h-1 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 84%"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-sm mt-xs">
+<div class="flex flex-col gap-xxs p-sm bg-surface rounded-lg border border-surface-variant">
+<span class="font-caption text-caption text-on-surface-variant">Active Keys</span>
+<span class="font-key-mono text-key-mono text-on-surface">3</span>
+</div>
+<div class="flex flex-col gap-xxs p-sm bg-surface rounded-lg border border-surface-variant">
+<span class="font-caption text-caption text-on-surface-variant">Avg Latency</span>
+<span class="font-key-mono text-key-mono text-on-surface">124ms</span>
+</div>
+</div>
+</div>
+<!-- Profile Card: Personal -->
+<div class="bg-surface-container border border-outline-variant rounded-xl p-md flex flex-col gap-md relative overflow-hidden group hover:border-outline transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-tertiary-container/20 flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</div>
+<h2 class="font-section-header text-section-header text-on-surface">Personal</h2>
+</div>
+<span class="bg-surface-variant text-on-surface-variant font-caption text-caption px-2 py-0.5 rounded-full border border-outline-variant">Active</span>
+</div>
+<div class="flex flex-col gap-xs mt-sm">
+<div class="flex justify-between items-baseline">
+<span class="font-caption text-caption text-on-surface-variant">Tokens (MTD)</span>
+<span class="font-key-mono text-key-mono text-on-surface">150K / 500K</span>
+</div>
+<div class="w-full h-1 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container rounded-full" style="width: 30%"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-sm mt-xs">
+<div class="flex flex-col gap-xxs p-sm bg-surface rounded-lg border border-surface-variant">
+<span class="font-caption text-caption text-on-surface-variant">Active Keys</span>
+<span class="font-key-mono text-key-mono text-on-surface">1</span>
+</div>
+<div class="flex flex-col gap-xxs p-sm bg-surface rounded-lg border border-surface-variant">
+<span class="font-caption text-caption text-on-surface-variant">Avg Latency</span>
+<span class="font-key-mono text-key-mono text-on-surface">98ms</span>
+</div>
+</div>
+</div>
+<!-- Profile Card: Side Project -->
+<div class="bg-surface-container border border-outline-variant rounded-xl p-md flex flex-col gap-md relative overflow-hidden group hover:border-outline transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-secondary-container/20 flex items-center justify-center text-secondary-container">
+<span class="material-symbols-outlined text-[18px]">code</span>
+</div>
+<h2 class="font-section-header text-section-header text-on-surface">Side Project</h2>
+</div>
+<span class="bg-surface-variant text-on-surface-variant font-caption text-caption px-2 py-0.5 rounded-full border border-outline-variant">Active</span>
+</div>
+<div class="flex flex-col gap-xs mt-sm">
+<div class="flex justify-between items-baseline">
+<span class="font-caption text-caption text-on-surface-variant">Tokens (MTD)</span>
+<span class="font-key-mono text-key-mono text-on-surface">890K / 1M</span>
+</div>
+<div class="w-full h-1 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container rounded-full" style="width: 89%"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-sm mt-xs">
+<div class="flex flex-col gap-xxs p-sm bg-surface rounded-lg border border-surface-variant">
+<span class="font-caption text-caption text-on-surface-variant">Active Keys</span>
+<span class="font-key-mono text-key-mono text-on-surface">2</span>
+</div>
+<div class="flex flex-col gap-xxs p-sm bg-surface rounded-lg border border-surface-variant">
+<span class="font-caption text-caption text-on-surface-variant">Avg Latency</span>
+<span class="font-key-mono text-key-mono text-on-surface">145ms</span>
+</div>
+</div>
+</div>
+<!-- Upsell Card -->
+<div class="bg-secondary-container/10 border border-secondary-container/30 rounded-xl p-md flex flex-col items-center justify-center text-center gap-sm relative overflow-hidden min-h-[220px]">
+<div class="absolute inset-0 bg-gradient-to-br from-secondary-container/5 to-transparent pointer-events-none"></div>
+<span class="material-symbols-outlined text-[32px] text-secondary-container mb-xs">add_circle</span>
+<h3 class="font-section-header text-section-header text-on-surface">Need more contexts?</h3>
+<p class="font-body text-body text-on-surface-variant max-w-[200px]">Upgrade to Enterprise to unlock unlimited profiles and granular role-based access.</p>
+<button class="mt-sm bg-secondary-container text-on-secondary-container font-body-semibold text-body-semibold px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                        Upgrade to Enterprise
+                    </button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline-variant flat no shadows fixed bottom-0 right-0 left-64 h-8 z-10">
+<div class="flex justify-between items-center px-md w-full h-full">
+<span class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant">Last updated: 2 mins ago • Version 1.0.4</span>
+<div class="flex items-center gap-md">
+<a class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary transition-colors duration-200" href="#">System Status</a>
+<a class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary transition-colors duration-200" href="#">API Health</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - AI Monitor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface": "#10131b",
+                      "surface-container-high": "#272a32",
+                      "on-primary-fixed-variant": "#004493",
+                      "surface-container": "#1c2028",
+                      "surface-variant": "#31353d",
+                      "on-error-container": "#ffdad6",
+                      "surface-container-highest": "#31353d",
+                      "outline-variant": "#414755",
+                      "error": "#ffb4ab",
+                      "surface-container-lowest": "#0b0e16",
+                      "on-surface-variant": "#c1c6d7",
+                      "error-container": "#93000a",
+                      "background": "#10131b",
+                      "surface-bright": "#363942",
+                      "surface-tint": "#adc6ff",
+                      "surface-container-low": "#181c23",
+                      "on-tertiary": "#571e00",
+                      "primary-fixed-dim": "#adc6ff",
+                      "on-tertiary-fixed-variant": "#7c2e00",
+                      "secondary-fixed-dim": "#e8b3ff",
+                      "on-secondary-fixed": "#310048",
+                      "on-tertiary-fixed": "#351000",
+                      "on-tertiary-container": "#4c1a00",
+                      "tertiary": "#ffb595",
+                      "secondary-container": "#7508a5",
+                      "tertiary-fixed-dim": "#ffb595",
+                      "on-surface": "#e0e2ed",
+                      "inverse-surface": "#e0e2ed",
+                      "on-secondary-fixed-variant": "#7201a2",
+                      "inverse-primary": "#005bc1",
+                      "secondary": "#e8b3ff",
+                      "on-background": "#e0e2ed",
+                      "primary-container": "#4b8eff",
+                      "outline": "#8b90a0",
+                      "on-error": "#690005",
+                      "tertiary-fixed": "#ffdbcc",
+                      "secondary-fixed": "#f6d9ff",
+                      "on-primary-fixed": "#001a41",
+                      "tertiary-container": "#ef6719",
+                      "on-primary": "#002e69",
+                      "primary-fixed": "#d8e2ff",
+                      "primary": "#adc6ff",
+                      "on-primary-container": "#00285c",
+                      "surface-dim": "#10131b",
+                      "on-secondary-container": "#e19fff",
+                      "on-secondary": "#510074",
+                      "inverse-on-surface": "#2d3039"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "8px",
+                      "lg": "24px",
+                      "xxs": "4px",
+                      "md": "16px",
+                      "gutter": "12px",
+                      "xl": "32px",
+                      "margin": "16px",
+                      "sm": "12px"
+              },
+              "fontFamily": {
+                      "key-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "body-semibold": [
+                              "Inter"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "section-header": [
+                              "Inter"
+                      ],
+                      "caption": [
+                              "Inter"
+                      ],
+                      "page-title": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "key-mono": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-semibold": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "-0.005em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "section-header": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "caption": [
+                              "11px",
+                              {
+                                      "lineHeight": "14px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "page-title": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "letterSpacing": "-0.015em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.surface'); color: theme('colors.on-surface'); }
+        /* Range slider styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border: 1px solid theme('colors.outline');
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: theme('colors.surface-variant');
+            border-radius: 2px;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        input[type=range]:focus::-webkit-slider-thumb {
+            box-shadow: 0 0 0 3px theme('colors.primary-container');
+        }
+        
+        /* Toggle styling */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: theme('colors.primary');
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: theme('colors.primary');
+        }
+        .toggle-checkbox {
+            right: 0;
+            z-index: 1;
+            border-color: theme('colors.outline');
+            transition: all 0.3s;
+        }
+        .toggle-label {
+            width: 36px;
+            height: 20px;
+            background-color: theme('colors.surface-variant');
+            border-radius: 9999px;
+            transition: all 0.3s;
+        }
+        .toggle-circle {
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .toggle-checkbox:checked ~ .toggle-circle {
+            transform: translateX(16px);
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low dark:bg-surface-container-low flex flex-col h-full p-md space-y-xs h-screen w-64 left-0 top-0 border-r border-outline-variant hidden md:flex shrink-0">
+<div class="mb-lg px-sm mt-sm">
+<div class="flex items-center gap-sm mb-xs">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-white text-[18px]" style="font-variation-settings: 'FILL' 1;">neurology</span>
+</div>
+<div>
+<h1 class="font-section-header text-section-header text-on-surface">AI Usage</h1>
+<p class="font-caption text-caption text-on-surface-variant">v1.4.2</p>
+</div>
+</div>
+</div>
+<button class="bg-primary hover:bg-primary-container text-on-primary font-body-semibold text-body-semibold py-sm px-md rounded-lg flex items-center justify-center gap-xs mb-lg transition-colors w-full shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            New Request
+        </button>
+<div class="flex-1 space-y-xs">
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80 flex items-center gap-sm py-sm px-sm font-body text-body group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80 flex items-center gap-sm py-sm px-sm font-body text-body group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface">neurology</span>
+                Models
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80 flex items-center gap-sm py-sm px-sm font-body text-body group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface">history</span>
+                Usage History
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80 flex items-center gap-sm py-sm px-sm font-body text-body group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface">vpn_key</span>
+                API Keys
+            </a>
+<a class="bg-primary-container text-on-primary-container rounded-lg cursor-pointer active:opacity-80 flex items-center gap-sm py-sm px-sm font-body text-body" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">settings</span>
+                Settings
+            </a>
+</div>
+<div class="pt-md mt-auto border-t border-outline-variant space-y-xs">
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80 flex items-center gap-sm py-sm px-sm font-body text-body group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface">help_outline</span>
+                Support
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-all cursor-pointer active:opacity-80 flex items-center gap-sm py-sm px-sm font-body text-body group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-on-surface">terminal</span>
+                Logs
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-full overflow-hidden bg-background">
+<!-- TopAppBar (Mobile Only) -->
+<header class="bg-surface/80 dark:bg-surface/80 backdrop-blur-xl docked full-width top-0 flat no shadows sticky top-0 z-50 flex justify-between items-center px-lg py-sm w-full md:hidden">
+<div class="flex items-center gap-sm">
+<span class="font-page-title text-page-title text-on-surface tracking-tight">AI Monitor</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-full p-xs active:scale-95 transition-transform">
+<span class="material-symbols-outlined">sync</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-full p-xs active:scale-95 transition-transform">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-primary font-body-semibold text-body-semibold hover:bg-surface-variant/50 transition-colors px-sm py-xs rounded-lg active:scale-95 transition-transform">
+                    Upgrade
+                </button>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<div class="flex-1 overflow-y-auto p-margin md:p-xl">
+<div class="max-w-3xl mx-auto w-full">
+<div class="mb-xl">
+<h2 class="font-page-title text-page-title text-on-surface mb-xxs">Settings</h2>
+<p class="font-body text-body text-on-surface-variant">Manage your application preferences and system integration.</p>
+</div>
+<!-- General Settings Card -->
+<div class="bg-surface-container rounded-xl border border-outline-variant overflow-hidden mb-gutter shadow-sm">
+<div class="px-md py-sm border-b border-outline-variant bg-surface-container-high">
+<h3 class="font-section-header text-section-header text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">tune</span>
+                            General
+                        </h3>
+</div>
+<div class="p-md space-y-lg">
+<!-- Launch at login -->
+<div class="flex items-center justify-between">
+<div>
+<label class="font-body-semibold text-body-semibold text-on-surface block cursor-pointer" for="launch-login">Launch at login</label>
+<span class="font-caption text-caption text-on-surface-variant">Automatically start the application when you log in.</span>
+</div>
+<div class="relative inline-block w-9 h-5 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer opacity-0" id="launch-login" name="toggle" type="checkbox"/>
+<div class="toggle-label block overflow-hidden cursor-pointer"></div>
+<div class="toggle-circle pointer-events-none"></div>
+</div>
+</div>
+<!-- Language -->
+<div class="flex items-center justify-between">
+<div>
+<label class="font-body-semibold text-body-semibold text-on-surface block" for="language">Language</label>
+<span class="font-caption text-caption text-on-surface-variant">Select your preferred interface language.</span>
+</div>
+<div class="relative">
+<select class="appearance-none bg-surface border border-outline-variant text-on-surface font-body text-body rounded-md pl-sm pr-lg py-xs focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent min-w-[140px] cursor-pointer" id="language">
+<option value="en">System Default</option>
+<option value="en">English</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
+<option value="de">Deutsch</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Performance Card -->
+<div class="bg-surface-container rounded-xl border border-outline-variant overflow-hidden mb-gutter shadow-sm">
+<div class="px-md py-sm border-b border-outline-variant bg-surface-container-high">
+<h3 class="font-section-header text-section-header text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">speed</span>
+                            Performance
+                        </h3>
+</div>
+<div class="p-md">
+<!-- Auto-refresh interval -->
+<div>
+<div class="flex justify-between items-end mb-sm">
+<div>
+<label class="font-body-semibold text-body-semibold text-on-surface block" for="refresh-interval">Auto-refresh interval</label>
+<span class="font-caption text-caption text-on-surface-variant">How often usage data is synced with the API.</span>
+</div>
+<span class="font-key-mono text-key-mono text-primary bg-primary/10 px-xs py-xxs rounded" id="refresh-value">30s</span>
+</div>
+<div class="pt-sm pb-xs">
+<input class="w-full" id="refresh-slider" max="120" min="5" type="range" value="30"/>
+<div class="flex justify-between mt-xxs">
+<span class="font-caption text-caption text-on-surface-variant">5s</span>
+<span class="font-caption text-caption text-on-surface-variant">2m</span>
+</div>
+</div>
+<script>
+                                const slider = document.getElementById('refresh-slider');
+                                const output = document.getElementById('refresh-value');
+                                slider.oninput = function() {
+                                    if(this.value < 60) {
+                                        output.innerHTML = this.value + "s";
+                                    } else {
+                                        const mins = Math.floor(this.value / 60);
+                                        const secs = this.value % 60;
+                                        output.innerHTML = mins + "m" + (secs > 0 ? " " + secs + "s" : "");
+                                    }
+                                }
+                            </script>
+</div>
+</div>
+</div>
+<!-- Updates & Maintenance Card -->
+<div class="bg-surface-container rounded-xl border border-outline-variant overflow-hidden mb-xl shadow-sm">
+<div class="px-md py-sm border-b border-outline-variant bg-surface-container-high">
+<h3 class="font-section-header text-section-header text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">build</span>
+                            Maintenance
+                        </h3>
+</div>
+<div class="p-md space-y-md">
+<!-- Updates -->
+<div class="flex items-center justify-between py-xs">
+<div>
+<span class="font-body-semibold text-body-semibold text-on-surface block">Software Update</span>
+<span class="font-caption text-caption text-on-surface-variant">Current version: 1.4.2 (Up to date)</span>
+</div>
+<button class="bg-surface-variant hover:bg-surface-bright text-on-surface font-body-semibold text-body-semibold py-xs px-sm rounded-md border border-outline-variant transition-colors active:scale-95 text-sm">
+                                Check for updates
+                            </button>
+</div>
+<div class="h-px bg-outline-variant w-full"></div>
+<!-- Reset Data -->
+<div class="flex items-center justify-between py-xs">
+<div>
+<span class="font-body-semibold text-body-semibold text-error block">Danger Zone</span>
+<span class="font-caption text-caption text-on-surface-variant">Clear all local caches and API keys.</span>
+</div>
+<button class="bg-error/10 hover:bg-error/20 text-error border border-error/30 font-body-semibold text-body-semibold py-xs px-sm rounded-md transition-colors active:scale-95 flex items-center gap-xs text-sm">
+<span class="material-symbols-outlined text-[16px]">warning</span>
+                                Reset app data
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest docked full-width bottom-0 border-t border-outline-variant flat no shadows flex justify-between items-center px-lg py-xxs w-full z-10 shrink-0 hidden md:flex">
+<span class="font-caption text-caption text-on-surface-variant">System Status: Operational</span>
+<div class="flex gap-md">
+<a class="font-caption text-caption text-on-surface-variant hover:text-primary transition-colors underline-offset-2 hover:underline" href="#">Documentation</a>
+<a class="font-caption text-caption text-on-surface-variant hover:text-primary transition-colors underline-offset-2 hover:underline" href="#">Privacy Policy</a>
+</div>
+</footer>
+</main>
+</body></html>

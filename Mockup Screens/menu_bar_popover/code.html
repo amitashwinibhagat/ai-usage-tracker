@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Menu Bar Popover</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#272a32",
+                    "inverse-primary": "#005bc1",
+                    "surface-tint": "#adc6ff",
+                    "tertiary": "#ffb595",
+                    "on-primary": "#002e69",
+                    "on-error-container": "#ffdad6",
+                    "outline": "#8b90a0",
+                    "surface-container-highest": "#31353d",
+                    "on-secondary": "#510074",
+                    "on-surface-variant": "#c1c6d7",
+                    "on-primary-fixed-variant": "#004493",
+                    "secondary-fixed-dim": "#e8b3ff",
+                    "surface-dim": "#10131b",
+                    "on-primary-container": "#00285c",
+                    "secondary-fixed": "#f6d9ff",
+                    "secondary": "#e8b3ff",
+                    "on-secondary-fixed-variant": "#7201a2",
+                    "primary-fixed-dim": "#adc6ff",
+                    "error-container": "#93000a",
+                    "on-error": "#690005",
+                    "on-tertiary-container": "#4c1a00",
+                    "inverse-surface": "#e0e2ed",
+                    "tertiary-container": "#ef6719",
+                    "surface-container-low": "#181c23",
+                    "on-tertiary": "#571e00",
+                    "on-background": "#e0e2ed",
+                    "on-secondary-container": "#e19fff",
+                    "surface-container-lowest": "#0b0e16",
+                    "primary-fixed": "#d8e2ff",
+                    "error": "#ffb4ab",
+                    "surface-bright": "#363942",
+                    "outline-variant": "#414755",
+                    "surface-container": "#1c2028",
+                    "tertiary-fixed-dim": "#ffb595",
+                    "on-secondary-fixed": "#310048",
+                    "tertiary-fixed": "#ffdbcc",
+                    "surface": "#10131b",
+                    "background": "#10131b",
+                    "on-tertiary-fixed-variant": "#7c2e00",
+                    "on-surface": "#e0e2ed",
+                    "on-primary-fixed": "#001a41",
+                    "secondary-container": "#7508a5",
+                    "primary": "#adc6ff",
+                    "surface-variant": "#31353d",
+                    "inverse-on-surface": "#2d3039",
+                    "primary-container": "#4b8eff",
+                    "on-tertiary-fixed": "#351000"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "8px",
+                    "xl": "32px",
+                    "md": "16px",
+                    "sm": "12px",
+                    "gutter": "12px",
+                    "margin": "16px",
+                    "xxs": "4px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-semibold": ["Inter"],
+                    "caption": ["Inter"],
+                    "page-title": ["Inter"],
+                    "body": ["Inter"],
+                    "key-mono": ["JetBrains Mono"],
+                    "section-header": ["Inter"]
+            },
+            "fontSize": {
+                    "body-semibold": ["13px", {"lineHeight": "18px", "fontWeight": "600"}],
+                    "caption": ["11px", {"lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "page-title": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+                    "body": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "400"}],
+                    "key-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "section-header": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .glass-panel {
+            background-color: rgba(28, 32, 40, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex items-center justify-center p-xl font-body">
+<!-- Popover Container (~320px wide) -->
+<div class="w-[320px] glass-panel border border-outline-variant rounded-xl shadow-2xl flex flex-col p-md gap-sm relative overflow-hidden">
+<!-- Header -->
+<header class="flex items-center gap-xs pb-xs border-b border-surface-variant">
+<div class="w-6 h-6 rounded bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<h1 class="font-page-title text-page-title text-on-surface">Personal Profile</h1>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex flex-col gap-sm">
+<!-- Radial Progress Gauge -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-sm flex flex-col items-center justify-center relative shadow-inner">
+<div class="relative w-32 h-32 flex items-center justify-center">
+<!-- SVG Chart -->
+<svg class="w-full h-full transform -rotate-90 absolute inset-0" viewbox="0 0 100 100">
+<!-- Background Track (#3D3D3D mapped to surface-variant) -->
+<circle class="text-surface-variant" cx="50" cy="50" fill="none" r="42" stroke="currentColor" stroke-width="6"></circle>
+<!-- Progress Track -->
+<!-- Circumference is 2*pi*42 = 263.89. 68% of 263.89 = 179.4 -->
+<circle class="text-primary transition-all duration-1000 ease-out" cx="50" cy="50" fill="none" r="42" stroke="currentColor" stroke-dasharray="179.4 263.9" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<!-- Center Text -->
+<div class="flex flex-col items-center text-center z-10">
+<span class="font-key-mono text-key-mono text-on-surface tracking-tight">14.2k tokens</span>
+</div>
+</div>
+<div class="mt-xs font-body-semibold text-body-semibold text-primary">68% Used</div>
+</div>
+<!-- Bento Cards Grid -->
+<div class="grid grid-cols-2 gap-xs">
+<!-- Card 1: Burn Rate -->
+<div class="col-span-2 bg-surface-container border border-outline-variant rounded-lg p-sm flex flex-col gap-xxs hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-end">
+<div class="flex flex-col">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Burn Rate</span>
+<span class="font-body-semibold text-body-semibold text-error">Limit in 23 min</span>
+</div>
+</div>
+<!-- Sparkline -->
+<div class="h-8 w-full flex items-end gap-[2px] mt-xs overflow-hidden opacity-90">
+<div class="w-full bg-surface-variant rounded-sm h-[20%]"></div>
+<div class="w-full bg-surface-variant rounded-sm h-[30%]"></div>
+<div class="w-full bg-surface-variant rounded-sm h-[40%]"></div>
+<div class="w-full bg-surface-variant rounded-sm h-[35%]"></div>
+<div class="w-full bg-surface-variant rounded-sm h-[60%]"></div>
+<div class="w-full bg-surface-variant rounded-sm h-[75%]"></div>
+<div class="w-full bg-error rounded-sm h-[90%] shadow-[0_0_8px_rgba(255,180,171,0.4)]"></div>
+<div class="w-full bg-error rounded-sm h-[100%] shadow-[0_0_8px_rgba(255,180,171,0.5)]"></div>
+</div>
+</div>
+<!-- Card 2: Estimated Cost -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-sm flex flex-col gap-xxs hover:bg-surface-container-high transition-colors">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Estimated Cost</span>
+<span class="font-key-mono text-key-mono text-tertiary mt-auto">$0.42 equivalent</span>
+</div>
+<!-- Card 3: Session -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-sm flex flex-col gap-xxs hover:bg-surface-container-high transition-colors">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Session</span>
+<span class="font-body-semibold text-body-semibold text-on-surface mt-auto">3.4k / 5k target</span>
+</div>
+</div>
+</main>
+<!-- Quick Actions -->
+<div class="flex items-center gap-xs mt-xxs">
+<button class="flex-1 py-xs flex justify-center items-center bg-surface-container border border-outline-variant rounded hover:bg-surface-container-highest transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">open_in_browser</span>
+</button>
+<button class="flex-1 py-xs flex justify-center items-center bg-surface-container border border-outline-variant rounded hover:bg-surface-container-highest transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">refresh</span>
+</button>
+<button class="flex-1 py-xs flex justify-center items-center bg-surface-container border border-outline-variant rounded hover:bg-surface-container-highest transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">settings</span>
+</button>
+</div>
+<!-- Footer -->
+<footer class="pt-sm border-t border-surface-variant flex justify-between items-center text-on-surface-variant">
+<span class="font-caption text-caption">Last updated: 2 mins ago</span>
+</footer>
+</div>
+</body></html>

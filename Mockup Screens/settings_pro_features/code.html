@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Claude Tracker - Billing &amp; Licenses</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "tertiary-fixed-dim": "#ffb595",
+                            "on-secondary": "#510074",
+                            "inverse-on-surface": "#2d3039",
+                            "surface-tint": "#adc6ff",
+                            "primary-container": "#4b8eff",
+                            "error": "#ffb4ab",
+                            "surface-container-low": "#181c23",
+                            "on-surface-variant": "#c1c6d7",
+                            "on-primary-fixed": "#001a41",
+                            "on-primary": "#002e69",
+                            "surface-container-high": "#272a32",
+                            "surface-dim": "#10131b",
+                            "secondary": "#e8b3ff",
+                            "on-tertiary-container": "#4c1a00",
+                            "tertiary-fixed": "#ffdbcc",
+                            "on-tertiary-fixed": "#351000",
+                            "tertiary": "#ffb595",
+                            "on-error-container": "#ffdad6",
+                            "on-tertiary-fixed-variant": "#7c2e00",
+                            "on-secondary-fixed": "#310048",
+                            "surface-variant": "#31353d",
+                            "surface-container": "#1c2028",
+                            "on-background": "#e0e2ed",
+                            "primary-fixed-dim": "#adc6ff",
+                            "on-tertiary": "#571e00",
+                            "surface": "#10131b",
+                            "surface-container-lowest": "#0b0e16",
+                            "primary": "#adc6ff",
+                            "secondary-container": "#7508a5",
+                            "background": "#10131b",
+                            "secondary-fixed": "#f6d9ff",
+                            "surface-bright": "#363942",
+                            "on-secondary-container": "#e19fff",
+                            "secondary-fixed-dim": "#e8b3ff",
+                            "on-primary-container": "#00285c",
+                            "outline-variant": "#414755",
+                            "outline": "#8b90a0",
+                            "surface-container-highest": "#31353d",
+                            "on-primary-fixed-variant": "#004493",
+                            "inverse-surface": "#e0e2ed",
+                            "inverse-primary": "#005bc1",
+                            "tertiary-container": "#ef6719",
+                            "on-error": "#690005",
+                            "primary-fixed": "#d8e2ff",
+                            "on-surface": "#e0e2ed",
+                            "on-secondary-fixed-variant": "#7201a2",
+                            "error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "xs": "8px",
+                            "lg": "24px",
+                            "xl": "32px",
+                            "md": "16px",
+                            "gutter": "12px",
+                            "xxs": "4px",
+                            "sm": "12px",
+                            "margin": "16px"
+                    },
+                    "fontFamily": {
+                            "caption": ["Inter"],
+                            "body-semibold": ["Inter"],
+                            "body": ["Inter"],
+                            "section-header": ["Inter"],
+                            "page-title": ["Inter"],
+                            "key-mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                            "caption": ["11px", {"lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                            "body-semibold": ["13px", {"lineHeight": "18px", "fontWeight": "600"}],
+                            "body": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "400"}],
+                            "section-header": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                            "page-title": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+                            "key-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #1E1E1E; }
+        .card-border { border: 1px solid #3D3D3D; }
+        .glass-overlay { background: rgba(45, 48, 57, 0.4); backdrop-filter: blur(20px); border: 1px solid #4D4D4D; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body text-body antialiased flex">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low dark:bg-surface-container-low h-screen w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant flex flex-col p-md z-20">
+<div class="mb-lg px-3">
+<h1 class="font-page-title text-page-title text-on-surface dark:text-on-surface">Claude Tracker</h1>
+<p class="font-caption text-caption text-on-surface-variant mt-1">Pro Account</p>
+</div>
+<ul class="flex-1 space-y-2">
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg hover:bg-surface-container-high dark:hover:bg-surface-container-high active:scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body text-body">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg hover:bg-surface-container-high dark:hover:bg-surface-container-high active:scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="vpn_key">vpn_key</span>
+<span class="font-body text-body">Credentials</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg hover:bg-surface-container-high dark:hover:bg-surface-container-high active:scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-body text-body">History</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 bg-secondary-container dark:bg-secondary-container text-on-secondary-container dark:text-on-secondary-container rounded-lg px-3 py-2 font-body-semibold text-body-semibold hover:bg-surface-container-high dark:hover:bg-surface-container-high active:scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="credit_card">credit_card</span>
+<span>Billing</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg hover:bg-surface-container-high dark:hover:bg-surface-container-high active:scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body text-body">Settings</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg hover:bg-surface-container-high dark:hover:bg-surface-container-high active:scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-body text-body">Help</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Area -->
+<div class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface docked full-width top-0 sticky border-b border-outline-variant dark:border-outline-variant flex justify-between items-center h-14 px-lg w-full z-10">
+<div class="flex items-center gap-md">
+<span class="font-page-title text-page-title font-semibold text-on-surface dark:text-on-surface">Usage Monitor</span>
+<nav class="hidden md:flex gap-4 ml-lg">
+<!-- Search Bar space -->
+</nav>
+</div>
+<div class="flex items-center gap-4 text-primary dark:text-primary hover:opacity-80 transition-opacity">
+<button class="hover:text-on-surface dark:hover:text-on-surface transition-colors flex items-center">
+<span class="material-symbols-outlined" data-icon="refresh">refresh</span>
+</button>
+<button class="hover:text-on-surface dark:hover:text-on-surface transition-colors flex items-center">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<main class="p-margin flex-1 pb-24">
+<div class="max-w-4xl mx-auto space-y-lg">
+<!-- Status Banner -->
+<div class="bg-[#2D2D2D] card-border rounded-lg p-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-md relative overflow-hidden">
+<div class="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-primary-container/20 to-transparent pointer-events-none"></div>
+<div>
+<div class="flex items-center gap-xs mb-1">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="workspace_premium">workspace_premium</span>
+<h2 class="font-page-title text-page-title">Pro Tier Active</h2>
+</div>
+<p class="font-body text-body text-on-surface-variant">Your license renews on <span class="font-body-semibold text-on-surface">Oct 24, 2024</span>.</p>
+</div>
+<button class="bg-primary-container text-on-primary-container font-body-semibold text-body-semibold px-4 py-2 rounded flex items-center gap-xs hover:bg-primary transition-colors z-10 shadow-sm">
+<span class="material-symbols-outlined text-sm" data-icon="manage_accounts">manage_accounts</span>
+                        Manage License
+                    </button>
+</div>
+<!-- Features Grid -->
+<div>
+<h3 class="font-section-header text-section-header mb-sm text-on-surface-variant">Unlocked Features</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="bg-[#2D2D2D] card-border rounded-lg p-md flex flex-col gap-xs">
+<span class="material-symbols-outlined text-secondary text-2xl mb-xs" data-icon="all_inclusive">all_inclusive</span>
+<span class="font-body-semibold text-body-semibold">Unlimited API Calls</span>
+<span class="font-caption text-caption text-on-surface-variant">No rate limits on standard endpoints.</span>
+</div>
+<div class="bg-[#2D2D2D] card-border rounded-lg p-md flex flex-col gap-xs">
+<span class="material-symbols-outlined text-tertiary text-2xl mb-xs" data-icon="query_stats">query_stats</span>
+<span class="font-body-semibold text-body-semibold">Advanced Tracking</span>
+<span class="font-caption text-caption text-on-surface-variant">Real-time telemetry and 90-day history retention.</span>
+</div>
+<div class="bg-[#2D2D2D] card-border rounded-lg p-md flex flex-col gap-xs">
+<span class="material-symbols-outlined text-primary text-2xl mb-xs" data-icon="support_agent">support_agent</span>
+<span class="font-body-semibold text-body-semibold">Priority Support</span>
+<span class="font-caption text-caption text-on-surface-variant">SLA-backed technical assistance via Slack.</span>
+</div>
+</div>
+</div>
+<!-- Pricing & Billing -->
+<div class="bg-[#2D2D2D] card-border rounded-lg overflow-hidden">
+<div class="p-sm border-b border-outline-variant bg-surface-container-high flex justify-between items-center">
+<h3 class="font-section-header text-section-header">Billing Cycle</h3>
+</div>
+<div class="p-md">
+<div class="flex flex-col md:flex-row gap-lg">
+<div class="flex-1 space-y-4 border-r border-outline-variant pr-lg">
+<div class="flex justify-between items-center">
+<span class="font-body text-body text-on-surface-variant">Current Plan</span>
+<span class="font-body-semibold text-body-semibold">Pro Annual</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body text-body text-on-surface-variant">Seat Count</span>
+<span class="font-key-mono text-key-mono">5/10 Used</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body text-body text-on-surface-variant">Total Cost</span>
+<span class="font-key-mono text-key-mono text-lg">$499.00 / yr</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-center space-y-sm">
+<div class="flex items-center justify-between p-sm border border-primary rounded bg-primary/10">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-primary ring-2 ring-primary/30"></div>
+<span class="font-body-semibold text-body-semibold">Annual Billing</span>
+</div>
+<span class="bg-primary text-on-primary font-caption text-caption px-2 py-0.5 rounded-full">Save 20%</span>
+</div>
+<div class="flex items-center justify-between p-sm border border-outline-variant rounded hover:border-outline transition-colors cursor-pointer opacity-70 hover:opacity-100">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full border border-outline-variant"></div>
+<span class="font-body text-body">Monthly Billing</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant">$49.00 / mo</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Invoices -->
+<div>
+<h3 class="font-section-header text-section-header mb-sm text-on-surface-variant">Recent Invoices</h3>
+<div class="bg-[#2D2D2D] card-border rounded-lg overflow-hidden">
+<table class="w-full text-left font-body text-body">
+<thead class="bg-surface-container-high border-b border-outline-variant">
+<tr>
+<th class="px-md py-sm font-caption text-caption text-on-surface-variant">Date</th>
+<th class="px-md py-sm font-caption text-caption text-on-surface-variant">Amount</th>
+<th class="px-md py-sm font-caption text-caption text-on-surface-variant">Status</th>
+<th class="px-md py-sm font-caption text-caption text-on-surface-variant text-right">Invoice</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr>
+<td class="px-md py-sm">Oct 24, 2023</td>
+<td class="px-md py-sm font-key-mono text-key-mono">$499.00</td>
+<td class="px-md py-sm"><span class="bg-[#3D3D3D] text-on-surface font-caption text-caption px-2 py-0.5 rounded-full border border-outline-variant">Paid</span></td>
+<td class="px-md py-sm text-right"><button class="text-primary hover:underline font-body-semibold text-body-semibold">PDF</button></td>
+</tr>
+<tr>
+<td class="px-md py-sm">Oct 24, 2022</td>
+<td class="px-md py-sm font-key-mono text-key-mono">$499.00</td>
+<td class="px-md py-sm"><span class="bg-[#3D3D3D] text-on-surface font-caption text-caption px-2 py-0.5 rounded-full border border-outline-variant">Paid</span></td>
+<td class="px-md py-sm text-right"><button class="text-primary hover:underline font-body-semibold text-body-semibold">PDF</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest fixed bottom-0 right-0 left-64 h-8 border-t border-outline-variant dark:border-outline-variant flex justify-between items-center px-md w-full z-10 transition-colors duration-200">
+<span class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant">Last updated: 2 mins ago • Version 1.0.4</span>
+<div class="flex gap-4">
+<a class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary" href="#">System Status</a>
+<a class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary" href="#">API Health</a>
+</div>
+</footer>
+</div>
+</body></html>

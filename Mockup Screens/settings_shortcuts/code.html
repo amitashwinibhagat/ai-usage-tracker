@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Claude Tracker - Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb595",
+                        "on-secondary": "#510074",
+                        "inverse-on-surface": "#2d3039",
+                        "surface-tint": "#adc6ff",
+                        "primary-container": "#4b8eff",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#181c23",
+                        "on-surface-variant": "#c1c6d7",
+                        "on-primary-fixed": "#001a41",
+                        "on-primary": "#002e69",
+                        "surface-container-high": "#272a32",
+                        "surface-dim": "#10131b",
+                        "secondary": "#e8b3ff",
+                        "on-tertiary-container": "#4c1a00",
+                        "tertiary-fixed": "#ffdbcc",
+                        "on-tertiary-fixed": "#351000",
+                        "tertiary": "#ffb595",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "on-secondary-fixed": "#310048",
+                        "surface-variant": "#31353d",
+                        "surface-container": "#1c2028",
+                        "on-background": "#e0e2ed",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-tertiary": "#571e00",
+                        "surface": "#10131b",
+                        "surface-container-lowest": "#0b0e16",
+                        "primary": "#adc6ff",
+                        "secondary-container": "#7508a5",
+                        "background": "#10131b",
+                        "secondary-fixed": "#f6d9ff",
+                        "surface-bright": "#363942",
+                        "on-secondary-container": "#e19fff",
+                        "secondary-fixed-dim": "#e8b3ff",
+                        "on-primary-container": "#00285c",
+                        "outline-variant": "#414755",
+                        "outline": "#8b90a0",
+                        "surface-container-highest": "#31353d",
+                        "on-primary-fixed-variant": "#004493",
+                        "inverse-surface": "#e0e2ed",
+                        "inverse-primary": "#005bc1",
+                        "tertiary-container": "#ef6719",
+                        "on-error": "#690005",
+                        "primary-fixed": "#d8e2ff",
+                        "on-surface": "#e0e2ed",
+                        "on-secondary-fixed-variant": "#7201a2",
+                        "error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "gutter": "12px",
+                        "xxs": "4px",
+                        "sm": "12px",
+                        "margin": "16px"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "body-semibold": ["Inter"],
+                        "body": ["Inter"],
+                        "section-header": ["Inter"],
+                        "page-title": ["Inter"],
+                        "key-mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "caption": ["11px", { "lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "body-semibold": ["13px", { "lineHeight": "18px", "fontWeight": "600" }],
+                        "body": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+                        "section-header": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "page-title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+                        "key-mono": ["12px", { "lineHeight": "16px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #1E1E1E; /* Forced base app canvas per style guide override */
+            color: #e0e2ed;
+        }
+        .card-elevation {
+            background-color: #2D2D2D;
+            border: 1px solid #3D3D3D;
+        }
+    </style>
+</head>
+<body class="font-body text-body antialiased flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low dark:bg-surface-container-low h-screen w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant flex flex-col h-full p-md z-20">
+<div class="mb-lg flex items-center gap-sm px-xs pt-xs">
+<div class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">token</span>
+</div>
+<div>
+<h1 class="font-page-title text-page-title text-on-surface dark:text-on-surface font-semibold tracking-tight">Claude Tracker</h1>
+<p class="font-caption text-caption text-on-surface-variant">Pro Account</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto space-y-xxs">
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-surface transition-colors">dashboard</span>
+<span class="font-body text-body group-hover:text-on-surface transition-colors">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-surface transition-colors">vpn_key</span>
+<span class="font-body text-body group-hover:text-on-surface transition-colors">Credentials</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-surface transition-colors">history</span>
+<span class="font-body text-body group-hover:text-on-surface transition-colors">History</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-surface transition-colors">credit_card</span>
+<span class="font-body text-body group-hover:text-on-surface transition-colors">Billing</span>
+</a>
+<a class="flex items-center gap-sm bg-secondary-container dark:bg-secondary-container text-on-secondary-container dark:text-on-secondary-container rounded-lg px-3 py-2 font-body-semibold text-body-semibold transition-all duration-150 transform hover:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-surface transition-colors">help</span>
+<span class="font-body text-body group-hover:text-on-surface transition-colors">Help</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 flex flex-col h-screen relative">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface flex justify-between items-center h-14 px-lg w-full docked full-width top-0 sticky border-b border-outline-variant dark:border-outline-variant z-10 shrink-0">
+<div class="flex items-center gap-sm">
+<h2 class="font-page-title text-page-title font-semibold text-on-surface dark:text-on-surface tracking-tight">Usage Monitor</h2>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="bg-surface-container-low border border-outline-variant text-on-surface font-body text-body rounded-full py-1 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent w-48 transition-all" placeholder="Search..." type="text"/>
+</div>
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors hover:opacity-80">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors hover:opacity-80">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Page Content -->
+<div class="flex-1 overflow-y-auto p-margin">
+<div class="max-w-3xl mx-auto space-y-lg">
+<div class="flex items-end justify-between border-b border-outline-variant pb-xs">
+<div>
+<h3 class="font-section-header text-section-header text-on-surface">Keyboard Shortcuts</h3>
+<p class="font-caption text-caption text-on-surface-variant mt-1">Configure global hotkeys to accelerate your workflow.</p>
+</div>
+<button class="font-body-semibold text-body-semibold text-primary hover:text-primary-fixed transition-colors">Restore Defaults</button>
+</div>
+<div class="card-elevation rounded-lg overflow-hidden">
+<div class="flex items-center justify-between p-sm border-b border-[#3D3D3D] hover:bg-surface-container-high transition-colors group">
+<div class="flex flex-col">
+<span class="font-body-semibold text-body-semibold text-on-surface">Toggle Popover</span>
+<span class="font-caption text-caption text-on-surface-variant">Quickly show or hide the global tracker overlay</span>
+</div>
+<button class="flex items-center gap-xs px-sm py-1.5 rounded bg-surface-container border border-outline-variant hover:border-primary-container focus:ring-2 focus:ring-primary-container transition-all text-on-surface w-32 justify-center group-hover:bg-surface-container-lowest">
+<span class="font-key-mono text-key-mono">⌥ Space</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-sm border-b border-[#3D3D3D] hover:bg-surface-container-high transition-colors group">
+<div class="flex flex-col">
+<span class="font-body-semibold text-body-semibold text-on-surface">Refresh Data</span>
+<span class="font-caption text-caption text-on-surface-variant">Force a sync with Claude servers</span>
+</div>
+<button class="flex items-center gap-xs px-sm py-1.5 rounded bg-surface-container border border-outline-variant hover:border-primary-container focus:ring-2 focus:ring-primary-container transition-all text-on-surface w-32 justify-center group-hover:bg-surface-container-lowest">
+<span class="font-key-mono text-key-mono">⌘ R</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-sm border-b border-[#3D3D3D] hover:bg-surface-container-high transition-colors group">
+<div class="flex flex-col">
+<span class="font-body-semibold text-body-semibold text-on-surface">Open Settings</span>
+<span class="font-caption text-caption text-on-surface-variant">Navigate directly to the preferences screen</span>
+</div>
+<button class="flex items-center gap-xs px-sm py-1.5 rounded bg-surface-container border border-outline-variant hover:border-primary-container focus:ring-2 focus:ring-primary-container transition-all text-on-surface w-32 justify-center group-hover:bg-surface-container-lowest">
+<span class="font-key-mono text-key-mono">⌘ ,</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-high transition-colors group">
+<div class="flex flex-col">
+<span class="font-body-semibold text-body-semibold text-on-surface">Next Profile</span>
+<span class="font-caption text-caption text-on-surface-variant">Cycle to the next configured API key</span>
+</div>
+<button class="flex items-center gap-xs px-sm py-1.5 rounded bg-surface-container border border-primary-container ring-1 ring-primary-container transition-all text-on-surface w-32 justify-center relative overflow-hidden bg-surface-container-lowest shadow-[0_0_15px_rgba(75,142,255,0.15)]">
+<span class="font-key-mono text-key-mono text-primary animate-pulse">Recording...</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline-variant fixed bottom-0 right-0 left-64 h-8 flex justify-between items-center px-md z-10">
+<span class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant">Last updated: 2 mins ago • Version 1.0.4</span>
+<div class="flex items-center gap-sm">
+<a class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary transition-colors duration-200" href="#">System Status</a>
+<a class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary transition-colors duration-200" href="#">API Health</a>
+</div>
+</footer>
+</main>
+</body></html>

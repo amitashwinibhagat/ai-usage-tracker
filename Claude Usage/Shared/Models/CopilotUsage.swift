@@ -134,8 +134,11 @@ struct CopilotCredentials: ProviderCredentials {
     /// GitHub username
     var username: String?
 
+    /// OAuth access token (alternative to PAT)
+    var oauthAccessToken: String?
+
     var isValid: Bool {
-        accessToken != nil && !accessToken!.isEmpty
+        (accessToken != nil && !accessToken!.isEmpty) || (oauthAccessToken != nil && !oauthAccessToken!.isEmpty)
     }
 
     var statusDescription: String {

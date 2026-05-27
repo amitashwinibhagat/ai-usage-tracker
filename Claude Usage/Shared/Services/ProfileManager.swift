@@ -134,6 +134,9 @@ class ProfileManager: ObservableObject {
 
         profiles.removeAll { $0.id == id }
 
+        // Clean up OAuth tokens from Keychain
+        OAuthTokenStore.shared.deleteAllTokens(for: id)
+
         // Credentials are deleted automatically with the profile
 
         // Switch to first profile if deleted active
@@ -665,6 +668,56 @@ class ProfileManager: ObservableObject {
             profiles[index].minimaxUsage = nil
             if activeProfile?.id == profileId { activeProfile = profiles[index] }
             profileStore.saveProfiles(profiles)
+        }
+    }
+
+    // MARK: - OAuth Connection State
+
+    /// Marks a provider as connected via OAuth for a profile
+    func setOAuthConnected(_ connected: Bool, provider: AIProvider, for profileId: UUID) {
+        guard provider.supportsOAuth else { return }
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            switch provider {
+            case .gemini:
+                profiles[index].geminiOAuthConnected = connected
+            case .copilot:
+                profiles[index].copilotOAuthConnected = connected
+            default:
+                return
+            }
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Updated OAuth state for \(provider.displayName): \(connected)")
+        }
+    }
+
+    /// Disconnects OAuth for a provider and optionally clears API key credentials
+    func disconnectOAuth(provider: AIProvider, clearApiKey: Bool = false, for profileId: UUID) {
+        guard provider.supportsOAuth else { return }
+
+        // Delete token from Keychain
+        OAuthTokenStore.shared.delete(provider: provider, profileId: profileId)
+
+        if let index = profiles.firstIndex(where: { $0.id == profileId }) {
+            switch provider {
+            case .gemini:
+                profiles[index].geminiOAuthConnected = false
+                if clearApiKey {
+                    profiles[index].geminiApiKey = nil
+                    profiles[index].geminiProjectId = nil
+                }
+            case .copilot:
+                profiles[index].copilotOAuthConnected = false
+                if clearApiKey {
+                    profiles[index].copilotAccessToken = nil
+                    profiles[index].copilotUsername = nil
+                }
+            default:
+                break
+            }
+            if activeProfile?.id == profileId { activeProfile = profiles[index] }
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("Disconnected OAuth for \(provider.displayName)")
         }
     }
 

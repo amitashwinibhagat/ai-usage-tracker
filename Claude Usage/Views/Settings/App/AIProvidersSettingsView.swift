@@ -16,6 +16,7 @@ struct AIProvidersSettingsView: View {
 
     enum ProviderSheet: Identifiable {
         case codex, gemini, copilot, kimi, deepseek, glm, qwen, minimax
+        case geminiOAuth, copilotOAuth
         var id: Int { hashValue }
     }
 
@@ -74,21 +75,39 @@ struct AIProvidersSettingsView: View {
 
         Divider()
 
-        ProviderCard(
-            provider: .gemini,
-            isConnected: profile.hasGeminiCredentials,
-            status: profile.hasGeminiCredentials ? "Connected" : "API key required",
-            usage: profile.geminiUsage?.tokensUsed
-        ) { activeSheet = .gemini }
+        if profile.geminiOAuthConnected {
+            ProviderCard(
+                provider: .gemini,
+                isConnected: true,
+                status: "Signed in with Google",
+                usage: profile.geminiUsage?.tokensUsed
+            ) { activeSheet = .geminiOAuth }
+        } else {
+            ProviderCard(
+                provider: .gemini,
+                isConnected: profile.hasGeminiCredentials,
+                status: profile.hasGeminiCredentials ? "Connected via API key" : "Sign in or add API key",
+                usage: profile.geminiUsage?.tokensUsed
+            ) { activeSheet = .gemini }
+        }
 
         Divider()
 
-        ProviderCard(
-            provider: .copilot,
-            isConnected: profile.hasCopilotCredentials,
-            status: profile.hasCopilotCredentials ? "Connected \(profile.copilotUsername ?? "")" : "GitHub token required",
-            usage: profile.copilotUsage?.suggestionsAccepted
-        ) { activeSheet = .copilot }
+        if profile.copilotOAuthConnected {
+            ProviderCard(
+                provider: .copilot,
+                isConnected: true,
+                status: "Signed in with GitHub \(profile.copilotUsername ?? "")",
+                usage: profile.copilotUsage?.suggestionsAccepted
+            ) { activeSheet = .copilotOAuth }
+        } else {
+            ProviderCard(
+                provider: .copilot,
+                isConnected: profile.hasCopilotCredentials,
+                status: profile.hasCopilotCredentials ? "Connected via token \(profile.copilotUsername ?? "")" : "Sign in or add token",
+                usage: profile.copilotUsage?.suggestionsAccepted
+            ) { activeSheet = .copilot }
+        }
 
         // Chinese providers
         SectionHeader(title: "Chinese Providers")
@@ -156,6 +175,10 @@ struct AIProvidersSettingsView: View {
             QwenCredentialsSheet(profileId: profileId)
         case .minimax:
             MiniMaxCredentialsSheet(profileId: profileId)
+        case .geminiOAuth:
+            GeminiOAuthSheet(profileId: profileId)
+        case .copilotOAuth:
+            CopilotOAuthSheet(profileId: profileId)
         }
     }
 }
@@ -268,18 +291,81 @@ struct GeminiCredentialsSheet: View {
     let profileId: UUID?
     @State private var apiKey = ""
     @State private var projectId = ""
+    @State private var isSigningIn = false
+    @State private var authError: String?
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        CredentialSheet(title: "Google Gemini", profileId: profileId, dismiss: dismiss) {
+        VStack(spacing: 20) {
+            Text("Google Gemini")
+                .font(.system(size: 18, weight: .semibold))
+
             VStack(alignment: .leading, spacing: 12) {
                 SecureFieldRow(title: "API Key", placeholder: "AIza...", text: $apiKey)
                 TextFieldRow(title: "Project ID (optional)", placeholder: "my-project-123", text: $projectId)
                 Link("Get your API key from AI Studio →", destination: URL(string: "https://aistudio.google.com/app/apikey")!)
             }
-        } onSave: {
-            ProfileManager.shared.updateGeminiCredentials(apiKey: apiKey, projectId: projectId.isEmpty ? nil : projectId, for: profileId!)
-        } isValid: { !apiKey.isEmpty }
+
+            Divider()
+
+            VStack(spacing: 8) {
+                Text("or")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                OAuthSignInButton(
+                    provider: .gemini,
+                    isLoading: isSigningIn
+                ) {
+                    startOAuthSignIn()
+                }
+            }
+
+            if let error = authError {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
+
+            HStack(spacing: 12) {
+                Button("Cancel") { dismiss() }
+                    .buttonStyle(.plain)
+
+                Button("Save") {
+                    ProfileManager.shared.updateGeminiCredentials(apiKey: apiKey.isEmpty ? nil : apiKey, projectId: projectId.isEmpty ? nil : projectId, for: profileId!)
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(profileId == nil)
+            }
+        }
+        .padding(24)
+        .frame(width: 400)
+    }
+
+    private func startOAuthSignIn() {
+        guard let profileId = profileId else { return }
+        isSigningIn = true
+        authError = nil
+
+        let config = GoogleOAuthConfiguration()
+        OAuthFlowCoordinator.shared.startLogin(
+            configuration: config,
+            profileId: profileId
+        ) { result in
+            isSigningIn = false
+            switch result {
+            case .success:
+                ProfileManager.shared.setOAuthConnected(true, provider: .gemini, for: profileId)
+                dismiss()
+            case .failure(let error):
+                if let oauthError = error as? OAuthError, oauthError == OAuthError.userCancelled {
+                    // User cancelled, don't show error
+                    break
+                }
+                authError = error.localizedDescription
+            }
+        }
     }
 }
 
@@ -287,18 +373,207 @@ struct CopilotCredentialsSheet: View {
     let profileId: UUID?
     @State private var accessToken = ""
     @State private var username = ""
+    @State private var isSigningIn = false
+    @State private var authError: String?
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        CredentialSheet(title: "GitHub Copilot", profileId: profileId, dismiss: dismiss) {
+        VStack(spacing: 20) {
+            Text("GitHub Copilot")
+                .font(.system(size: 18, weight: .semibold))
+
             VStack(alignment: .leading, spacing: 12) {
                 SecureFieldRow(title: "Personal Access Token", placeholder: "ghp_...", text: $accessToken)
                 TextFieldRow(title: "GitHub Username", placeholder: "username", text: $username)
                 Link("Create a token on GitHub →", destination: URL(string: "https://github.com/settings/tokens")!)
             }
-        } onSave: {
-            ProfileManager.shared.updateCopilotCredentials(accessToken: accessToken, username: username.isEmpty ? nil : username, for: profileId!)
-        } isValid: { !accessToken.isEmpty }
+
+            Divider()
+
+            VStack(spacing: 8) {
+                Text("or")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                OAuthSignInButton(
+                    provider: .copilot,
+                    isLoading: isSigningIn
+                ) {
+                    startOAuthSignIn()
+                }
+            }
+
+            if let error = authError {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
+
+            HStack(spacing: 12) {
+                Button("Cancel") { dismiss() }
+                    .buttonStyle(.plain)
+
+                Button("Save") {
+                    ProfileManager.shared.updateCopilotCredentials(accessToken: accessToken.isEmpty ? nil : accessToken, username: username.isEmpty ? nil : username, for: profileId!)
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(profileId == nil)
+            }
+        }
+        .padding(24)
+        .frame(width: 400)
+    }
+
+    private func startOAuthSignIn() {
+        guard let profileId = profileId else { return }
+        isSigningIn = true
+        authError = nil
+
+        let config = GitHubOAuthConfiguration()
+        OAuthFlowCoordinator.shared.startLogin(
+            configuration: config,
+            profileId: profileId
+        ) { result in
+            isSigningIn = false
+            switch result {
+            case .success:
+                ProfileManager.shared.setOAuthConnected(true, provider: .copilot, for: profileId)
+                dismiss()
+            case .failure(let error):
+                if let oauthError = error as? OAuthError, oauthError == OAuthError.userCancelled {
+                    break
+                }
+                authError = error.localizedDescription
+            }
+        }
+    }
+}
+
+// MARK: - OAuth Management Sheets
+
+struct GeminiOAuthSheet: View {
+    let profileId: UUID?
+    @State private var isDisconnecting = false
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Google Gemini")
+                .font(.system(size: 18, weight: .semibold))
+
+            HStack(spacing: 8) {
+                Image(systemName: "checkmark.shield.fill")
+                    .foregroundColor(.green)
+                Text("Signed in with Google")
+                    .font(DesignTokens.Typography.bodyMedium)
+            }
+
+            Text("Your Google account is connected. Usage data is fetched via OAuth.")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+
+            Divider()
+
+            Button("Disconnect Google Account") {
+                disconnect()
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.red)
+            .disabled(isDisconnecting)
+
+            Button("Cancel") { dismiss() }
+                .buttonStyle(.plain)
+        }
+        .padding(24)
+        .frame(width: 400)
+    }
+
+    private func disconnect() {
+        guard let profileId = profileId else { return }
+        isDisconnecting = true
+        ProfileManager.shared.disconnectOAuth(provider: .gemini, for: profileId)
+        isDisconnecting = false
+        dismiss()
+    }
+}
+
+struct CopilotOAuthSheet: View {
+    let profileId: UUID?
+    @State private var isDisconnecting = false
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("GitHub Copilot")
+                .font(.system(size: 18, weight: .semibold))
+
+            HStack(spacing: 8) {
+                Image(systemName: "checkmark.shield.fill")
+                    .foregroundColor(.green)
+                Text("Signed in with GitHub")
+                    .font(DesignTokens.Typography.bodyMedium)
+            }
+
+            Text("Your GitHub account is connected. Usage data is fetched via OAuth.")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+
+            Divider()
+
+            Button("Disconnect GitHub Account") {
+                disconnect()
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.red)
+            .disabled(isDisconnecting)
+
+            Button("Cancel") { dismiss() }
+                .buttonStyle(.plain)
+        }
+        .padding(24)
+        .frame(width: 400)
+    }
+
+    private func disconnect() {
+        guard let profileId = profileId else { return }
+        isDisconnecting = true
+        ProfileManager.shared.disconnectOAuth(provider: .copilot, for: profileId)
+        isDisconnecting = false
+        dismiss()
+    }
+}
+
+// MARK: - OAuth Sign In Button
+
+struct OAuthSignInButton: View {
+    let provider: AIProvider
+    let isLoading: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                if isLoading {
+                    ProgressView()
+                        .controlSize(.small)
+                        .scaleEffect(0.7)
+                } else {
+                    Image(systemName: provider == .gemini ? "g.circle.fill" : "cat.fill")
+                        .font(.system(size: 14))
+                }
+
+                Text("Sign in with \(provider == .gemini ? "Google" : "GitHub")")
+                    .font(.system(size: 13, weight: .medium))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(provider == .gemini ? Color(red: 0.26, green: 0.52, blue: 0.96) : Color(red: 0.2, green: 0.2, blue: 0.2))
+        .disabled(isLoading)
     }
 }
 

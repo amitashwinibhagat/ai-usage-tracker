@@ -60,6 +60,12 @@ struct Profile: Codable, Identifiable, Equatable {
     var minimaxApiKey: String?
     var minimaxGroupId: String?
 
+    // MARK: - OAuth Connection State (Per-Profile)
+    /// Whether Gemini is connected via OAuth (tokens stored in Keychain)
+    var geminiOAuthConnected: Bool = false
+    /// Whether Copilot is connected via OAuth (tokens stored in Keychain)
+    var copilotOAuthConnected: Bool = false
+
     // MARK: - Appearance Settings (Per-Profile)
     var iconConfig: MenuBarIconConfiguration
 
@@ -115,6 +121,8 @@ struct Profile: Codable, Identifiable, Equatable {
         qwenApiKey: String? = nil,
         minimaxApiKey: String? = nil,
         minimaxGroupId: String? = nil,
+        geminiOAuthConnected: Bool = false,
+        copilotOAuthConnected: Bool = false,
         iconConfig: MenuBarIconConfiguration = .default,
         refreshInterval: TimeInterval = 30.0,
         autoStartSessionEnabled: Bool = false,
@@ -158,6 +166,8 @@ struct Profile: Codable, Identifiable, Equatable {
         self.qwenApiKey = qwenApiKey
         self.minimaxApiKey = minimaxApiKey
         self.minimaxGroupId = minimaxGroupId
+        self.geminiOAuthConnected = geminiOAuthConnected
+        self.copilotOAuthConnected = copilotOAuthConnected
         self.iconConfig = iconConfig
         self.refreshInterval = refreshInterval
         self.autoStartSessionEnabled = autoStartSessionEnabled
@@ -201,11 +211,11 @@ struct Profile: Codable, Identifiable, Equatable {
     }
 
     var hasGeminiCredentials: Bool {
-        geminiApiKey != nil && !geminiApiKey!.isEmpty
+        (geminiApiKey != nil && !geminiApiKey!.isEmpty) || geminiOAuthConnected
     }
 
     var hasCopilotCredentials: Bool {
-        copilotAccessToken != nil && !copilotAccessToken!.isEmpty
+        (copilotAccessToken != nil && !copilotAccessToken!.isEmpty) || copilotOAuthConnected
     }
 
     var hasKimiCredentials: Bool {

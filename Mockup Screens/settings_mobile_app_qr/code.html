@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Monitor - Sync iOS App</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "surface": "#10131b",
+                            "surface-container-high": "#272a32",
+                            "on-primary-fixed-variant": "#004493",
+                            "surface-container": "#1c2028",
+                            "surface-variant": "#31353d",
+                            "on-error-container": "#ffdad6",
+                            "surface-container-highest": "#31353d",
+                            "outline-variant": "#414755",
+                            "error": "#ffb4ab",
+                            "surface-container-lowest": "#0b0e16",
+                            "on-surface-variant": "#c1c6d7",
+                            "error-container": "#93000a",
+                            "background": "#10131b",
+                            "surface-bright": "#363942",
+                            "surface-tint": "#adc6ff",
+                            "surface-container-low": "#181c23",
+                            "on-tertiary": "#571e00",
+                            "primary-fixed-dim": "#adc6ff",
+                            "on-tertiary-fixed-variant": "#7c2e00",
+                            "secondary-fixed-dim": "#e8b3ff",
+                            "on-secondary-fixed": "#310048",
+                            "on-tertiary-fixed": "#351000",
+                            "on-tertiary-container": "#4c1a00",
+                            "tertiary": "#ffb595",
+                            "secondary-container": "#7508a5",
+                            "tertiary-fixed-dim": "#ffb595",
+                            "on-surface": "#e0e2ed",
+                            "inverse-surface": "#e0e2ed",
+                            "on-secondary-fixed-variant": "#7201a2",
+                            "inverse-primary": "#005bc1",
+                            "secondary": "#e8b3ff",
+                            "on-background": "#e0e2ed",
+                            "primary-container": "#4b8eff",
+                            "outline": "#8b90a0",
+                            "on-error": "#690005",
+                            "tertiary-fixed": "#ffdbcc",
+                            "secondary-fixed": "#f6d9ff",
+                            "on-primary-fixed": "#001a41",
+                            "tertiary-container": "#ef6719",
+                            "on-primary": "#002e69",
+                            "primary-fixed": "#d8e2ff",
+                            "primary": "#adc6ff",
+                            "on-primary-container": "#00285c",
+                            "surface-dim": "#10131b",
+                            "on-secondary-container": "#e19fff",
+                            "on-secondary": "#510074",
+                            "inverse-on-surface": "#2d3039"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "xs": "8px",
+                            "lg": "24px",
+                            "xxs": "4px",
+                            "md": "16px",
+                            "gutter": "12px",
+                            "xl": "32px",
+                            "margin": "16px",
+                            "sm": "12px"
+                    },
+                    "fontFamily": {
+                            "key-mono": [
+                                    "JetBrains Mono"
+                            ],
+                            "body-semibold": [
+                                    "Inter"
+                            ],
+                            "body": [
+                                    "Inter"
+                            ],
+                            "section-header": [
+                                    "Inter"
+                            ],
+                            "caption": [
+                                    "Inter"
+                            ],
+                            "page-title": [
+                                    "Inter"
+                            ]
+                    },
+                    "fontSize": {
+                            "key-mono": [
+                                    "12px",
+                                    {
+                                            "lineHeight": "16px",
+                                            "fontWeight": "500"
+                                    }
+                            ],
+                            "body-semibold": [
+                                    "13px",
+                                    {
+                                            "lineHeight": "18px",
+                                            "fontWeight": "600"
+                                    }
+                            ],
+                            "body": [
+                                    "13px",
+                                    {
+                                            "lineHeight": "18px",
+                                            "letterSpacing": "-0.005em",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "section-header": [
+                                    "13px",
+                                    {
+                                            "lineHeight": "18px",
+                                            "letterSpacing": "-0.01em",
+                                            "fontWeight": "600"
+                                    }
+                            ],
+                            "caption": [
+                                    "11px",
+                                    {
+                                            "lineHeight": "14px",
+                                            "letterSpacing": "0.01em",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "page-title": [
+                                    "18px",
+                                    {
+                                            "lineHeight": "24px",
+                                            "letterSpacing": "-0.015em",
+                                            "fontWeight": "600"
+                                    }
+                            ]
+                    }
+            },
+                },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background flex h-screen overflow-hidden font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar (Mobile Only) -->
+<header class="md:hidden sticky top-0 z-50 flex justify-between items-center px-lg py-sm w-full bg-surface/80 dark:bg-surface/80 backdrop-blur-xl border-b border-outline-variant">
+<div class="flex items-center gap-sm">
+<span class="font-page-title text-page-title text-on-surface tracking-tight">AI Monitor</span>
+</div>
+<div class="flex items-center gap-xs">
+<button class="p-xxs rounded-full hover:bg-surface-variant/50 transition-colors active:scale-95 transition-transform text-primary">
+<span class="material-symbols-outlined">sync</span>
+</button>
+<button class="p-xxs rounded-full hover:bg-surface-variant/50 transition-colors active:scale-95 transition-transform text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="bg-primary text-on-primary px-sm py-xxs rounded-lg font-body-semibold hover:opacity-90 active:scale-95 transition-all text-sm ml-xs">Upgrade</button>
+</div>
+</header>
+<!-- SideNavBar (Desktop Only) -->
+<nav class="hidden md:flex flex-col h-screen w-64 left-0 top-0 border-r border-outline-variant bg-surface-container-low dark:bg-surface-container-low p-md space-y-xs z-40 shrink-0">
+<div class="flex items-center gap-sm mb-xl px-xs">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container text-[20px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">neurology</span>
+</div>
+<div>
+<h1 class="font-section-header text-section-header text-on-surface">AI Usage</h1>
+<p class="font-caption text-caption text-on-surface-variant">v1.4.2</p>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-body-semibold py-sm px-md rounded-lg flex items-center justify-center gap-xs mb-lg hover:opacity-90 transition-opacity active:scale-[0.98]">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            New Request
+        </button>
+<div class="flex-1 space-y-xs overflow-y-auto">
+<a class="flex items-center gap-sm px-sm py-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span class="font-body text-body">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">neurology</span>
+<span class="font-body text-body">Models</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">history</span>
+<span class="font-body text-body">Usage History</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">vpn_key</span>
+<span class="font-body text-body">API Keys</span>
+</a>
+<!-- Active Tab Mapping based on 'Settings/Sync' intent -->
+<a class="flex items-center gap-sm px-sm py-xs rounded-lg bg-primary-container text-on-primary-container transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-body-semibold text-body-semibold">Settings</span>
+</a>
+</div>
+<div class="mt-auto space-y-xs pt-lg border-t border-outline-variant/30">
+<a class="flex items-center gap-sm px-sm py-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">help_outline</span>
+<span class="font-body text-body">Support</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+<span class="font-body text-body">Logs</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col relative overflow-hidden bg-background">
+<!-- Header area for desktop context if needed, otherwise rely on raw canvas -->
+<div class="hidden md:flex items-center justify-between px-xl py-lg border-b border-outline-variant/50">
+<div>
+<h2 class="font-page-title text-page-title text-on-surface">Sync to Mobile</h2>
+<p class="font-caption text-caption text-on-surface-variant mt-xxs">Access your usage stats on the go.</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-margin md:p-xl flex items-center justify-center">
+<!-- Glassmorphic Bento-style Card Container -->
+<div class="w-full max-w-[800px] grid grid-cols-1 md:grid-cols-12 gap-gutter relative">
+<!-- Background decoration for visual depth -->
+<div class="absolute -top-32 -right-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Left Column: Info & Features -->
+<div class="md:col-span-7 bg-surface-container-high border border-outline-variant rounded-xl p-lg flex flex-col shadow-lg relative z-10 backdrop-blur-md">
+<div class="flex items-center gap-sm mb-md">
+<div class="w-10 h-10 rounded-lg bg-surface flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-primary text-[24px]">smartphone</span>
+</div>
+<div>
+<h3 class="font-section-header text-section-header text-on-surface text-lg">AI Monitor for iOS</h3>
+<div class="flex items-center gap-xs mt-1">
+<span class="bg-primary-container/20 text-primary px-2 py-0.5 rounded-full font-key-mono text-key-mono text-[10px]">Free</span>
+<span class="font-caption text-caption text-on-surface-variant">Requires iOS 16.0+</span>
+</div>
+</div>
+</div>
+<p class="font-body text-body text-on-surface-variant mb-lg leading-relaxed">
+                        Take your telemetry data with you. The iOS app syncs securely over your local network or via end-to-end encrypted cloud sync to provide real-time alerts and usage tracking.
+                    </p>
+<h4 class="font-section-header text-section-header text-on-surface mb-sm">Key Features</h4>
+<ul class="space-y-sm mb-lg">
+<li class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-tertiary text-[18px] mt-0.5">bolt</span>
+<div>
+<span class="font-body-semibold text-body-semibold text-on-surface block">Real-time Push Alerts</span>
+<span class="font-caption text-caption text-on-surface-variant">Get notified instantly when API limits are approached.</span>
+</div>
+</li>
+<li class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-secondary text-[18px] mt-0.5">widgets</span>
+<div>
+<span class="font-body-semibold text-body-semibold text-on-surface block">Home Screen Widgets</span>
+<span class="font-caption text-caption text-on-surface-variant">Glanceable token burn rates directly on your iOS home screen.</span>
+</div>
+</li>
+<li class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">enhanced_encryption</span>
+<div>
+<span class="font-body-semibold text-body-semibold text-on-surface block">Local Network Sync</span>
+<span class="font-caption text-caption text-on-surface-variant">Data never leaves your network if configured for local mode.</span>
+</div>
+</li>
+</ul>
+<div class="mt-auto pt-md border-t border-outline-variant">
+<button class="w-full flex items-center justify-center gap-sm bg-surface text-on-surface font-body-semibold py-sm rounded-lg border border-outline-variant hover:bg-surface-variant transition-colors group">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">ios</span>
+                            Open in App Store
+                        </button>
+</div>
+</div>
+<!-- Right Column: QR Code -->
+<div class="md:col-span-5 bg-surface-container-high border border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center shadow-lg relative z-10 backdrop-blur-md">
+<div class="text-center mb-md">
+<h4 class="font-section-header text-section-header text-on-surface">Scan to Download</h4>
+<p class="font-caption text-caption text-on-surface-variant mt-xxs">Point your iPhone camera here</p>
+</div>
+<!-- Simulated QR Code Container -->
+<div class="bg-white p-sm rounded-lg shadow-inner mb-md relative group cursor-pointer transition-transform hover:scale-105 duration-300">
+<!-- Abstract representation of a QR code using grid and divs for demo purposes instead of an image -->
+<div class="grid grid-cols-6 grid-rows-6 gap-0.5 w-48 h-48 p-xs border-4 border-black rounded">
+<!-- Top Left Corner -->
+<div class="col-span-2 row-span-2 border-4 border-black rounded-sm flex items-center justify-center"><div class="w-3/5 h-3/5 bg-black rounded-sm"></div></div>
+<div class="bg-black rounded-sm"></div>
+<div class="col-start-4"></div>
+<div class="bg-black rounded-sm"></div>
+<div class="bg-black rounded-sm"></div>
+<!-- Top Right Corner -->
+<div class="col-start-5 col-span-2 row-span-2 border-4 border-black rounded-sm flex items-center justify-center"><div class="w-3/5 h-3/5 bg-black rounded-sm"></div></div>
+<div class="row-start-2 col-start-3 bg-black rounded-sm"></div>
+<div class="row-start-2 col-start-4 bg-black rounded-sm"></div>
+<!-- Middle bits -->
+<div class="row-start-3 col-start-1 bg-black rounded-sm"></div>
+<div class="row-start-3 col-start-2 bg-black rounded-sm"></div>
+<div class="row-start-3 col-start-4 bg-black rounded-sm"></div>
+<div class="row-start-3 col-start-5 bg-black rounded-sm"></div>
+<div class="row-start-4 col-start-2 bg-black rounded-sm"></div>
+<div class="row-start-4 col-start-3 bg-black rounded-sm"></div>
+<div class="row-start-4 col-start-6 bg-black rounded-sm"></div>
+<!-- Bottom Left Corner -->
+<div class="row-start-5 col-start-1 col-span-2 row-span-2 border-4 border-black rounded-sm flex items-center justify-center"><div class="w-3/5 h-3/5 bg-black rounded-sm"></div></div>
+<div class="row-start-5 col-start-4 bg-black rounded-sm"></div>
+<div class="row-start-5 col-start-5 bg-black rounded-sm"></div>
+<div class="row-start-6 col-start-3 bg-black rounded-sm"></div>
+<div class="row-start-6 col-start-5 bg-black rounded-sm"></div>
+<div class="row-start-6 col-start-6 bg-black rounded-sm"></div>
+</div>
+<!-- Hover overlay for 'Copy Link' interaction -->
+<div class="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+<span class="bg-surface text-on-surface font-body-semibold px-md py-xs rounded-full flex items-center gap-xs shadow-xl">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+                                Copy Link
+                            </span>
+</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-md px-sm py-xs flex items-center justify-between w-full">
+<span class="font-key-mono text-key-mono text-on-surface-variant truncate">ai-monitor.app/dl/ios</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="docked full-width bottom-0 border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center px-lg py-xxs w-full shrink-0">
+<span class="font-caption text-caption text-on-surface-variant">System Status: Operational</span>
+<div class="flex gap-sm">
+<a class="font-caption text-caption text-on-surface-variant hover:text-primary transition-colors underline-offset-2 hover:underline" href="#">Documentation</a>
+<a class="font-caption text-caption text-on-surface-variant hover:text-primary transition-colors underline-offset-2 hover:underline" href="#">Privacy Policy</a>
+</div>
+</footer>
+</main>
+</body></html>

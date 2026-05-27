@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Claude Tracker - Statusline Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#ffb595",
+                      "secondary-container": "#7508a5",
+                      "on-secondary-container": "#e19fff",
+                      "on-primary-fixed-variant": "#004493",
+                      "secondary-fixed-dim": "#e8b3ff",
+                      "error": "#ffb4ab",
+                      "background": "#10131b",
+                      "surface-variant": "#31353d",
+                      "surface-tint": "#adc6ff",
+                      "surface-bright": "#363942",
+                      "on-secondary-fixed-variant": "#7201a2",
+                      "on-tertiary-fixed": "#351000",
+                      "primary-container": "#4b8eff",
+                      "on-tertiary": "#571e00",
+                      "inverse-surface": "#e0e2ed",
+                      "secondary-fixed": "#f6d9ff",
+                      "surface-dim": "#10131b",
+                      "surface-container": "#1c2028",
+                      "primary-fixed": "#d8e2ff",
+                      "error-container": "#93000a",
+                      "inverse-primary": "#005bc1",
+                      "on-surface": "#e0e2ed",
+                      "on-primary": "#002e69",
+                      "on-error-container": "#ffdad6",
+                      "inverse-on-surface": "#2d3039",
+                      "on-tertiary-container": "#4c1a00",
+                      "primary-fixed-dim": "#adc6ff",
+                      "surface-container-high": "#272a32",
+                      "outline": "#8b90a0",
+                      "tertiary-fixed": "#ffdbcc",
+                      "tertiary-container": "#ef6719",
+                      "on-tertiary-fixed-variant": "#7c2e00",
+                      "on-primary-fixed": "#001a41",
+                      "surface-container-highest": "#31353d",
+                      "outline-variant": "#414755",
+                      "on-secondary-fixed": "#310048",
+                      "surface": "#10131b",
+                      "secondary": "#e8b3ff",
+                      "surface-container-lowest": "#0b0e16",
+                      "on-primary-container": "#00285c",
+                      "on-error": "#690005",
+                      "tertiary-fixed-dim": "#ffb595",
+                      "on-background": "#e0e2ed",
+                      "surface-container-low": "#181c23",
+                      "on-surface-variant": "#c1c6d7",
+                      "primary": "#adc6ff",
+                      "on-secondary": "#510074"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xxs": "4px",
+                      "xl": "32px",
+                      "margin": "16px",
+                      "md": "16px",
+                      "xs": "8px",
+                      "sm": "12px",
+                      "gutter": "12px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "section-header": [
+                              "Inter"
+                      ],
+                      "key-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "page-title": [
+                              "Inter"
+                      ],
+                      "caption": [
+                              "Inter"
+                      ],
+                      "body-semibold": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "section-header": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "key-mono": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "-0.005em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "page-title": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "letterSpacing": "-0.015em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "caption": [
+                              "11px",
+                              {
+                                      "lineHeight": "14px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-semibold": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        /* Custom toggle styles to keep HTML clean */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: theme('colors.primary-container');
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: theme('colors.primary-container');
+        }
+        .toggle-checkbox:checked + .toggle-label:after {
+            transform: translateX(100%);
+        }
+      </style>
+</head>
+<body class="bg-surface text-on-surface font-body overflow-hidden flex">
+<!-- SideNavBar (from JSON) -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant dark:border-outline-variant flex flex-col p-md z-20">
+<div class="flex items-center gap-sm mb-xl">
+<div class="w-8 h-8 rounded-DEFAULT bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<div>
+<h1 class="font-page-title text-page-title text-on-surface dark:text-on-surface">Claude Tracker</h1>
+<p class="font-caption text-caption text-on-surface-variant">Pro Account</p>
+</div>
+</div>
+<ul class="flex flex-col gap-xxs flex-1">
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+</li>
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">vpn_key</span>
+<span>Credentials</span>
+</a>
+</li>
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>History</span>
+</a>
+</li>
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">credit_card</span>
+<span>Billing</span>
+</a>
+</li>
+<!-- Active Tab: Settings -->
+<li>
+<a class="flex items-center gap-sm bg-secondary-container dark:bg-secondary-container text-on-secondary-container dark:text-on-secondary-container rounded-lg px-3 py-2 font-body-semibold text-body-semibold active:scale-[0.98] transition-all duration-150" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</li>
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center gap-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high px-3 py-2 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Help</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="ml-64 flex flex-col flex-1 h-screen relative">
+<!-- TopAppBar (from JSON) -->
+<header class="docked full-width top-0 sticky bg-surface dark:bg-surface border-b border-outline-variant dark:border-outline-variant flex justify-between items-center h-14 px-lg w-full z-10">
+<div class="flex items-center gap-sm">
+<span class="font-page-title text-page-title font-semibold text-on-surface dark:text-on-surface">Usage Monitor</span>
+<span class="text-on-surface-variant">/</span>
+<span class="font-body text-body text-on-surface-variant">Integrations</span>
+</div>
+<div class="flex items-center gap-md">
+<!-- Search bar on right as per JSON -->
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2 text-on-surface-variant text-[18px]">search</span>
+<input class="bg-surface-container-high border border-outline-variant rounded-DEFAULT py-1 pl-8 pr-3 text-body font-body focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container text-on-surface placeholder:text-on-surface-variant w-48 transition-all" placeholder="Search settings..." type="text"/>
+</div>
+<!-- Trailing icons -->
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors hover:opacity-80 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors hover:opacity-80 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto p-xl flex flex-col gap-lg pb-24">
+<!-- Header Section -->
+<div>
+<h2 class="font-page-title text-page-title text-on-surface mb-xxs">Statusline Integration</h2>
+<p class="font-body text-body text-on-surface-variant">Configure the live data points injected into your Zsh/Bash statusline prompt.</p>
+</div>
+<!-- Terminal Preview Card (Glassmorphism inspired) -->
+<section class="bg-surface-container rounded-lg border border-outline-variant overflow-hidden shadow-sm flex flex-col">
+<!-- Fake Window Header -->
+<div class="bg-surface-container-high border-b border-outline-variant px-md py-xs flex items-center gap-sm">
+<div class="flex gap-1.5">
+<div class="w-3 h-3 rounded-full bg-outline-variant"></div>
+<div class="w-3 h-3 rounded-full bg-outline-variant"></div>
+<div class="w-3 h-3 rounded-full bg-outline-variant"></div>
+</div>
+<span class="font-caption text-caption text-on-surface-variant mx-auto pr-8">Live Preview</span>
+</div>
+<!-- Terminal Content -->
+<div class="p-md font-key-mono text-key-mono bg-[#0b0e16] text-[#c1c6d7] flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="text-primary-container">~/dev/project</span>
+<span class="text-tertiary">git:(main)</span>
+<span class="text-secondary-container">✗</span>
+</div>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-[#8b90a0]">❯</span>
+<!-- Statusline Injection -->
+<div class="flex items-center gap-1.5 bg-[#1c2028] border border-[#31353d] rounded px-2 py-0.5 text-[#e0e2ed]">
+<span class="material-symbols-outlined text-[14px] text-surface-tint">memory</span>
+<span>Claude 3.5 Sonnet</span>
+<span class="text-[#414755]">|</span>
+<span class="material-symbols-outlined text-[14px] text-secondary">database</span>
+<span>45k/200k</span>
+<span class="text-[#414755]">|</span>
+<span class="material-symbols-outlined text-[14px] text-tertiary-fixed-dim">payments</span>
+<span>$0.12</span>
+</div>
+</div>
+<div class="mt-1 flex items-center gap-2 text-surface-bright">
+<span class="animate-pulse w-2 h-4 bg-primary-container inline-block"></span>
+</div>
+</div>
+</section>
+<!-- Toggles Section: Bento Grid -->
+<section>
+<h3 class="font-section-header text-section-header text-on-surface mb-sm">Visible Elements</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-sm">
+<!-- Toggle Card Component Factory -->
+<script>
+                        const toggles = [
+                            { id: 't-model', label: 'Active Model', icon: 'memory', checked: true, desc: 'Claude 3.5 Sonnet' },
+                            { id: 't-ctx', label: 'Context Usage', icon: 'database', checked: true, desc: 'Current vs Limit' },
+                            { id: 't-cost', label: 'Session Cost', icon: 'payments', checked: true, desc: 'Estimated total' },
+                            { id: 't-dir', label: 'Directory Context', icon: 'folder_open', checked: false, desc: 'Included paths' },
+                            { id: 't-branch', label: 'Git Context', icon: 'account_tree', checked: false, desc: 'Current branch' },
+                            { id: 't-time', label: 'Response Time', icon: 'timer', checked: true, desc: 'Last API call' },
+                            { id: 't-tokens', label: 'Token Count', icon: 'data_usage', checked: false, desc: 'Exact token stream' },
+                            { id: 't-status', label: 'Agent Status', icon: 'bolt', checked: true, desc: 'Idle, Working...' },
+                            { id: 't-errors', label: 'Error State', icon: 'error', checked: true, desc: 'API failures' },
+                            { id: 't-env', label: 'Environment', icon: 'terminal', checked: false, desc: 'Dev, Prod...' },
+                            { id: 't-sync', label: 'Sync Status', icon: 'sync', checked: false, desc: 'Local vs Remote' },
+                            { id: 't-mem', label: 'Memory Usage', icon: 'memory_alt', checked: false, desc: 'Agent memory' }
+                        ];
+
+                        toggles.forEach(t => {
+                            document.write(`
+                                <div class="bg-surface-container hover:bg-surface-container-high transition-colors border border-outline-variant rounded-lg p-md flex items-center justify-between group">
+                                    <div class="flex items-center gap-sm">
+                                        <div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">${t.icon}</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="font-body-semibold text-body-semibold text-on-surface">${t.label}</span>
+                                            <span class="font-caption text-caption text-on-surface-variant">${t.desc}</span>
+                                        </div>
+                                    </div>
+                                    <!-- Simple Toggle -->
+                                    <div class="relative inline-block w-10 h-5 align-middle select-none transition duration-200 ease-in">
+                                        <input type="checkbox" name="toggle" id="${t.id}" ${t.checked ? 'checked' : ''} class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-on-surface border-4 appearance-none cursor-pointer border-outline-variant z-10 transition-all duration-300"/>
+                                        <label for="${t.id}" class="toggle-label block overflow-hidden h-5 rounded-full bg-surface-container-highest cursor-pointer transition-all duration-300"></label>
+                                    </div>
+                                </div>
+                            `);
+                        });
+                    </script>
+</div>
+</section>
+<!-- Appearance Section -->
+<section class="flex flex-col gap-sm">
+<h3 class="font-section-header text-section-header text-on-surface">Appearance</h3>
+<div class="bg-surface-container border border-outline-variant rounded-lg p-md flex flex-col md:flex-row gap-lg md:items-center justify-between">
+<div class="flex flex-col gap-xs">
+<span class="font-body-semibold text-body-semibold text-on-surface">Color Scheme</span>
+<div class="flex bg-surface-container-highest p-1 rounded-DEFAULT w-max">
+<button class="px-3 py-1 font-caption text-caption text-on-surface bg-surface-container border border-outline-variant shadow-sm rounded-DEFAULT">Monochrome</button>
+<button class="px-3 py-1 font-caption text-caption text-on-surface-variant hover:text-on-surface">Multi-color</button>
+</div>
+</div>
+<div class="w-px h-12 bg-outline-variant hidden md:block"></div>
+<div class="flex flex-col gap-xs flex-1">
+<span class="font-body-semibold text-body-semibold text-on-surface flex items-center gap-2">
+                            Element Colors
+                            <span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-caption text-[10px]">Pro</span>
+</span>
+<div class="flex gap-sm">
+<div class="flex flex-col gap-1 items-center">
+<div class="w-6 h-6 rounded-full bg-primary-container border border-outline-variant cursor-pointer ring-2 ring-transparent hover:ring-outline transition-all"></div>
+<span class="font-caption text-[9px] text-on-surface-variant">Model</span>
+</div>
+<div class="flex flex-col gap-1 items-center">
+<div class="w-6 h-6 rounded-full bg-secondary border border-outline-variant cursor-pointer ring-2 ring-transparent hover:ring-outline transition-all"></div>
+<span class="font-caption text-[9px] text-on-surface-variant">Ctx</span>
+</div>
+<div class="flex flex-col gap-1 items-center">
+<div class="w-6 h-6 rounded-full bg-tertiary-fixed-dim border border-outline-variant cursor-pointer ring-2 ring-transparent hover:ring-outline transition-all"></div>
+<span class="font-caption text-[9px] text-on-surface-variant">Cost</span>
+</div>
+<div class="flex flex-col gap-1 items-center">
+<div class="w-6 h-6 rounded-full bg-error border border-outline-variant cursor-pointer ring-2 ring-transparent hover:ring-outline transition-all"></div>
+<span class="font-caption text-[9px] text-on-surface-variant">Error</span>
+</div>
+<button class="w-6 h-6 rounded-full bg-surface-container-highest border border-outline-variant border-dashed flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:border-outline transition-all">
+<span class="material-symbols-outlined text-[14px]">add</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Actions Section -->
+<section class="mt-auto border-t border-outline-variant pt-md flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-semibold text-body-semibold text-on-surface">Shell Scripts</span>
+<span class="font-caption text-caption text-on-surface-variant">Modifies ~/.zshrc or ~/.bashrc</span>
+</div>
+<div class="flex gap-sm">
+<button class="px-4 py-2 rounded-DEFAULT font-body-semibold text-body-semibold bg-surface-container border border-outline-variant text-on-surface hover:bg-surface-container-high transition-colors">
+                        Uninstall
+                    </button>
+<button class="px-4 py-2 rounded-DEFAULT font-body-semibold text-body-semibold bg-primary-container text-on-primary-container hover:opacity-90 transition-opacity flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+                        Install Scripts
+                    </button>
+</div>
+</section>
+</main>
+<!-- Footer (from JSON) -->
+<footer class="fixed bottom-0 right-0 left-64 h-8 bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline-variant flex justify-between items-center px-md w-[calc(100%-16rem)] z-10">
+<span class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant">Last updated: 2 mins ago • Version 1.0.4</span>
+<div class="flex gap-md">
+<a class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary transition-colors duration-200" href="#">System Status</a>
+<a class="font-caption text-caption text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary transition-colors duration-200" href="#">API Health</a>
+</div>
+</footer>
+</div>
+</body></html>

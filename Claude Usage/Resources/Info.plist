@@ -57,5 +57,18 @@
 	<!-- Enable gentle reminders for background apps -->
 	<key>SUEnableAutomaticUpdateReminders</key>
 	<true/>
+
+	<!-- OAuth Callback URL Scheme -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.claudeusage.oauth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>claude-usage-tracker</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

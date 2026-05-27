@@ -95,6 +95,14 @@ enum AIProvider: String, Codable, CaseIterable, Identifiable {
         !isFreeTier
     }
 
+    /// Whether this provider supports OAuth login (vs manual API key)
+    var supportsOAuth: Bool {
+        switch self {
+        case .gemini, .copilot: return true
+        case .claude, .codex, .kimi, .deepseek, .glm, .qwen, .minimax: return false
+        }
+    }
+
     /// Description for settings UI
     var description: String {
         switch self {

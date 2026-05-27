@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Claude.ai Credentials Setup Wizard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#ffb595",
+                        "secondary-container": "#7508a5",
+                        "on-secondary-container": "#e19fff",
+                        "on-primary-fixed-variant": "#004493",
+                        "secondary-fixed-dim": "#e8b3ff",
+                        "error": "#ffb4ab",
+                        "background": "#10131b",
+                        "surface-variant": "#31353d",
+                        "surface-tint": "#adc6ff",
+                        "surface-bright": "#363942",
+                        "on-secondary-fixed-variant": "#7201a2",
+                        "on-tertiary-fixed": "#351000",
+                        "primary-container": "#4b8eff",
+                        "on-tertiary": "#571e00",
+                        "inverse-surface": "#e0e2ed",
+                        "secondary-fixed": "#f6d9ff",
+                        "surface-dim": "#10131b",
+                        "surface-container": "#1c2028",
+                        "primary-fixed": "#d8e2ff",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#005bc1",
+                        "on-surface": "#e0e2ed",
+                        "on-primary": "#002e69",
+                        "on-error-container": "#ffdad6",
+                        "inverse-on-surface": "#2d3039",
+                        "on-tertiary-container": "#4c1a00",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-container-high": "#272a32",
+                        "outline": "#8b90a0",
+                        "tertiary-fixed": "#ffdbcc",
+                        "tertiary-container": "#ef6719",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "on-primary-fixed": "#001a41",
+                        "surface-container-highest": "#31353d",
+                        "outline-variant": "#414755",
+                        "on-secondary-fixed": "#310048",
+                        "surface": "#10131b",
+                        "secondary": "#e8b3ff",
+                        "surface-container-lowest": "#0b0e16",
+                        "on-primary-container": "#00285c",
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#ffb595",
+                        "on-background": "#e0e2ed",
+                        "surface-container-low": "#181c23",
+                        "on-surface-variant": "#c1c6d7",
+                        "primary": "#adc6ff",
+                        "on-secondary": "#510074"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xxs": "4px",
+                        "xl": "32px",
+                        "margin": "16px",
+                        "md": "16px",
+                        "xs": "8px",
+                        "sm": "12px",
+                        "gutter": "12px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "section-header": ["Inter"],
+                        "key-mono": ["JetBrains Mono"],
+                        "body": ["Inter"],
+                        "page-title": ["Inter"],
+                        "caption": ["Inter"],
+                        "body-semibold": ["Inter"]
+                    },
+                    "fontSize": {
+                        "section-header": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "key-mono": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+                        "page-title": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+                        "caption": ["11px", { "lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "body-semibold": ["13px", { "lineHeight": "18px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #1E1E1E; }
+        .glass-panel { background: rgba(45, 45, 45, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid #3D3D3D; }
+        .input-ring:focus { outline: none; box-shadow: 0 0 0 2px #4b8eff; border-color: transparent; }
+        .wizard-step { display: none; }
+        .wizard-step.active { display: block; animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="text-on-background font-body min-h-screen flex items-center justify-center p-md">
+<!-- Wizard Container -->
+<main class="glass-panel w-full max-w-lg rounded-xl overflow-hidden shadow-2xl relative">
+<!-- Wizard Header -->
+<header class="border-b border-[#3D3D3D] px-lg py-md flex items-center justify-between bg-surface-container-low">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">vpn_key</span>
+<h1 class="font-page-title text-page-title text-on-surface">Credentials Setup</h1>
+</div>
+<div class="flex gap-xxs items-center">
+<div class="w-2 h-2 rounded-full bg-primary" id="indicator-1"></div>
+<div class="w-4 h-[2px] bg-outline-variant"></div>
+<div class="w-2 h-2 rounded-full bg-outline-variant" id="indicator-2"></div>
+<div class="w-4 h-[2px] bg-outline-variant"></div>
+<div class="w-2 h-2 rounded-full bg-outline-variant" id="indicator-3"></div>
+</div>
+</header>
+<!-- Wizard Content -->
+<div class="p-lg">
+<!-- Step 1: Authentication -->
+<div class="wizard-step active" id="step-1">
+<h2 class="font-section-header text-section-header text-on-surface mb-sm">Step 1: Authentication</h2>
+<p class="font-body text-body text-on-surface-variant mb-lg">Connect your Claude.ai account to enable tracking and analytics features.</p>
+<div class="flex flex-col gap-md">
+<button class="w-full bg-primary-container text-on-primary-container hover:opacity-90 font-body-semibold py-sm px-md rounded-lg flex items-center justify-center gap-xs transition-opacity" onclick="nextStep(2)" type="button">
+<span class="material-symbols-outlined text-[18px]">login</span>
+                        Sign in to Claude.ai
+                    </button>
+<div class="relative flex py-sm items-center">
+<div class="flex-grow border-t border-outline-variant"></div>
+<span class="flex-shrink-0 mx-sm font-caption text-caption text-outline">OR MANUAL SETUP</span>
+<div class="flex-grow border-t border-outline-variant"></div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-body-semibold text-body-semibold text-on-surface" for="session-key">Session Key</label>
+<input class="bg-surface-container w-full border border-[#3D3D3D] rounded-lg px-md py-xs font-key-mono text-key-mono text-on-surface placeholder:text-outline input-ring transition-all" id="session-key" placeholder="sk-ant-..." type="password"/>
+<p class="font-caption text-caption text-on-surface-variant flex items-center gap-xxs mt-xxs">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                            Find this in your browser cookies under 'sessionKey'
+                        </p>
+</div>
+</div>
+<div class="mt-xl flex justify-end">
+<button class="bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-semibold py-xs px-md rounded-lg border border-[#3D3D3D] transition-colors" onclick="nextStep(2)" type="button">Next Step</button>
+</div>
+</div>
+<!-- Step 2: Organization -->
+<div class="wizard-step" id="step-2">
+<h2 class="font-section-header text-section-header text-on-surface mb-sm">Step 2: Select Organization</h2>
+<p class="font-body text-body text-on-surface-variant mb-lg">Choose which workspace to monitor usage for.</p>
+<div class="flex flex-col gap-sm">
+<label class="flex items-center gap-md p-md rounded-lg border border-primary bg-surface-container cursor-pointer transition-all hover:bg-surface-container-high">
+<input checked="" class="text-primary bg-surface-dim border-outline-variant focus:ring-primary h-4 w-4" name="org" type="radio"/>
+<div class="flex flex-col flex-1">
+<span class="font-body-semibold text-body-semibold text-on-surface">Personal Workspace</span>
+<span class="font-caption text-caption text-on-surface-variant">Default Account</span>
+</div>
+<div class="flex items-center gap-xxs">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="font-caption text-caption text-on-surface-variant">Active</span>
+</div>
+</label>
+<label class="flex items-center gap-md p-md rounded-lg border border-[#3D3D3D] bg-surface-container cursor-pointer transition-all hover:bg-surface-container-high opacity-70">
+<input class="text-primary bg-surface-dim border-outline-variant focus:ring-primary h-4 w-4" disabled="" name="org" type="radio"/>
+<div class="flex flex-col flex-1">
+<span class="font-body-semibold text-body-semibold text-on-surface">Acme Corp Team</span>
+<span class="font-caption text-caption text-on-surface-variant">Pro Plan</span>
+</div>
+<div class="flex items-center gap-xxs">
+<div class="w-2 h-2 rounded-full bg-red-500"></div>
+<span class="font-caption text-caption text-on-surface-variant">Access Denied</span>
+</div>
+</label>
+</div>
+<div class="mt-xl flex justify-between">
+<button class="text-on-surface-variant hover:text-on-surface font-body py-xs px-md rounded-lg transition-colors" onclick="prevStep(1)" type="button">Back</button>
+<button class="bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-semibold py-xs px-md rounded-lg border border-[#3D3D3D] transition-colors" onclick="nextStep(3)" type="button">Review</button>
+</div>
+</div>
+<!-- Step 3: Review -->
+<div class="wizard-step" id="step-3">
+<div class="flex items-center gap-sm mb-sm">
+<span class="material-symbols-outlined text-green-400 text-xl">check_circle</span>
+<h2 class="font-section-header text-section-header text-on-surface">Step 3: Review &amp; Save</h2>
+</div>
+<p class="font-body text-body text-on-surface-variant mb-lg">Verify your settings before finalizing the connection.</p>
+<div class="bg-surface-container rounded-lg border border-[#3D3D3D] p-md mb-lg">
+<div class="grid grid-cols-2 gap-y-sm">
+<div class="font-caption text-caption text-outline">Connection Type</div>
+<div class="font-body-semibold text-body-semibold text-on-surface text-right">Manual Session Key</div>
+<div class="font-caption text-caption text-outline">Workspace</div>
+<div class="font-body-semibold text-body-semibold text-on-surface text-right">Personal Workspace</div>
+<div class="font-caption text-caption text-outline">Status</div>
+<div class="font-body-semibold text-body-semibold text-green-400 text-right flex justify-end items-center gap-xxs">
+<div class="w-2 h-2 rounded-full bg-green-400"></div>
+                            Ready
+                        </div>
+</div>
+</div>
+<div class="mt-xl flex justify-between">
+<button class="text-on-surface-variant hover:text-on-surface font-body py-xs px-md rounded-lg transition-colors" onclick="prevStep(2)" type="button">Back</button>
+<button class="bg-primary-container text-on-primary-container hover:opacity-90 font-body-semibold py-xs px-md rounded-lg flex items-center gap-xs transition-opacity" onclick="finishSetup()" type="button">
+<span class="material-symbols-outlined text-[16px]">save</span>
+                        Save Credentials
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<script>
+        function updateIndicators(step) {
+            for(let i=1; i<=3; i++) {
+                const ind = document.getElementById(`indicator-${i}`);
+                if(i < step) {
+                    ind.className = 'w-2 h-2 rounded-full bg-primary';
+                } else if(i === step) {
+                    ind.className = 'w-2 h-2 rounded-full bg-primary ring-2 ring-primary/30';
+                } else {
+                    ind.className = 'w-2 h-2 rounded-full bg-outline-variant';
+                }
+            }
+        }
+
+        function nextStep(step) {
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            updateIndicators(step);
+        }
+
+        function prevStep(step) {
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            updateIndicators(step);
+        }
+
+        function finishSetup() {
+            const btn = document.querySelector('#step-3 button.bg-primary-container');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Saving...`;
+            setTimeout(() => {
+                btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">check</span> Saved`;
+                btn.classList.remove('bg-primary-container', 'text-on-primary-container');
+                btn.classList.add('bg-green-600', 'text-white');
+            }, 1000);
+        }
+        
+        // Init indicators
+        updateIndicators(1);
+    </script>
+</body></html>
