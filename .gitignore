@@ -139,6 +139,10 @@ pkg/
 release/
 *.zip
 
+.netlify/
+.sparkle/
+releases/
+
 .idea
 /APPEARANCE_SETTINGS_FIX.md
 /CLEAN_DATA_ARCHITECTURE_IMPLEMENTATION.md

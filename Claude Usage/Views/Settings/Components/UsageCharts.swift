@@ -89,7 +89,7 @@ struct SessionUsageChart: View {
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.1))
+                    .background(AppTheme.Colors.borderSubtle)
                     .cornerRadius(4)
                 }
             }
@@ -120,7 +120,7 @@ struct SessionUsageChart: View {
             .chartYAxis {
                 AxisMarks(position: .leading, values: [0, 50, 100]) { value in
                     AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
-                        .foregroundStyle(Color.secondary.opacity(0.3))
+                        .foregroundStyle(AppTheme.Colors.textMuted.opacity(0.3))
                     AxisValueLabel {
                         if let intValue = value.as(Int.self) {
                             Text("\(intValue)%")
@@ -212,7 +212,7 @@ struct WeeklyUsageChart: View {
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.1))
+                    .background(AppTheme.Colors.borderSubtle)
                     .cornerRadius(4)
                 }
             }
@@ -244,7 +244,7 @@ struct WeeklyUsageChart: View {
             .chartYAxis {
                 AxisMarks(position: .leading, values: [0, 50, 100]) { value in
                     AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
-                        .foregroundStyle(Color.secondary.opacity(0.3))
+                        .foregroundStyle(AppTheme.Colors.textMuted.opacity(0.3))
                     AxisValueLabel {
                         if let intValue = value.as(Int.self) {
                             Text("\(intValue)%")
@@ -358,7 +358,7 @@ struct BillingCycleChart: View {
                 .chartYAxis {
                     AxisMarks { value in
                         AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
-                            .foregroundStyle(Color.secondary.opacity(0.3))
+                            .foregroundStyle(AppTheme.Colors.textMuted.opacity(0.3))
                         AxisValueLabel {
                             if let doubleValue = value.as(Double.self) {
                                 Text("$\(Int(doubleValue))")

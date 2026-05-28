@@ -2,82 +2,34 @@
 //  SettingsColors.swift
 //  Claude Usage - Settings Design System
 //
-//  Created by Claude Code on 2025-12-20.
+//  DEPRECATED: Aliased into AppTheme. Use `AppTheme.Colors.*` for new code.
 //
 
 import SwiftUI
 
-/// Semantic color palette for Settings UI
-/// Provides consistent colors across all settings views
 enum SettingsColors {
-    // MARK: - Status Colors
+    static let success = AppTheme.Colors.success
+    static let error   = AppTheme.Colors.error
+    static let warning = AppTheme.Colors.warning
+    static let info    = AppTheme.Colors.info
+    static let caution = AppTheme.Colors.caution
 
-    /// Success state (green)
-    static let success = Color.adaptiveGreen
+    static let primary   = AppTheme.Colors.accent
+    static let secondary = AppTheme.Colors.textSecondary
 
-    /// Error state (red)
-    static let error = Color.red
+    static let cardBackground = AppTheme.Colors.card
+    static let inputBackground = AppTheme.Colors.card
+    static let border = AppTheme.Colors.borderSubtle
 
-    /// Warning state (orange)
-    static let warning = Color.orange
+    static let featureIcon = AppTheme.Colors.accent
+    static let betaBadge   = AppTheme.Colors.betaBadge
+    static let proBadge    = AppTheme.Colors.proBadge
 
-    /// Informational state (blue)
-    static let info = Color.blue
+    static let usageLow      = AppTheme.Colors.usageLow
+    static let usageMedium   = AppTheme.Colors.usageMedium
+    static let usageHigh     = AppTheme.Colors.usageHigh
+    static let usageCritical = AppTheme.Colors.usageCritical
 
-    /// Caution state (yellow)
-    static let caution = Color.yellow
-
-    // MARK: - Semantic UI Colors
-
-    /// Primary action color (system accent)
-    static let primary = Color.accentColor
-
-    /// Secondary elements
-    static let secondary = Color.secondary
-
-    /// Card background — translucent to work with vibrancy
-    static let cardBackground = Color.primary.opacity(0.04)
-
-    /// Input field background — translucent to work with vibrancy
-    static let inputBackground = Color.primary.opacity(0.06)
-
-    /// Border color for inputs and cards — subtle for vibrancy
-    static let border = Color.primary.opacity(0.08)
-
-    // MARK: - Feature-Specific Colors
-
-    /// Icon color for feature highlights
-    static let featureIcon = Color.blue
-
-    /// Beta badge color
-    static let betaBadge = Color.orange
-
-    /// Pro feature badge
-    static let proBadge = Color.purple
-
-    // MARK: - Threshold Colors (for usage indicators)
-
-    /// Low usage (0-50%)
-    static let usageLow = Color.adaptiveGreen
-
-    /// Medium usage (50-75%)
-    static let usageMedium = Color.yellow
-
-    /// High usage (75-90%)
-    static let usageHigh = Color.orange
-
-    /// Critical usage (90%+)
-    static let usageCritical = Color.red
-
-    // MARK: - Opacity Variants
-
-    /// Light background overlay (for cards on cards)
-    static func lightOverlay(_ color: Color, opacity: Double = 0.1) -> Color {
-        return color.opacity(opacity)
-    }
-
-    /// Border with opacity
-    static func borderColor(_ color: Color, opacity: Double = 0.3) -> Color {
-        return color.opacity(opacity)
-    }
+    static func lightOverlay(_ color: Color, opacity: Double = 0.1) -> Color { color.opacity(opacity) }
+    static func borderColor(_ color: Color, opacity: Double = 0.3) -> Color { color.opacity(opacity) }
 }

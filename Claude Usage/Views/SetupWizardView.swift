@@ -386,7 +386,7 @@ struct EnterKeyStepSetup: View {
                                 .padding(16)
                                 .background(
                                     RoundedRectangle(cornerRadius: 8)
-                                        .fill(Color(nsColor: .controlBackgroundColor))
+                                        .fill(AppTheme.Colors.elevated)
                                 )
                             }
 
@@ -403,7 +403,7 @@ struct EnterKeyStepSetup: View {
                                     .padding(10)
                                     .background(
                                         RoundedRectangle(cornerRadius: 6)
-                                            .fill(Color(nsColor: .textBackgroundColor))
+                                            .fill(AppTheme.Colors.inputBackground)
                                             .overlay(
                                                 RoundedRectangle(cornerRadius: 6)
                                                     .strokeBorder(Color.gray.opacity(0.2), lineWidth: 1)
@@ -452,7 +452,7 @@ struct EnterKeyStepSetup: View {
             // Footer
             HStack {
                 Button("common.cancel".localized) {
-                    // Dismiss handled by parent
+                    dismiss()
                 }
                 .buttonStyle(.bordered)
 

@@ -36,6 +36,7 @@ struct PersonalUsageView: View {
     @StateObject private var profileManager = ProfileManager.shared
     @State private var wizardState = WizardState()
     @State private var currentCredentials: ProfileCredentials?
+    @State private var showRemoveConfirmation = false
     private let apiService = ClaudeAPIService()
 
     var body: some View {
@@ -47,47 +48,15 @@ struct PersonalUsageView: View {
                     subtitle: "personal.subtitle".localized
                 )
 
-                // Professional Status Card
-                HStack(spacing: DesignTokens.Spacing.medium) {
-                    Circle()
-                        .fill(currentCredentials?.hasClaudeAI == true ? Color.green : Color.secondary.opacity(0.4))
-                        .frame(width: DesignTokens.StatusDot.standard, height: DesignTokens.StatusDot.standard)
-
-                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.extraSmall) {
-                        Text(currentCredentials?.hasClaudeAI == true ? "general.connected".localized : "general.not_connected".localized)
-                            .font(DesignTokens.Typography.bodyMedium)
-
-                        if let creds = currentCredentials, creds.hasClaudeAI {
-                            Text(maskKey(creds.claudeSessionKey ?? ""))
-                                .font(DesignTokens.Typography.captionMono)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-
-                    Spacer()
-
-                    // Remove button integrated into status card
-                    if currentCredentials?.hasClaudeAI == true {
-                        Button(action: removeCredentials) {
-                            HStack(spacing: DesignTokens.Spacing.extraSmall) {
-                                Image(systemName: "trash")
-                                    .font(.system(size: DesignTokens.Icons.small))
-                                Text("common.remove".localized)
-                                    .font(DesignTokens.Typography.body)
-                            }
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.regular)
-                        .foregroundColor(.red)
-                    }
+                SettingsContentCard {
+                    CredentialStatusContent(
+                        title: currentCredentials?.hasClaudeAI == true ? "Claude.ai connected" : "Claude.ai not connected",
+                        message: currentCredentials?.hasClaudeAI == true ? "Personal usage tracking is active for this profile." : "Connect Claude.ai to show session and weekly usage in the menu bar.",
+                        detail: currentCredentials?.hasClaudeAI == true ? maskKey(currentCredentials?.claudeSessionKey ?? "") : nil,
+                        isConnected: currentCredentials?.hasClaudeAI == true,
+                        removeAction: currentCredentials?.hasClaudeAI == true ? { showRemoveConfirmation = true } : nil
+                    )
                 }
-                .padding(DesignTokens.Spacing.medium)
-                .background(DesignTokens.Colors.cardBackground)
-                .cornerRadius(DesignTokens.Radius.card)
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                        .strokeBorder(DesignTokens.Colors.cardBorder, lineWidth: 1)
-                )
 
                 // Configuration Card Container
                 VStack(alignment: .leading, spacing: 0) {
@@ -106,7 +75,7 @@ struct PersonalUsageView: View {
                                 HStack(spacing: DesignTokens.Spacing.extraSmall) {
                                     ZStack {
                                         Circle()
-                                            .fill(isCompleted ? Color.green : (isCurrent ? Color.accentColor : Color.secondary.opacity(0.2)))
+                                            .fill(isCompleted ? Color.green : (isCurrent ? Color.accentColor : AppTheme.Colors.borderActive))
                                             .frame(width: 20, height: 20)
 
                                         if isCompleted {
@@ -130,7 +99,7 @@ struct PersonalUsageView: View {
 
                                 if step < 3 {
                                     Rectangle()
-                                        .fill(isCompleted ? Color.green.opacity(0.3) : Color.secondary.opacity(0.2))
+                                        .fill(isCompleted ? Color.green.opacity(0.3) : AppTheme.Colors.borderActive)
                                         .frame(height: 1)
                                 }
                             }
@@ -181,6 +150,14 @@ struct PersonalUsageView: View {
 
             // Reset wizard state
             wizardState = WizardState()
+        }
+        .alert("Remove Claude.ai credentials?", isPresented: $showRemoveConfirmation) {
+            Button("common.cancel".localized, role: .cancel) { }
+            Button("common.remove".localized, role: .destructive) {
+                removeCredentials()
+            }
+        } message: {
+            Text("This stops personal Claude usage tracking for the active profile. You can reconnect later.")
         }
     }
 
@@ -293,13 +270,13 @@ struct EnterKeyStep: View {
             // OR divider
             HStack {
                 Rectangle()
-                    .fill(Color.secondary.opacity(0.3))
+                    .fill(AppTheme.Colors.textMuted.opacity(0.3))
                     .frame(height: 1)
                 Text("OR")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(.secondary)
                 Rectangle()
-                    .fill(Color.secondary.opacity(0.3))
+                    .fill(AppTheme.Colors.textMuted.opacity(0.3))
                     .frame(height: 1)
             }
             .padding(.vertical, 4)
@@ -482,7 +459,7 @@ struct SelectOrgStep: View {
                                     .strokeBorder(
                                         wizardState.selectedOrgId == org.uuid
                                             ? Color.accentColor
-                                            : Color.secondary.opacity(0.3),
+                                            : AppTheme.Colors.textMuted.opacity(0.3),
                                         lineWidth: 1.5
                                     )
                                     .frame(width: 16, height: 16)
@@ -516,7 +493,7 @@ struct SelectOrgStep: View {
                         .background(
                             wizardState.selectedOrgId == org.uuid
                                 ? Color.accentColor.opacity(0.06)
-                                : Color.primary.opacity(0.04)
+                                : AppTheme.Colors.card
                         )
                         .cornerRadius(6)
                         .overlay(
@@ -524,7 +501,7 @@ struct SelectOrgStep: View {
                                 .strokeBorder(
                                     wizardState.selectedOrgId == org.uuid
                                         ? Color.accentColor.opacity(0.3)
-                                        : Color.primary.opacity(0.08),
+                                        : AppTheme.Colors.elevated,
                                     lineWidth: 1
                                 )
                         )

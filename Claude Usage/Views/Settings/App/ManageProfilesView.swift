@@ -22,33 +22,34 @@ struct ManageProfilesView: View {
                     subtitle: "profiles.subtitle".localized
                 )
 
-                // Profile List
+                ProductInsightCard(
+                    icon: "person.2.wave.2.fill",
+                    title: "Profiles are for separating work context",
+                    message: "Use profiles for separate Claude accounts, client projects, API keys, or workflows so limits and costs stay understandable.",
+                    color: AppTheme.Colors.info
+                )
+
+                profileCapacityCard
+
                 SettingsContentCard {
-                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                         ForEach(profileManager.profiles) { profile in
                             ProfileRow(profile: profile)
-                                .padding(.vertical, DesignTokens.Spacing.extraSmall)
-
-                            if profile.id != profileManager.profiles.last?.id {
-                                Divider()
-                            }
                         }
                     }
                 }
 
-                // Create New Profile Button (gated for free tier)
                 if profileManager.canCreateProfile {
-                    SettingsButton(
+                    SettingsButton.primary(
                         title: "profiles.create_new".localized,
                         icon: "plus.circle.fill"
                     ) {
                         showingCreateProfile = true
                     }
                 } else {
-                    // Upsell prompt for free tier users at limit
                     ProUpsellCard(
                         title: "Upgrade to Pro for Unlimited Profiles",
-                        message: "You've reached the free tier limit of 2 profiles. Pro users can track unlimited Claude accounts and API keys.",
+                        message: "You've reached the free limit of 2 profiles. Pro removes profile limits so every account, client, and API key can be tracked separately.",
                         actionTitle: "Upgrade for $4.99/mo"
                     ) {
                         if let url = LicenseManager.shared.proCheckoutURL {
@@ -350,6 +351,40 @@ struct ManageProfilesView: View {
         }
     }
 
+    private var profileCapacityCard: some View {
+        SettingsContentCard {
+            HStack(spacing: AppTheme.Spacing.md) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+                    Text("Profile capacity")
+                        .font(AppTheme.Typography.tinySemibold)
+                        .foregroundColor(AppTheme.Colors.textMuted)
+                        .textCase(.uppercase)
+
+                    Text("\(profileManager.profiles.count) profiles active")
+                        .font(AppTheme.Typography.sectionTitle)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+
+                    Text(profileManager.canCreateProfile ? "Add another profile when a new account or project needs separate tracking." : "Free tier profile capacity is full. Existing profiles remain usable.")
+                        .font(AppTheme.Typography.small)
+                        .foregroundColor(AppTheme.Colors.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer()
+
+                Text(profileManager.canCreateProfile ? "Ready" : "Limit")
+                    .font(AppTheme.Typography.badge)
+                    .foregroundColor(profileManager.canCreateProfile ? AppTheme.Colors.success : AppTheme.Colors.warning)
+                    .padding(.horizontal, AppTheme.Spacing.sm)
+                    .padding(.vertical, 4)
+                    .background(
+                        Capsule()
+                            .fill((profileManager.canCreateProfile ? AppTheme.Colors.success : AppTheme.Colors.warning).opacity(0.14))
+                    )
+            }
+        }
+    }
+
     private func createNewProfile() {
         let name = newProfileName.isEmpty ? nil : newProfileName
         let profile = profileManager.createProfile(name: name)
@@ -371,13 +406,18 @@ struct ProfileRow: View {
     @State private var showingDeleteConfirmation = false
 
     var body: some View {
-        HStack(spacing: 12) {
-            // Profile Icon
-            Image(systemName: profile.hasCliAccount ? "person.crop.circle.fill.badge.checkmark" : "person.crop.circle.fill")
-                .font(.system(size: 24))
-                .foregroundColor(profileManager.activeProfile?.id == profile.id ? .accentColor : .secondary)
+        HStack(spacing: AppTheme.Spacing.md) {
+            ZStack {
+                Circle()
+                    .fill(isActive ? AppTheme.Colors.accentMuted : AppTheme.Colors.elevated.opacity(0.75))
+                    .frame(width: 42, height: 42)
 
-            VStack(alignment: .leading, spacing: 4) {
+                Image(systemName: profile.hasCliAccount ? "person.crop.circle.fill.badge.checkmark" : "person.crop.circle.fill")
+                    .font(AppTheme.Typography.cardTitle)
+                    .foregroundColor(isActive ? AppTheme.Colors.accentHover : AppTheme.Colors.textMuted)
+            }
+
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 if isEditing {
                     TextField("Profile Name", text: $editedName, onCommit: {
                         saveProfileName()
@@ -386,23 +426,24 @@ struct ProfileRow: View {
                 } else {
                     HStack(spacing: 8) {
                         Text(profile.name)
-                            .font(.system(size: 14, weight: .medium))
+                            .font(AppTheme.Typography.label)
+                            .foregroundColor(AppTheme.Colors.textPrimary)
 
-                        if profileManager.activeProfile?.id == profile.id {
+                        if isActive {
                             Text("profiles.active_badge".localized)
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundColor(.white)
+                                .font(AppTheme.Typography.badge)
+                                .foregroundColor(AppTheme.Colors.textPrimary)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
-                                .background(Color.accentColor)
-                                .cornerRadius(4)
+                                .background(AppTheme.Colors.accentMuted)
+                                .clipShape(Capsule())
                         }
                     }
                 }
 
                 Text(profileInfo)
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
+                    .font(AppTheme.Typography.tiny)
+                    .foregroundColor(AppTheme.Colors.textSecondary)
             }
 
             Spacer()
@@ -416,7 +457,8 @@ struct ProfileRow: View {
                         isEditing = true
                     }) {
                         Image(systemName: "pencil")
-                            .font(.system(size: 12))
+                            .font(AppTheme.Typography.smallMedium)
+                            .foregroundColor(AppTheme.Colors.textMuted)
                     }
                     .buttonStyle(.plain)
                     .help("profiles.rename".localized)
@@ -429,7 +471,8 @@ struct ProfileRow: View {
                             }
                         }) {
                             Image(systemName: "checkmark.circle")
-                                .font(.system(size: 12))
+                                .font(AppTheme.Typography.smallMedium)
+                                .foregroundColor(AppTheme.Colors.success)
                         }
                         .buttonStyle(.plain)
                         .help("profiles.activate".localized)
@@ -441,8 +484,8 @@ struct ProfileRow: View {
                             showingDeleteConfirmation = true
                         }) {
                             Image(systemName: "trash")
-                                .font(.system(size: 12))
-                                .foregroundColor(.red)
+                                .font(AppTheme.Typography.smallMedium)
+                                .foregroundColor(AppTheme.Colors.error)
                         }
                         .buttonStyle(.plain)
                         .help("profiles.delete".localized)
@@ -453,8 +496,8 @@ struct ProfileRow: View {
                         saveProfileName()
                     }) {
                         Image(systemName: "checkmark")
-                            .font(.system(size: 12))
-                            .foregroundColor(.green)
+                            .font(AppTheme.Typography.smallMedium)
+                            .foregroundColor(AppTheme.Colors.success)
                     }
                     .buttonStyle(.plain)
 
@@ -463,13 +506,22 @@ struct ProfileRow: View {
                         isEditing = false
                     }) {
                         Image(systemName: "xmark")
-                            .font(.system(size: 12))
-                            .foregroundColor(.red)
+                            .font(AppTheme.Typography.smallMedium)
+                            .foregroundColor(AppTheme.Colors.error)
                     }
                     .buttonStyle(.plain)
                 }
             }
         }
+        .padding(AppTheme.Spacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(isActive ? AppTheme.Colors.accentMuted.opacity(0.6) : AppTheme.Colors.backgroundDeep.opacity(0.45))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .strokeBorder(isActive ? AppTheme.Colors.accent.opacity(0.35) : AppTheme.Colors.borderSubtle.opacity(0.75), lineWidth: 0.5)
+        )
         .alert("profiles.delete_title".localized, isPresented: $showingDeleteConfirmation) {
             Button("common.cancel".localized, role: .cancel) {}
             Button("common.delete".localized, role: .destructive) {
@@ -478,6 +530,10 @@ struct ProfileRow: View {
         } message: {
             Text(String(format: "profiles.delete_confirm".localized, profile.name))
         }
+    }
+
+    private var isActive: Bool {
+        profileManager.activeProfile?.id == profile.id
     }
 
     private var profileInfo: String {

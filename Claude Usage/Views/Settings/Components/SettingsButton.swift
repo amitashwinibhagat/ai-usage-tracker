@@ -25,26 +25,26 @@ struct SettingsButton: View {
 
         var backgroundColor: Color {
             switch self {
-            case .primary: return SettingsColors.primary
-            case .secondary: return SettingsColors.cardBackground
-            case .destructive: return SettingsColors.error
+            case .primary: return AppTheme.Colors.accent
+            case .secondary: return AppTheme.Colors.cardElevated
+            case .destructive: return AppTheme.Colors.error
             case .subtle: return Color.clear
             }
         }
 
         var foregroundColor: Color {
             switch self {
-            case .primary: return .white
-            case .secondary: return .primary
-            case .destructive: return .white
-            case .subtle: return .primary
+            case .primary: return AppTheme.Colors.textPrimary
+            case .secondary: return AppTheme.Colors.textPrimary
+            case .destructive: return AppTheme.Colors.textPrimary
+            case .subtle: return AppTheme.Colors.textSecondary
             }
         }
 
         var borderColor: Color {
             switch self {
             case .primary: return .clear
-            case .secondary: return SettingsColors.border
+            case .secondary: return AppTheme.Colors.borderSubtle
             case .destructive: return .clear
             case .subtle: return .clear
             }
@@ -55,13 +55,13 @@ struct SettingsButton: View {
 
             switch self {
             case .primary:
-                return SettingsColors.primary.opacity(0.85)
+                return AppTheme.Colors.accentHover
             case .secondary:
-                return Color.primary.opacity(0.08)
+                return AppTheme.Colors.elevated
             case .destructive:
-                return SettingsColors.error.opacity(0.85)
+                return AppTheme.Colors.error.opacity(0.85)
             case .subtle:
-                return Color.gray.opacity(0.1)
+                return AppTheme.Colors.cardElevated
             }
         }
     }
@@ -83,21 +83,21 @@ struct SettingsButton: View {
             HStack(spacing: Spacing.iconTextSpacing) {
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.system(size: 12))
+                        .font(AppTheme.Typography.smallSemibold)
                 }
 
                 Text(title)
-                    .font(Typography.body)
+                    .font(AppTheme.Typography.smallSemibold)
             }
-            .padding(.horizontal, Spacing.md)
-            .padding(.vertical, Spacing.sm)
+            .padding(.horizontal, AppTheme.Spacing.md)
+            .padding(.vertical, AppTheme.Spacing.sm)
             .frame(maxWidth: style == .primary ? .infinity : nil)
             .background(
-                RoundedRectangle(cornerRadius: Spacing.radiusMedium)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.small)
                     .fill(style.hoverBackgroundColor(isHovered: isHovered))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: Spacing.radiusMedium)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.small)
                     .strokeBorder(style.borderColor, lineWidth: 0.5)
             )
             .foregroundColor(style.foregroundColor)

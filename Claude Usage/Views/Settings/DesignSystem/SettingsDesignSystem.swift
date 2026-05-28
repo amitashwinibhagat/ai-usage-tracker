@@ -2,61 +2,33 @@
 //  SettingsDesignSystem.swift
 //  Claude Usage - Settings Design System
 //
-//  Created by Claude Code on 2025-12-20.
+//  DEPRECATED: Card modifier delegates to AppTheme. Use `.appThemeCard()` for new code.
 //
 
 import SwiftUI
 
-/// Centralized design system for Settings UI
-/// Provides access to all design tokens and styles
 enum SettingsDesignSystem {
-    // Design system components are available as:
-    // - Typography (direct import)
-    // - SettingsColors
-    // - Spacing (direct import)
-
-    // MARK: - Common Styles
-
-    /// Standard card style with shadow and border
-    static func cardStyle() -> some ShapeStyle {
-        return Color.primary.opacity(0.04)
-    }
-
-    /// Standard card shape
-    static func cardShape() -> some Shape {
-        return RoundedRectangle(cornerRadius: Spacing.radiusLarge)
-    }
-
-    /// Input field style
-    static func inputFieldStyle() -> some ShapeStyle {
-        return Color(nsColor: .textBackgroundColor)
-    }
-
-    /// Input field shape
-    static func inputFieldShape() -> some Shape {
-        return RoundedRectangle(cornerRadius: Spacing.radiusMedium)
-    }
+    static func cardStyle() -> some ShapeStyle { AppTheme.Colors.card }
+    static func cardShape() -> some Shape { RoundedRectangle(cornerRadius: AppTheme.Radius.standard) }
+    static func inputFieldStyle() -> some ShapeStyle { AppTheme.Colors.inputBackground }
+    static func inputFieldShape() -> some Shape { RoundedRectangle(cornerRadius: AppTheme.Radius.small) }
 }
 
-/// View modifier for standard card appearance
 struct CardModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .padding(Spacing.cardPadding)
+            .padding(AppTheme.Spacing.cardPadding)
             .background(
-                RoundedRectangle(cornerRadius: Spacing.radiusLarge)
-                    .fill(SettingsColors.cardBackground)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                    .fill(AppTheme.Colors.card)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: Spacing.radiusLarge)
-                    .strokeBorder(SettingsColors.border, lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                    .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
             )
     }
 }
 
 extension View {
-    /// Apply standard card styling
-    func settingsCard() -> some View {
-        self.modifier(CardModifier())
-    }
+    func settingsCard() -> some View { self.modifier(CardModifier()) }
 }

@@ -12,6 +12,7 @@ struct CLIAccountView: View {
     @State private var isSyncing = false
     @State private var syncError: String?
     @State private var cliAccountInfo: CLIAccountInfo?
+    @State private var showRemoveConfirmation = false
 
     var body: some View {
         ScrollView {
@@ -23,32 +24,15 @@ struct CLIAccountView: View {
                 )
 
                 if let profile = profileManager.activeProfile {
-                    // Professional Status Card
-                    HStack(spacing: DesignTokens.Spacing.medium) {
-                        Circle()
-                            .fill(profile.hasCliAccount ? Color.green : Color.secondary.opacity(0.4))
-                            .frame(width: DesignTokens.StatusDot.standard, height: DesignTokens.StatusDot.standard)
-
-                        VStack(alignment: .leading, spacing: DesignTokens.Spacing.extraSmall) {
-                            Text(profile.hasCliAccount ? "cli.synced".localized : "cli.not_synced".localized)
-                                .font(DesignTokens.Typography.bodyMedium)
-
-                            if profile.hasCliAccount, let syncedAt = profile.cliAccountSyncedAt {
-                                Text(syncedAt, style: .relative)
-                                    .font(DesignTokens.Typography.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-
-                        Spacer()
+                    SettingsContentCard {
+                        CredentialStatusContent(
+                            title: profile.hasCliAccount ? "Claude Code synced" : "Claude Code not synced",
+                            message: profile.hasCliAccount ? "This profile can use its synced Claude Code credential copy for tracking and statusline integrations." : "Import Claude Code credentials into this local profile to avoid manual session-key setup.",
+                            detail: profile.cliAccountSyncedAt.map { "Last synced \($0.formatted(date: .abbreviated, time: .shortened))" },
+                            isConnected: profile.hasCliAccount,
+                            removeAction: profile.hasCliAccount ? { showRemoveConfirmation = true } : nil
+                        )
                     }
-                    .padding(DesignTokens.Spacing.medium)
-                    .background(DesignTokens.Colors.cardBackground)
-                    .cornerRadius(DesignTokens.Radius.card)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                            .strokeBorder(DesignTokens.Colors.cardBorder, lineWidth: 1)
-                    )
 
                     // Credentials & Actions Card
                     SettingsSectionCard(
@@ -171,7 +155,7 @@ struct CLIAccountView: View {
                                 .disabled(isSyncing)
 
                                 if profile.hasCliAccount {
-                                    Button(action: removeSync) {
+                                    Button(action: { showRemoveConfirmation = true }) {
                                         HStack(spacing: DesignTokens.Spacing.extraSmall) {
                                             Image(systemName: "trash")
                                                 .font(.system(size: DesignTokens.Icons.small))
@@ -229,6 +213,14 @@ struct CLIAccountView: View {
             // Reload when profile changes
             loadCLIAccountInfo()
             syncError = nil
+        }
+        .alert("Remove Claude Code sync?", isPresented: $showRemoveConfirmation) {
+            Button("common.cancel".localized, role: .cancel) { }
+            Button("common.remove".localized, role: .destructive) {
+                removeSync()
+            }
+        } message: {
+            Text("This removes the synced CLI credentials from the active profile. Claude Code itself is not modified.")
         }
     }
 
@@ -316,7 +308,7 @@ struct CLIAccountView: View {
         return CLIAccountInfo(subscriptionType: info.type, scopes: info.scopes)
     }
 
-    /// Extracts the access token from CLI credentials JSON (OAuth)
+    /// Extracts the Claude Code access token from the synced credentials JSON.
     private func extractSessionKey(from json: String) -> String? {
         guard let data = json.data(using: .utf8),
               let parsed = try? JSONSerialization.jsonObject(with: data) as? [String: Any],

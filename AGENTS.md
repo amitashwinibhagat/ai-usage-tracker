@@ -207,10 +207,31 @@ xcodebuild -project "Claude Usage.xcodeproj" -scheme "Claude Usage" -destination
 # Release build (for DMG)
 xcodebuild -project "Claude Usage.xcodeproj" -scheme "Claude Usage" -configuration Release -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-# Create DMG
+# Full release (auto-increments build, builds Release, creates signed DMG + appcast)
+./scripts/release.sh              # incremental build (e.g. 15→16 for v3.1.1)
+./scripts/release.sh 3.2.0        # new version, resets build to 1
+./scripts/release.sh -b 100       # force specific build number
+
+# Create DMG manually
 APP_PATH="~/Library/Developer/Xcode/DerivedData/Claude_Usage-*/Build/Products/Release/Claude Usage.app"
 hdiutil create -volname "Claude Usage Tracker" -srcfolder "$APP_PATH" -ov -format UDZO ~/Desktop/Claude-Usage-Tracker.dmg
 ```
+
+### Release Process (Sparkle Auto-Increment)
+
+Every DMG release auto-increments `CURRENT_PROJECT_VERSION` (CFBundleVersion) in the main app target. Sparkle uses this build number to detect available updates — a higher build number means an update exists, even if MARKETING_VERSION hasn't changed.
+
+**How it works:**
+- `scripts/release.sh` reads the current build number from `project.pbxproj`
+- Increments only the main app target entries (test target stays at its own version)
+- `Info.plist` uses `$(CURRENT_PROJECT_VERSION)` variable — resolved at build time
+- `generate_appcast` reads the built app's Info.plist and embeds version + build in the appcast
+- Sparkle client compares its installed build number against the appcast entry
+
+**Versioning convention:**
+- `MARKETING_VERSION` = `3.1.1` (semantic display version)
+- `CURRENT_PROJECT_VERSION` = incremental integer (16, 17, 18...)
+- DMG filename = `Claude-Usage-Tracker-3.1.1-16.dmg`
 
 ## Known Issues / TODOs
 
@@ -219,13 +240,57 @@ hdiutil create -volname "Claude Usage Tracker" -srcfolder "$APP_PATH" -ov -forma
 3. **GeminiAPIService** — Cloud Monitoring requires GCP project ID. Falls back to model list.
 4. **CopilotAPIService** — Org usage requires admin. Falls back to user profile + individual plan.
 5. **Chinese providers** (Kimi, DeepSeek, GLM, Qwen, MiniMax) — Model list validation only. Real usage APIs need implementation.
-6. **Sparkle SUFeedURL** — Points to `amitashwinibhagat.github.io/claude-usage-tracker-private/appcast.xml`. Needs GitHub Pages setup.
+6. ~~GitHub Pages appcast hosting~~ — Now hosted on Netlify (`rococo-fox-c631c0.netlify.app`). Old GitHub Pages no longer required.
 7. **Team tier** — Not implemented (dashboard, webhooks, SSO).
 8. **Weekly digest** — Not implemented.
 9. **Referral program** — Not implemented.
 10. **OAuth client IDs** — Google and GitHub OAuth client IDs are TODOs in `Info.plist` or build config. Must register apps before shipping.
 
-## Session Notes (Last Updated: 2026-05-27)
+## Session Notes (Last Updated: 2026-05-28)
+
+### Changes on 2026-05-28
+- **Created unified design system** (`Shared/DesignSystem/AppTheme.swift`) — Single source of truth replacing legacy `SettingsColors`, `Typography`, `Spacing`, and `DesignTokens`
+  - **Colors**: 42 explicit hex tokens for dark-first premium aesthetic
+  - **Typography**: 36 tokens from 7pt to 48pt, all weights, mono + rounded variants
+  - **Spacing**: 8px base grid + 13 semantic aliases
+  - **Radius**: 7 tokens (micro=2, tiny=4, compact=6, small=8, standard=12, large=16, pill)
+  - **Shadows**: 4 styles (card, elevated, glow, modal)
+- **Rewrote legacy alias files** (Typography.swift, Spacing.swift, SettingsColors.swift, DesignTokens.swift, SettingsDesignSystem.swift) to delegate into `AppTheme.*`
+- **Updated `Color+AppColors.swift`** with shorthand extensions and hex initializer
+- **Comprehensive token migration** across ~50 view files:
+  - 509+ `.font(.system(...))` → `AppTheme.Typography.*`
+  - 275+ `.foregroundColor(.red/.green/etc)` → `AppTheme.Colors.*`
+  - 35+ `.cornerRadius(N)` → `AppTheme.Radius.*`
+  - 40+ background/border/fill/stroke colors → `AppTheme.Colors.*`
+- **Sparkle in-app updates configured**:
+  - Sparkle 2.8.1 linked via SPM with `SPUStandardUpdaterController` in `UpdateManager`
+  - Generated ed25519 signing keypair (private key in Keychain, public key in Info.plist)
+  - Created `appcast.xml` template and `scripts/release.sh`
+  - `scripts/release.sh` auto-increments `CURRENT_PROJECT_VERSION` (build number) with every DMG
+  - Only main app target build entries updated (test target preserved at its own version)
+  - `Info.plist` uses `$(CURRENT_PROJECT_VERSION)` variable resolved at build time
+  - DMG naming: `Claude-Usage-Tracker-{MARKETING_VERSION}-{CURRENT_PROJECT_VERSION}.dmg`
+  - Sparkle compares CFBundleVersion (build number) to detect available updates
+- **Redesigned settings sidebar** (`SettingsView.swift`) — wider 228pt sidebar with dark-first navigation grouping and AppTheme-only styling
+- **Redesigned popover dashboard** (`PopoverContentView.swift`) — 320pt width, UsageGuidanceCard, explicit used/left labels, redesigned BurnRateCard and CostTransparencyCard, forced `.preferredColorScheme(.dark)`
+- **Redesigned shared settings primitives** — SettingsPageHeader, SettingsSectionCard, SettingsContentCard, SettingsCard, SettingsHeader, SettingToggle, SettingsButton, ProUpsellCard, ProductInsightCard, CredentialStatusContent
+- **Redesigned key customer screens** — ProFeaturesView, AIProvidersSettingsView, ManageProfilesView, SupportView (commercial support/Pro/private-by-design messaging), AboutView (direct-distribution messaging, destructive reset styling)
+- **Redesigned credential views** — PersonalUsageView, APIBillingView, CLIAccountView, ConsoleAuthWebView with credential removal confirmations and privacy/trust framing
+- **Redesigned menu-bar secondary cards** — CrossProfileDashboard, SessionOverlapCard, ContextualTipCard
+- **Fixed auth cookie domain handling** (`ConsoleAuthWebView.swift`, `APIBillingView.swift`):
+  - `ConsoleAuthWebView` now supports multiple cookie domains (`cookieDomains: [String]`)
+  - `ConsoleAuthSheet` retains backward-compatible single-domain initializer
+  - After capturing the session cookie, Claude/Anthropic cookies are cleared from the web view
+  - API billing auth checks `console.anthropic.com`, `anthropic.com`, and `platform.claude.com`
+- **Fixed credential/OAuth storage copy** (`SupportView.swift`, `CLIAccountView.swift`):
+  - Distinguishes Keychain-backed provider OAuth (Gemini, Copilot) from synced Claude Code profile credentials
+  - Clarifies that synced CLI credentials stay in the local profile plist, not Keychain
+- **Restyled reset app data** (`AboutView.swift`) — destructive local action with red tint, no external-link arrow
+- **Built and deployed release v3.1.1 build 19**:
+  - DMG: `releases/Claude-Usage-Tracker-3.1.1-19.dmg` (9.7M)
+  - Deployed appcast + DMG to Netlify: `https://rococo-fox-c631c0.netlify.app/`
+  - Updated `SUFeedURL` in `Info.plist` to Netlify endpoint
+  - Old GitHub Pages hosting no longer required
 
 ### Changes on 2026-05-27
 - **Implemented OAuth login for AI providers** — Users can now "Sign in with Google" (Gemini) and "Sign in with GitHub" (Copilot) instead of manually entering API keys
@@ -263,7 +328,7 @@ hdiutil create -volname "Claude Usage Tracker" -srcfolder "$APP_PATH" -ov -forma
 4. Team tier infrastructure (dashboard, webhooks, admin)
 5. Weekly digest email
 6. App Store review preparation (if ever needed)
-7. Update Sparkle appcast for private repo
+7. ~~Deploy appcast.xml~~ — Done via Netlify (`rococo-fox-c631c0.netlify.app`)
 8. Implement UI redesign once designer mockups are ready
 
 ## How to Make Test Builds (All Features Unlocked)

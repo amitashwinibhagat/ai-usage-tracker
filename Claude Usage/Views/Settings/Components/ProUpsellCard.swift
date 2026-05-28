@@ -16,51 +16,68 @@ struct ProUpsellCard: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 8) {
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.purple)
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+                HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
+                    ZStack {
+                        Circle()
+                            .fill(AppTheme.Colors.proBadge.opacity(0.16))
+                            .frame(width: 32, height: 32)
 
-                    Text(title)
-                        .font(DesignTokens.Typography.bodyMedium)
-                        .foregroundColor(.primary)
+                        Image(systemName: "sparkles")
+                            .font(AppTheme.Typography.smallSemibold)
+                            .foregroundColor(AppTheme.Colors.proBadge)
+                    }
 
-                    Spacer()
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(title)
+                            .font(AppTheme.Typography.smallSemibold)
+                            .foregroundColor(AppTheme.Colors.textPrimary)
+
+                        Text(message)
+                            .font(AppTheme.Typography.tiny)
+                            .foregroundColor(AppTheme.Colors.textSecondary)
+                            .lineLimit(3)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Spacer(minLength: 0)
 
                     Text("PRO")
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(Color.purple)
-                        .cornerRadius(3)
+                        .font(AppTheme.Typography.badge)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(
+                            Capsule()
+                                .fill(AppTheme.Colors.proBadge.opacity(0.22))
+                        )
                 }
-
-                Text(message)
-                    .font(DesignTokens.Typography.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
 
                 HStack {
                     Spacer()
                     Text(actionTitle)
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(.purple)
+                        .font(AppTheme.Typography.captionSemibold)
+                        .foregroundColor(AppTheme.Colors.proBadge)
+                    Image(systemName: "arrow.right")
+                        .font(AppTheme.Typography.tinySemibold)
+                        .foregroundColor(AppTheme.Colors.proBadge)
                 }
             }
-            .padding(DesignTokens.Spacing.cardPadding)
+            .padding(AppTheme.Spacing.cardPadding)
             .background(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                    .fill(Color.purple.opacity(0.06))
+                LinearGradient(
+                    colors: [
+                        AppTheme.Colors.proBadge.opacity(isHovered ? 0.18 : 0.12),
+                        AppTheme.Colors.card.opacity(0.88)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.large))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                    .strokeBorder(Color.purple.opacity(0.2), lineWidth: 1)
-            )
-            .background(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                    .fill(isHovered ? Color.purple.opacity(0.03) : Color.clear)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.large)
+                    .strokeBorder(AppTheme.Colors.proBadge.opacity(0.3), lineWidth: 0.5)
             )
         }
         .buttonStyle(.plain)

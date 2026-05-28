@@ -197,7 +197,7 @@ struct TrafficLightButton: View {
 
     var body: some View {
         Circle()
-            .fill(isActive ? type.activeColor : Color.primary.opacity(0.15))
+            .fill(isActive ? type.activeColor : AppTheme.Colors.borderSubtle)
             .frame(width: 12, height: 12)
             .overlay {
                 if isHovered && isActive {
@@ -224,39 +224,14 @@ struct TrafficLightButton: View {
 struct SettingsView: View {
     @State private var selectedSection: SettingsSection = .appearance
     @StateObject private var profileManager = ProfileManager.shared
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack(spacing: 0) {
-            // Sidebar with Profile Switcher
-            VStack(spacing: 0) {
-                // Traffic light buttons
-                HStack {
-                    TrafficLightButtons()
-                    Spacer()
-                }
-                .padding(.leading, 12)
-                .padding(.top, 12)
+            SettingsSidebar(selectedSection: $selectedSection)
 
-                // Profile Section (Switcher + Credentials + Settings)
-                ProfileSectionContainer(selectedSection: $selectedSection)
-                    .padding(.horizontal, 12)
-                    .padding(.top, 8)
-
-                Spacer()
-
-                // App Settings Section
-                AppSettingsSection(selectedSection: $selectedSection)
-                    .padding(.horizontal, 12)
-
-                // Bottom bar: About, Debug, Support, Updates
-                BottomBarSection(selectedSection: $selectedSection)
-                    .padding(.horizontal, 12)
-                    .padding(.bottom, 8)
-                    .padding(.top, 4)
-            }
-            .background(SidebarVisualEffect())
-            .frame(width: 190)
+            Rectangle()
+                .fill(AppTheme.Colors.borderSubtle)
+                .frame(width: 1)
 
             // Content
             Group {
@@ -309,14 +284,97 @@ struct SettingsView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(
-                colorScheme == .dark
-                    ? Color.black.opacity(0.15)
-                    : Color.white.opacity(0.3)
-            )
+            .background(AppTheme.Colors.background)
         }
-        .frame(minWidth: 720, maxWidth: 720, maxHeight: .infinity)
-        .background(SettingsBackground())
+        .frame(minWidth: 820, maxWidth: 820, maxHeight: .infinity)
+        .background(AppTheme.Colors.backgroundDeep)
+    }
+}
+
+// MARK: - Settings Sidebar
+
+struct SettingsSidebar: View {
+    @Binding var selectedSection: SettingsSection
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                TrafficLightButtons()
+                Spacer()
+            }
+            .padding(.leading, AppTheme.Spacing.md)
+            .padding(.top, AppTheme.Spacing.md)
+
+            SidebarBrandHeader()
+                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.top, AppTheme.Spacing.mdCompact)
+
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: AppTheme.Spacing.mdCompact) {
+                    ProfileSectionContainer(selectedSection: $selectedSection)
+                    AppSettingsSection(selectedSection: $selectedSection)
+                }
+                .padding(.horizontal, AppTheme.Spacing.mdCompact)
+                .padding(.top, AppTheme.Spacing.mdCompact)
+                .padding(.bottom, AppTheme.Spacing.md)
+            }
+
+            BottomBarSection(selectedSection: $selectedSection)
+                .padding(.horizontal, AppTheme.Spacing.mdCompact)
+                .padding(.bottom, AppTheme.Spacing.sm)
+        }
+        .frame(width: 228)
+        .background(
+            LinearGradient(
+                colors: [
+                    AppTheme.Colors.sidebar,
+                    AppTheme.Colors.backgroundDeep
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
+    }
+}
+
+struct SidebarBrandHeader: View {
+    var body: some View {
+        HStack(spacing: AppTheme.Spacing.sm) {
+            ZStack {
+                RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                    .fill(AppTheme.Colors.accentMuted)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                            .strokeBorder(AppTheme.Colors.accent.opacity(0.35), lineWidth: 0.5)
+                    )
+
+                Image(systemName: "chart.line.uptrend.xyaxis")
+                    .font(AppTheme.Typography.smallSemibold)
+                    .foregroundColor(AppTheme.Colors.accentHover)
+            }
+            .frame(width: 34, height: 34)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Claude Usage")
+                    .font(AppTheme.Typography.labelBold)
+                    .foregroundColor(AppTheme.Colors.textPrimary)
+
+                Text("Tracker")
+                    .font(AppTheme.Typography.tinyMedium)
+                    .foregroundColor(AppTheme.Colors.textMuted)
+            }
+
+            Spacer()
+        }
+        .padding(AppTheme.Spacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(AppTheme.Colors.card.opacity(0.72))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
+        )
     }
 }
 
@@ -331,12 +389,12 @@ struct ProfileSectionContainer: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             // Profile Switcher
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text("section.active_profile".localized)
-                    .font(.system(size: 9, weight: .medium))
-                    .foregroundColor(.secondary)
+                    .font(AppTheme.Typography.microSemibold)
+                    .foregroundColor(AppTheme.Colors.textMuted)
 
                 Picker("", selection: Binding(
                     get: { profileManager.activeProfile?.id ?? UUID() },
@@ -351,8 +409,8 @@ struct ProfileSectionContainer: View {
                             Text(profile.name)
                             if profile.hasCliAccount {
                                 Image(systemName: "checkmark.seal.fill")
-                                    .font(.system(size: 9))
-                                    .foregroundColor(.green)
+                                    .font(AppTheme.Typography.micro)
+                                    .foregroundColor(AppTheme.Colors.success)
                             }
                         }
                         .tag(profile.id)
@@ -360,37 +418,37 @@ struct ProfileSectionContainer: View {
                 }
                 .labelsHidden()
                 .pickerStyle(.menu)
+                .controlSize(.small)
+                .tint(AppTheme.Colors.accent)
             }
-            .padding(8)
+            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.top, AppTheme.Spacing.sm)
 
             Divider()
-                .padding(.horizontal, 8)
+                .overlay(AppTheme.Colors.divider)
 
             // Credentials
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text("section.credentials".localized)
-                    .font(.system(size: 9, weight: .medium))
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.top, 6)
+                    .font(AppTheme.Typography.microSemibold)
+                    .foregroundColor(AppTheme.Colors.textMuted)
+                    .padding(.horizontal, AppTheme.Spacing.sm)
 
                 ProfileCredentialCardsRow(selectedSection: $selectedSection)
-                    .padding(.horizontal, 8)
-                    .padding(.bottom, 4)
+                    .padding(.horizontal, AppTheme.Spacing.xs)
             }
 
             Divider()
-                .padding(.horizontal, 8)
+                .overlay(AppTheme.Colors.divider)
 
             // Profile Settings
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text("section.settings".localized)
-                    .font(.system(size: 9, weight: .medium))
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.top, 6)
+                    .font(AppTheme.Typography.microSemibold)
+                    .foregroundColor(AppTheme.Colors.textMuted)
+                    .padding(.horizontal, AppTheme.Spacing.sm)
 
-                VStack(spacing: 4) {
+                VStack(spacing: AppTheme.Spacing.xs) {
                     ForEach(profileSections, id: \.self) { section in
                         Button {
                             selectedSection = section
@@ -405,17 +463,17 @@ struct ProfileSectionContainer: View {
                         .help(section.description)
                     }
                 }
-                .padding(.horizontal, 8)
-                .padding(.bottom, 4)
+                .padding(.horizontal, AppTheme.Spacing.xs)
             }
         }
+        .padding(AppTheme.Spacing.xs)
         .background(
-            RoundedRectangle(cornerRadius: 6)
-                .fill(Color.primary.opacity(0.04))
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(AppTheme.Colors.card.opacity(0.82))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 6)
-                .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
         )
     }
 }
@@ -430,11 +488,11 @@ struct AppSettingsSection: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             Text("section.app".localized)
-                .font(.system(size: 9, weight: .medium))
-                .foregroundColor(.secondary)
-                .padding(.horizontal, 4)
+                .font(AppTheme.Typography.microSemibold)
+                .foregroundColor(AppTheme.Colors.textMuted)
+                .padding(.horizontal, AppTheme.Spacing.sm)
 
             ForEach(sharedSections, id: \.self) { section in
                 SidebarItem(
@@ -447,6 +505,15 @@ struct AppSettingsSection: View {
                 }
             }
         }
+        .padding(AppTheme.Spacing.xs)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(AppTheme.Colors.card.opacity(0.48))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .strokeBorder(AppTheme.Colors.borderSubtle.opacity(0.8), lineWidth: 0.5)
+        )
     }
 }
 
@@ -459,8 +526,9 @@ struct BottomBarSection: View {
     }
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Divider()
+                .overlay(AppTheme.Colors.divider)
 
             HStack(spacing: 0) {
                 ForEach(items, id: \.self) { section in
@@ -485,13 +553,13 @@ struct BottomBarSection: View {
                 Button {
                     NSApplication.shared.terminate(nil)
                 } label: {
-                    bottomBarLabel(
-                        icon: "power",
-                        label: "common.quit".localized,
-                        isSelected: false,
-                        isHovered: hoveredItem == "quit",
-                        hoverColor: Color.red.opacity(0.1)
-                    )
+                        bottomBarLabel(
+                            icon: "power",
+                            label: "common.quit".localized,
+                            isSelected: false,
+                            isHovered: hoveredItem == "quit",
+                            hoverColor: AppTheme.Colors.error.opacity(0.12)
+                        )
                 }
                 .buttonStyle(.plain)
                 .onHover { hovering in
@@ -505,20 +573,24 @@ struct BottomBarSection: View {
     private func bottomBarLabel(icon: String, label: String, isSelected: Bool, isHovered: Bool, hoverColor: Color? = nil) -> some View {
         VStack(spacing: 2) {
             Image(systemName: icon)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundColor(isSelected ? .white : .secondary)
+                .font(AppTheme.Typography.smallMedium)
+                .foregroundColor(isSelected ? AppTheme.Colors.textPrimary : AppTheme.Colors.textMuted)
                 .frame(height: 14)
 
             Text(label)
-                .font(.system(size: 8, weight: .medium))
-                .foregroundColor(isSelected ? .white.opacity(0.9) : .secondary.opacity(0.7))
+                .font(AppTheme.Typography.nanoMedium)
+                .foregroundColor(isSelected ? AppTheme.Colors.textPrimary : AppTheme.Colors.textMuted)
                 .lineLimit(1)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 36)
+        .frame(height: 38)
         .background(
-            RoundedRectangle(cornerRadius: 4)
-                .fill(isSelected ? SettingsColors.primary : (isHovered ? (hoverColor ?? Color.primary.opacity(0.06)) : Color.clear))
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                .fill(isSelected ? AppTheme.Colors.accentMuted : (isHovered ? (hoverColor ?? AppTheme.Colors.cardElevated) : Color.clear))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                .strokeBorder(isSelected ? AppTheme.Colors.accent.opacity(0.35) : Color.clear, lineWidth: 0.5)
         )
         .contentShape(Rectangle())
     }
@@ -686,24 +758,27 @@ struct SidebarItem: View {
         Button(action: action) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(isSelected ? .white : .secondary)
-                    .frame(width: 12)
+                    .font(AppTheme.Typography.captionMedium)
+                    .foregroundColor(isSelected ? AppTheme.Colors.accentHover : AppTheme.Colors.textMuted)
+                    .frame(width: 16)
 
                 Text(title)
-                    .font(.system(size: 11, weight: isSelected ? .medium : .regular))
-                    .foregroundColor(isSelected ? .white : .primary)
+                    .font(isSelected ? AppTheme.Typography.captionMedium : AppTheme.Typography.caption)
+                    .foregroundColor(isSelected ? AppTheme.Colors.textPrimary : AppTheme.Colors.textSecondary)
+                    .lineLimit(1)
 
                 Spacer()
             }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(isSelected ? SettingsColors.primary : (isHovered ? Color.primary.opacity(0.06) : Color.clear))
-            )
-            .padding(.horizontal, 4)
-            .padding(.vertical, 1)
+            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.vertical, 6)
+            .background {
+                RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                    .fill(isSelected ? AppTheme.Colors.accentMuted : (isHovered ? AppTheme.Colors.cardElevated : Color.clear))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                    .strokeBorder(isSelected ? AppTheme.Colors.accent.opacity(0.35) : Color.clear, lineWidth: 0.5)
+            }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -722,7 +797,7 @@ struct ProfileCredentialCardsRow: View {
     @State private var credentials: ProfileCredentials?
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: AppTheme.Spacing.xs) {
             // Claude.ai Card
             Button {
                 selectedSection = .claudeAI
@@ -787,30 +862,33 @@ struct CredentialMiniCard: View {
         HStack(spacing: 8) {
             // Icon
             Image(systemName: icon)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundColor(isSelected ? .white : (isConnected ? .green : .gray))
-                .frame(width: 12)
+                .font(AppTheme.Typography.captionMedium)
+                .foregroundColor(isSelected ? AppTheme.Colors.accentHover : (isConnected ? AppTheme.Colors.success : AppTheme.Colors.textMuted))
+                .frame(width: 16)
 
             // Title
             Text(title)
-                .font(.system(size: 11, weight: isSelected ? .medium : .regular))
-                .foregroundColor(isSelected ? .white : .primary)
+                .font(isSelected ? AppTheme.Typography.captionMedium : AppTheme.Typography.caption)
+                .foregroundColor(isSelected ? AppTheme.Colors.textPrimary : AppTheme.Colors.textSecondary)
+                .lineLimit(1)
 
             Spacer()
 
             // Status indicator
             Circle()
-                .fill(isSelected ? Color.white.opacity(0.9) : (isConnected ? Color.green : Color.gray.opacity(0.3)))
-                .frame(width: 5, height: 5)
+                .fill(isConnected ? AppTheme.Colors.success : AppTheme.Colors.textMuted.opacity(0.35))
+                .frame(width: 6, height: 6)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(
-            RoundedRectangle(cornerRadius: 4)
-                .fill(isSelected ? SettingsColors.primary : (isHovered ? Color.primary.opacity(0.06) : Color.clear))
-        )
-        .padding(.horizontal, 4)
-        .padding(.vertical, 1)
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, 6)
+        .background {
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                .fill(isSelected ? AppTheme.Colors.accentMuted : (isHovered ? AppTheme.Colors.cardElevated : Color.clear))
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                .strokeBorder(isSelected ? AppTheme.Colors.accent.opacity(0.35) : Color.clear, lineWidth: 0.5)
+        }
         .onHover { hovering in
             isHovered = hovering
         }
@@ -827,25 +905,28 @@ struct SettingMiniButton: View {
         HStack(spacing: 8) {
             // Icon
             Image(systemName: icon)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundColor(isSelected ? .white : .secondary)
-                .frame(width: 12)
+                .font(AppTheme.Typography.captionMedium)
+                .foregroundColor(isSelected ? AppTheme.Colors.accentHover : AppTheme.Colors.textMuted)
+                .frame(width: 16)
 
             // Title
             Text(title)
-                .font(.system(size: 11, weight: isSelected ? .medium : .regular))
-                .foregroundColor(isSelected ? .white : .primary)
+                .font(isSelected ? AppTheme.Typography.captionMedium : AppTheme.Typography.caption)
+                .foregroundColor(isSelected ? AppTheme.Colors.textPrimary : AppTheme.Colors.textSecondary)
+                .lineLimit(1)
 
             Spacer()
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(
-            RoundedRectangle(cornerRadius: 4)
-                .fill(isSelected ? SettingsColors.primary : (isHovered ? Color.primary.opacity(0.06) : Color.clear))
-        )
-        .padding(.horizontal, 4)
-        .padding(.vertical, 1)
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, 6)
+        .background {
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                .fill(isSelected ? AppTheme.Colors.accentMuted : (isHovered ? AppTheme.Colors.cardElevated : Color.clear))
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                .strokeBorder(isSelected ? AppTheme.Colors.accent.opacity(0.35) : Color.clear, lineWidth: 0.5)
+        }
         .onHover { hovering in
             isHovered = hovering
         }

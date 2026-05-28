@@ -19,7 +19,7 @@ struct ConsoleCookieResult {
 
 struct ConsoleAuthWebView: NSViewRepresentable {
     let loginURL: URL
-    let cookieDomain: String
+    let cookieDomains: [String]
     let onCookieFound: (ConsoleCookieResult) -> Void
 
     func makeNSView(context: Context) -> WKWebView {
@@ -53,19 +53,19 @@ struct ConsoleAuthWebView: NSViewRepresentable {
     func updateNSView(_ nsView: WKWebView, context: Context) {}
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(cookieDomain: cookieDomain, onCookieFound: onCookieFound)
+        Coordinator(cookieDomains: cookieDomains, onCookieFound: onCookieFound)
     }
 
     class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKHTTPCookieStoreObserver {
-        let cookieDomain: String
+        let cookieDomains: [String]
         let onCookieFound: (ConsoleCookieResult) -> Void
         private var foundCookie = false
         weak var parentWebView: WKWebView?
         private var popupWindow: NSWindow?
         private var popupWebView: WKWebView?
 
-        init(cookieDomain: String, onCookieFound: @escaping (ConsoleCookieResult) -> Void) {
-            self.cookieDomain = cookieDomain
+        init(cookieDomains: [String], onCookieFound: @escaping (ConsoleCookieResult) -> Void) {
+            self.cookieDomains = cookieDomains
             self.onCookieFound = onCookieFound
         }
 
@@ -79,14 +79,16 @@ struct ConsoleAuthWebView: NSViewRepresentable {
             cookieStore.getAllCookies { [weak self] cookies in
                 guard let self = self, !self.foundCookie else { return }
                 for cookie in cookies {
-                    if cookie.name == "sessionKey" && cookie.domain.contains(self.cookieDomain) {
+                    if self.isTargetSessionCookie(cookie) {
                         self.foundCookie = true
                         let result = ConsoleCookieResult(
                             sessionKey: cookie.value,
                             expiryDate: cookie.expiresDate
                         )
-                        DispatchQueue.main.async {
-                            self.onCookieFound(result)
+                        self.clearProviderCookies(from: cookieStore) {
+                            DispatchQueue.main.async {
+                                self.onCookieFound(result)
+                            }
                         }
                         return
                     }
@@ -145,18 +147,35 @@ struct ConsoleAuthWebView: NSViewRepresentable {
                 guard let self = self, !self.foundCookie else { return }
 
                 for cookie in cookies {
-                    if cookie.name == "sessionKey" && cookie.domain.contains(self.cookieDomain) {
+                    if self.isTargetSessionCookie(cookie) {
                         self.foundCookie = true
                         let result = ConsoleCookieResult(
                             sessionKey: cookie.value,
                             expiryDate: cookie.expiresDate
                         )
-                        DispatchQueue.main.async {
-                            self.onCookieFound(result)
+                        self.clearProviderCookies(from: webView.configuration.websiteDataStore.httpCookieStore) {
+                            DispatchQueue.main.async {
+                                self.onCookieFound(result)
+                            }
                         }
                         return
                     }
                 }
+            }
+        }
+
+        private func isTargetSessionCookie(_ cookie: HTTPCookie) -> Bool {
+            cookie.name == "sessionKey" && cookieDomains.contains { cookie.domain.contains($0) }
+        }
+
+        private func clearProviderCookies(from cookieStore: WKHTTPCookieStore, completion: @escaping () -> Void) {
+            cookieStore.getAllCookies { cookies in
+                let group = DispatchGroup()
+                for cookie in cookies where cookie.domain.contains("claude") || cookie.domain.contains("anthropic") {
+                    group.enter()
+                    cookieStore.delete(cookie) { group.leave() }
+                }
+                group.notify(queue: .main, execute: completion)
             }
         }
     }
@@ -167,37 +186,98 @@ struct ConsoleAuthWebView: NSViewRepresentable {
 struct ConsoleAuthSheet: View {
     let title: String
     let loginURL: URL
-    let cookieDomain: String
+    let cookieDomains: [String]
     let onSuccess: (ConsoleCookieResult) -> Void
     let onCancel: () -> Void
 
     @State private var isLoading = true
     @State private var hasError = false
 
+    init(
+        title: String,
+        loginURL: URL,
+        cookieDomain: String,
+        onSuccess: @escaping (ConsoleCookieResult) -> Void,
+        onCancel: @escaping () -> Void
+    ) {
+        self.init(
+            title: title,
+            loginURL: loginURL,
+            cookieDomains: [cookieDomain],
+            onSuccess: onSuccess,
+            onCancel: onCancel
+        )
+    }
+
+    init(
+        title: String,
+        loginURL: URL,
+        cookieDomains: [String],
+        onSuccess: @escaping (ConsoleCookieResult) -> Void,
+        onCancel: @escaping () -> Void
+    ) {
+        self.title = title
+        self.loginURL = loginURL
+        self.cookieDomains = cookieDomains
+        self.onSuccess = onSuccess
+        self.onCancel = onCancel
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            // Title bar
-            HStack {
-                Text(title)
-                    .font(.system(size: 13, weight: .semibold))
+            HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
+                Image(systemName: "lock.shield.fill")
+                    .font(AppTheme.Typography.smallSemibold)
+                    .foregroundColor(AppTheme.Colors.success)
+                    .frame(width: 26, height: 26)
+                    .background(Circle().fill(AppTheme.Colors.success.opacity(0.12)))
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(AppTheme.Typography.label)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+
+                    Text("Sign in in this embedded browser. The app captures the session cookie needed for local usage tracking, then clears Claude/Anthropic cookies from this browser view.")
+                        .font(AppTheme.Typography.tiny)
+                        .foregroundColor(AppTheme.Colors.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
                 Spacer()
-                Button("Cancel") {
+
+                Button("common.cancel".localized) {
                     onCancel()
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
+                .buttonStyle(.plain)
+                .foregroundColor(AppTheme.Colors.textSecondary)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
+            .padding(AppTheme.Spacing.md)
+            .background(AppTheme.Colors.card)
 
             Divider()
+                .overlay(AppTheme.Colors.divider)
 
-            // WebView
-            ConsoleAuthWebView(loginURL: loginURL, cookieDomain: cookieDomain) { result in
+            HStack(spacing: AppTheme.Spacing.xs) {
+                Image(systemName: "key.fill")
+                    .font(AppTheme.Typography.tinySemibold)
+                    .foregroundColor(AppTheme.Colors.accentHover)
+
+                Text("The captured credential is stored locally for the selected profile and can be removed anytime.")
+                    .font(AppTheme.Typography.tiny)
+                    .foregroundColor(AppTheme.Colors.textMuted)
+
+                Spacer()
+            }
+            .padding(.horizontal, AppTheme.Spacing.md)
+            .padding(.vertical, AppTheme.Spacing.sm)
+            .background(AppTheme.Colors.backgroundDeep)
+
+            ConsoleAuthWebView(loginURL: loginURL, cookieDomains: cookieDomains) { result in
                 onSuccess(result)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .background(AppTheme.Colors.background)
         .frame(width: 520, height: 680)
     }
 }

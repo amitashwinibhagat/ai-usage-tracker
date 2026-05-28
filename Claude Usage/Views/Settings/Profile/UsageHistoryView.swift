@@ -312,7 +312,7 @@ struct SimpleUsageChart: View {
             .chartYAxis {
                 AxisMarks(position: .leading, values: [0, 50, 100]) { value in
                     AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
-                        .foregroundStyle(Color.secondary.opacity(0.3))
+                        .foregroundStyle(AppTheme.Colors.textMuted.opacity(0.3))
                     AxisValueLabel {
                         if let intValue = value.as(Int.self) {
                             Text("\(intValue)%")
@@ -550,7 +550,7 @@ struct CombinedUsageChart: View {
                 .chartYAxis {
                     AxisMarks(position: .leading, values: [0, 25, 50, 75, 100]) { value in
                         AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
-                            .foregroundStyle(Color.secondary.opacity(0.3))
+                            .foregroundStyle(AppTheme.Colors.textMuted.opacity(0.3))
                         AxisValueLabel {
                             if let intValue = value.as(Int.self) {
                                 Text("\(intValue)%")
@@ -646,7 +646,7 @@ struct CombinedUsageChart: View {
                             HStack(spacing: 2) {
                                 ForEach(0..<3, id: \.self) { _ in
                                     Rectangle()
-                                        .fill(Color(nsColor: .controlBackgroundColor))
+                                        .fill(AppTheme.Colors.elevated)
                                         .frame(width: 2, height: 1.5)
                                 }
                             }

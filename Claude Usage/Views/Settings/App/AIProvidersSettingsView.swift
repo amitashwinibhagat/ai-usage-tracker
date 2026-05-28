@@ -25,13 +25,20 @@ struct AIProvidersSettingsView: View {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.section) {
                 SettingsPageHeader(
                     title: "AI Providers",
-                    subtitle: "Track usage across all your AI coding tools"
+                    subtitle: "Connect the tools your team actually uses, then compare availability from one menu bar."
+                )
+
+                ProductInsightCard(
+                    icon: "point.3.connected.trianglepath.dotted",
+                    title: "Make provider choice a workflow decision",
+                    message: "The goal is not just storing API keys. It is knowing which account, model, or provider still has room when work needs to continue.",
+                    color: AppTheme.Colors.info
                 )
 
                 if featureFlags.isFree {
                     ProUpsellCard(
                         title: "Multi-AI Tracking (Pro)",
-                        message: "Pro users can track Claude, Codex, Gemini, Copilot, Kimi, DeepSeek, GLM, Qwen, and MiniMax usage in one place. Upgrade to see your complete AI spending picture.",
+                        message: "Track Claude, Codex, Gemini, Copilot, Kimi, DeepSeek, GLM, Qwen, and MiniMax together so your next provider choice is obvious.",
                         actionTitle: "Upgrade to Pro"
                     ) {
                         if let url = LicenseManager.shared.proCheckoutURL {
@@ -41,11 +48,14 @@ struct AIProvidersSettingsView: View {
                 }
 
                 if let profile = profileManager.activeProfile {
-                    // Claude (always available)
+                    providerSummary(profile: profile)
+
+                    SectionHeader(title: "Available on Free")
+
                     ProviderCard(
                         provider: .claude,
                         isConnected: profile.hasUsageCredentials,
-                        status: profile.hasUsageCredentials ? "Connected" : "Add credentials in Personal Usage",
+                        status: profile.hasUsageCredentials ? "Tracking Claude usage" : "Add credentials in Personal Usage",
                         usage: profile.claudeUsage?.sessionTokensUsed
                     )
 
@@ -65,33 +75,30 @@ struct AIProvidersSettingsView: View {
 
     @ViewBuilder
     private func providerSection(profile: Profile) -> some View {
-        // Western providers
+        SectionHeader(title: "Pro Providers")
+
         ProviderCard(
             provider: .codex,
             isConnected: profile.hasCodexCredentials,
-            status: profile.hasCodexCredentials ? "Connected" : "API key required",
+            status: profile.hasCodexCredentials ? "Tracking OpenAI usage" : "Connect an OpenAI API key",
             usage: profile.codexUsage?.tokensUsed
         ) { activeSheet = .codex }
-
-        Divider()
 
         if profile.geminiOAuthConnected {
             ProviderCard(
                 provider: .gemini,
                 isConnected: true,
-                status: "Signed in with Google",
+                status: "Signed in with Google OAuth",
                 usage: profile.geminiUsage?.tokensUsed
             ) { activeSheet = .geminiOAuth }
         } else {
             ProviderCard(
                 provider: .gemini,
                 isConnected: profile.hasGeminiCredentials,
-                status: profile.hasGeminiCredentials ? "Connected via API key" : "Sign in or add API key",
+                status: profile.hasGeminiCredentials ? "Connected via API key" : "Sign in with Google or add API key",
                 usage: profile.geminiUsage?.tokensUsed
             ) { activeSheet = .gemini }
         }
-
-        Divider()
 
         if profile.copilotOAuthConnected {
             ProviderCard(
@@ -104,56 +111,86 @@ struct AIProvidersSettingsView: View {
             ProviderCard(
                 provider: .copilot,
                 isConnected: profile.hasCopilotCredentials,
-                status: profile.hasCopilotCredentials ? "Connected via token \(profile.copilotUsername ?? "")" : "Sign in or add token",
+                status: profile.hasCopilotCredentials ? "Connected via token \(profile.copilotUsername ?? "")" : "Sign in with GitHub or add token",
                 usage: profile.copilotUsage?.suggestionsAccepted
             ) { activeSheet = .copilot }
         }
 
-        // Chinese providers
-        SectionHeader(title: "Chinese Providers")
+        SectionHeader(title: "Additional Providers")
 
         ProviderCard(
             provider: .kimi,
             isConnected: profile.hasKimiCredentials,
-            status: profile.hasKimiCredentials ? "Connected" : "API key required",
+            status: profile.hasKimiCredentials ? "Key connected; usage API pending" : "Connect a Moonshot API key",
             usage: profile.kimiUsage?.tokensUsed
         ) { activeSheet = .kimi }
-
-        Divider()
 
         ProviderCard(
             provider: .deepseek,
             isConnected: profile.hasDeepSeekCredentials,
-            status: profile.hasDeepSeekCredentials ? "Connected" : "API key required",
+            status: profile.hasDeepSeekCredentials ? "Key connected; balance checks available" : "Connect a DeepSeek API key",
             usage: profile.deepseekUsage?.tokensUsed
         ) { activeSheet = .deepseek }
-
-        Divider()
 
         ProviderCard(
             provider: .glm,
             isConnected: profile.hasGLMCredentials,
-            status: profile.hasGLMCredentials ? "Connected" : "API key required",
+            status: profile.hasGLMCredentials ? "Key connected; usage API pending" : "Connect a GLM API key",
             usage: profile.glmUsage?.tokensUsed
         ) { activeSheet = .glm }
-
-        Divider()
 
         ProviderCard(
             provider: .qwen,
             isConnected: profile.hasQwenCredentials,
-            status: profile.hasQwenCredentials ? "Connected" : "API key required",
+            status: profile.hasQwenCredentials ? "Key connected; usage API pending" : "Connect a DashScope API key",
             usage: profile.qwenUsage?.tokensUsed
         ) { activeSheet = .qwen }
-
-        Divider()
 
         ProviderCard(
             provider: .minimax,
             isConnected: profile.hasMiniMaxCredentials,
-            status: profile.hasMiniMaxCredentials ? "Connected" : "API key required",
+            status: profile.hasMiniMaxCredentials ? "Key connected; usage API pending" : "Connect a MiniMax API key",
             usage: profile.minimaxUsage?.tokensUsed
         ) { activeSheet = .minimax }
+    }
+
+    private func providerSummary(profile: Profile) -> some View {
+        let connectedCount = [
+            profile.hasUsageCredentials,
+            profile.hasCodexCredentials,
+            profile.hasGeminiCredentials || profile.geminiOAuthConnected,
+            profile.hasCopilotCredentials || profile.copilotOAuthConnected,
+            profile.hasKimiCredentials,
+            profile.hasDeepSeekCredentials,
+            profile.hasGLMCredentials,
+            profile.hasQwenCredentials,
+            profile.hasMiniMaxCredentials
+        ].filter { $0 }.count
+
+        return SettingsContentCard {
+            HStack(spacing: AppTheme.Spacing.md) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+                    Text("Connected coverage")
+                        .font(AppTheme.Typography.tinySemibold)
+                        .foregroundColor(AppTheme.Colors.textMuted)
+                        .textCase(.uppercase)
+
+                    Text("\(connectedCount) of 9 providers")
+                        .font(AppTheme.Typography.sectionTitle)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+
+                    Text(connectedCount <= 1 ? "Start with the providers you rely on daily." : "Your menu bar can compare more of your actual AI workflow now.")
+                        .font(AppTheme.Typography.small)
+                        .foregroundColor(AppTheme.Colors.textSecondary)
+                }
+
+                Spacer()
+
+                Image(systemName: connectedCount <= 1 ? "link.badge.plus" : "checkmark.seal.fill")
+                    .font(AppTheme.Typography.hero)
+                    .foregroundColor(connectedCount <= 1 ? AppTheme.Colors.warning : AppTheme.Colors.success)
+            }
+        }
     }
 
     @ViewBuilder
@@ -189,10 +226,11 @@ struct SectionHeader: View {
     let title: String
     var body: some View {
         Text(title)
-            .font(.system(size: 11, weight: .semibold))
-            .foregroundColor(.secondary)
+            .font(AppTheme.Typography.microSemibold)
+            .foregroundColor(AppTheme.Colors.textMuted)
             .textCase(.uppercase)
-            .padding(.top, 8)
+            .padding(.top, AppTheme.Spacing.sm)
+            .padding(.leading, AppTheme.Spacing.xs)
     }
 }
 
@@ -208,37 +246,38 @@ struct ProviderCard: View {
 
     var body: some View {
         Button(action: { onTap?() }) {
-            HStack(spacing: DesignTokens.Spacing.medium) {
+            HStack(spacing: AppTheme.Spacing.md) {
                 ZStack {
                     Circle()
-                        .fill(provider.brandColor.opacity(0.15))
-                        .frame(width: 36, height: 36)
+                        .fill(provider.brandColor.opacity(isConnected ? 0.18 : 0.08))
+                        .frame(width: 40, height: 40)
 
                     Image(systemName: provider.icon)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(provider.brandColor)
+                        .font(AppTheme.Typography.cardTitle)
+                        .foregroundColor(isConnected ? provider.brandColor : AppTheme.Colors.textMuted)
                 }
 
-                VStack(alignment: .leading, spacing: 3) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     HStack(spacing: 6) {
                         Text(provider.displayName)
-                            .font(DesignTokens.Typography.bodyMedium)
+                            .font(AppTheme.Typography.label)
+                            .foregroundColor(AppTheme.Colors.textPrimary)
 
                         if isConnected {
                             Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 10))
-                                .foregroundColor(.green)
+                                .font(AppTheme.Typography.tinySemibold)
+                                .foregroundColor(AppTheme.Colors.success)
                         }
                     }
 
                     Text(status)
-                        .font(DesignTokens.Typography.caption)
-                        .foregroundColor(isConnected ? .secondary : .orange)
+                        .font(AppTheme.Typography.small)
+                        .foregroundColor(isConnected ? AppTheme.Colors.textSecondary : AppTheme.Colors.warning)
 
                     if let usage = usage, usage > 0 {
                         Text("\(usage.formatted()) used")
-                            .font(DesignTokens.Typography.caption)
-                            .foregroundColor(.secondary)
+                            .font(AppTheme.Typography.tinyMedium)
+                            .foregroundColor(AppTheme.Colors.textMuted)
                     }
                 }
 
@@ -246,18 +285,18 @@ struct ProviderCard: View {
 
                 if onTap != nil {
                     Image(systemName: isConnected ? "pencil" : "plus")
-                        .font(.system(size: 12))
-                        .foregroundColor(.secondary)
+                        .font(AppTheme.Typography.smallMedium)
+                        .foregroundColor(isHovered ? AppTheme.Colors.accentHover : AppTheme.Colors.textMuted)
                 }
             }
-            .padding(DesignTokens.Spacing.cardPadding)
+            .padding(AppTheme.Spacing.cardPadding)
             .background(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                    .fill(isHovered ? Color.primary.opacity(0.03) : DesignTokens.Colors.cardBackground)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.large)
+                    .fill(isHovered ? AppTheme.Colors.cardElevated : AppTheme.Colors.card.opacity(0.88))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                    .strokeBorder(DesignTokens.Colors.cardBorder, lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.large)
+                    .strokeBorder(isConnected ? provider.brandColor.opacity(0.25) : AppTheme.Colors.borderSubtle, lineWidth: 0.5)
             )
         }
         .buttonStyle(.plain)

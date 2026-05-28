@@ -77,11 +77,11 @@ struct FeedbackPromptView: View {
         .frame(width: 380)
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill(Color(nsColor: .windowBackgroundColor))
+                .fill(AppTheme.Colors.card)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.secondary.opacity(0.15), lineWidth: 0.5)
+                .stroke(AppTheme.Colors.borderActive, lineWidth: 0.5)
         )
         .shadow(color: .black.opacity(0.15), radius: 15, x: 0, y: 5)
     }
@@ -117,11 +117,11 @@ struct FeedbackPromptView: View {
                     .padding(8)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(Color(nsColor: .textBackgroundColor))
+                            .fill(AppTheme.Colors.inputBackground)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 6)
-                            .stroke(Color.secondary.opacity(0.2), lineWidth: 0.5)
+                            .stroke(AppTheme.Colors.borderActive, lineWidth: 0.5)
                     )
 
                 // Role picker
@@ -141,11 +141,11 @@ struct FeedbackPromptView: View {
                 .padding(8)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(Color(nsColor: .textBackgroundColor))
+                        .fill(AppTheme.Colors.inputBackground)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(Color.secondary.opacity(0.2), lineWidth: 0.5)
+                        .stroke(AppTheme.Colors.borderActive, lineWidth: 0.5)
                 )
 
                 // Contact
@@ -155,11 +155,11 @@ struct FeedbackPromptView: View {
                     .padding(8)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(Color(nsColor: .textBackgroundColor))
+                            .fill(AppTheme.Colors.inputBackground)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 6)
-                            .stroke(Color.secondary.opacity(0.2), lineWidth: 0.5)
+                            .stroke(AppTheme.Colors.borderActive, lineWidth: 0.5)
                     )
 
                 // Message
@@ -170,11 +170,11 @@ struct FeedbackPromptView: View {
                     .frame(height: 80)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(Color(nsColor: .textBackgroundColor))
+                            .fill(AppTheme.Colors.inputBackground)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 6)
-                            .stroke(Color.secondary.opacity(0.2), lineWidth: 0.5)
+                            .stroke(AppTheme.Colors.borderActive, lineWidth: 0.5)
                     )
                     .overlay(alignment: .topLeading) {
                         if message.isEmpty {
@@ -199,7 +199,7 @@ struct FeedbackPromptView: View {
                         .padding(.vertical, 7)
                         .background(
                             RoundedRectangle(cornerRadius: 6)
-                                .fill(isHoveringRemind ? Color.secondary.opacity(0.12) : Color.secondary.opacity(0.06))
+                                .fill(isHoveringRemind ? Color.secondary.opacity(0.12) : AppTheme.Colors.borderSubtle)
                         )
                 }
                 .buttonStyle(.plain)
@@ -263,7 +263,7 @@ struct FeedbackPromptView: View {
                     .padding(.vertical, 6)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(Color.secondary.opacity(0.06))
+                            .fill(AppTheme.Colors.borderSubtle)
                     )
             }
             .buttonStyle(.plain)

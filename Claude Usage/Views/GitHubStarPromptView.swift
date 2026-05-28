@@ -45,7 +45,7 @@ struct GitHubStarPromptView: View {
                         .padding(.vertical, 7)
                         .background(
                             RoundedRectangle(cornerRadius: 6)
-                                .fill(isHoveringLaterButton ? Color.secondary.opacity(0.12) : Color.secondary.opacity(0.06))
+                                .fill(isHoveringLaterButton ? Color.secondary.opacity(0.12) : AppTheme.Colors.borderSubtle)
                         )
                 }
                 .buttonStyle(.plain)
@@ -90,11 +90,11 @@ struct GitHubStarPromptView: View {
         .frame(width: 300)
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill(Color(nsColor: .windowBackgroundColor))
+                .fill(AppTheme.Colors.card)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.secondary.opacity(0.15), lineWidth: 0.5)
+                .stroke(AppTheme.Colors.borderActive, lineWidth: 0.5)
         )
         .shadow(color: .black.opacity(0.15), radius: 15, x: 0, y: 5)
     }

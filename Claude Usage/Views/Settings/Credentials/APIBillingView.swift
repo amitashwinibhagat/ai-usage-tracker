@@ -36,6 +36,7 @@ struct APIBillingView: View {
     @StateObject private var profileManager = ProfileManager.shared
     @State private var wizardState = APIWizardState()
     @State private var currentCredentials: ProfileCredentials?
+    @State private var showRemoveConfirmation = false
 
     private let apiService = ClaudeAPIService()
 
@@ -48,75 +49,15 @@ struct APIBillingView: View {
                     subtitle: "api.subtitle".localized
                 )
 
-                // Professional Status Card
-                HStack(spacing: DesignTokens.Spacing.medium) {
-                    Circle()
-                        .fill(currentCredentials?.apiSessionKey != nil ? Color.green : Color.secondary.opacity(0.4))
-                        .frame(width: DesignTokens.StatusDot.standard, height: DesignTokens.StatusDot.standard)
-
-                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.extraSmall) {
-                        Text(currentCredentials?.apiSessionKey != nil ? "general.connected".localized : "general.not_connected".localized)
-                            .font(DesignTokens.Typography.bodyMedium)
-
-                        if let creds = currentCredentials, let apiKey = creds.apiSessionKey {
-                            Text(maskKey(apiKey))
-                                .font(DesignTokens.Typography.captionMono)
-                                .foregroundColor(.secondary)
-
-                            // Session key expiry status
-                            if let expiry = creds.apiSessionKeyExpiry {
-                                HStack(spacing: 4) {
-                                    if expiry < Date() {
-                                        Image(systemName: "exclamationmark.circle.fill")
-                                            .foregroundColor(.red)
-                                            .font(.system(size: 11))
-                                        Text("Session expired")
-                                            .font(.system(size: 11))
-                                            .foregroundColor(.red)
-                                    } else if expiry < Date().addingTimeInterval(24 * 60 * 60) {
-                                        Image(systemName: "exclamationmark.triangle.fill")
-                                            .foregroundColor(.orange)
-                                            .font(.system(size: 11))
-                                        Text("Expires soon")
-                                            .font(.system(size: 11))
-                                            .foregroundColor(.orange)
-                                    } else {
-                                        Image(systemName: "clock")
-                                            .foregroundColor(.secondary)
-                                            .font(.system(size: 11))
-                                        Text("Expires \(expiry, style: .relative)")
-                                            .font(.system(size: 11))
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Spacer()
-
-                    // Remove button integrated into status card
-                    if currentCredentials?.apiSessionKey != nil {
-                        Button(action: removeCredentials) {
-                            HStack(spacing: DesignTokens.Spacing.extraSmall) {
-                                Image(systemName: "trash")
-                                    .font(.system(size: DesignTokens.Icons.small))
-                                Text("common.remove".localized)
-                                    .font(DesignTokens.Typography.body)
-                            }
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.regular)
-                        .foregroundColor(.red)
-                    }
+                SettingsContentCard {
+                    CredentialStatusContent(
+                        title: currentCredentials?.apiSessionKey != nil ? "API Console connected" : "API Console not connected",
+                        message: apiCredentialMessage,
+                        detail: currentCredentials?.apiSessionKey.map(maskKey),
+                        isConnected: currentCredentials?.apiSessionKey != nil,
+                        removeAction: currentCredentials?.apiSessionKey != nil ? { showRemoveConfirmation = true } : nil
+                    )
                 }
-                .padding(DesignTokens.Spacing.medium)
-                .background(DesignTokens.Colors.cardBackground)
-                .cornerRadius(DesignTokens.Radius.card)
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                        .strokeBorder(DesignTokens.Colors.cardBorder, lineWidth: 1)
-                )
 
                 // Configuration Card Container with 3 Steps
                 VStack(alignment: .leading, spacing: 0) {
@@ -135,7 +76,7 @@ struct APIBillingView: View {
                                     HStack(spacing: DesignTokens.Spacing.extraSmall) {
                                         ZStack {
                                             Circle()
-                                                .fill(isCompleted ? Color.green : (isCurrent ? Color.accentColor : Color.secondary.opacity(0.2)))
+                                                .fill(isCompleted ? Color.green : (isCurrent ? Color.accentColor : AppTheme.Colors.borderActive))
                                                 .frame(width: 20, height: 20)
 
                                             if isCompleted {
@@ -159,7 +100,7 @@ struct APIBillingView: View {
 
                                     if step < 3 {
                                         Rectangle()
-                                            .fill(isCompleted ? Color.green.opacity(0.3) : Color.secondary.opacity(0.2))
+                                            .fill(isCompleted ? Color.green.opacity(0.3) : AppTheme.Colors.borderActive)
                                             .frame(height: 1)
                                     }
                                 }
@@ -211,6 +152,28 @@ struct APIBillingView: View {
             // Reset wizard state
             wizardState = APIWizardState()
         }
+        .alert("Remove API Console credentials?", isPresented: $showRemoveConfirmation) {
+            Button("common.cancel".localized, role: .cancel) { }
+            Button("common.remove".localized, role: .destructive) {
+                removeCredentials()
+            }
+        } message: {
+            Text("This stops API billing and credits tracking for the active profile. You can reconnect later.")
+        }
+    }
+
+    private var apiCredentialMessage: String {
+        guard let apiSessionKey = currentCredentials?.apiSessionKey, !apiSessionKey.isEmpty else {
+            return "Connect Anthropic Console to track API credits, billing, and usage for this profile."
+        }
+
+        guard let expiry = currentCredentials?.apiSessionKeyExpiry else {
+            return "API Console billing tracking is active for this profile."
+        }
+
+        if expiry < Date() { return "Session expired. Reconnect to resume billing tracking." }
+        if expiry < Date().addingTimeInterval(24 * 60 * 60) { return "Session expires soon. Reconnect if tracking stops." }
+        return "Session expires \(expiry.formatted(date: .omitted, time: .shortened))."
     }
 
     private func stepTitle(for step: Int) -> String {
@@ -303,7 +266,7 @@ struct APIEnterKeyStep: View {
                 ConsoleAuthSheet(
                     title: "Sign in to Anthropic Console",
                     loginURL: URL(string: "https://console.anthropic.com/login")!,
-                    cookieDomain: "platform.claude.com",
+                    cookieDomains: ["console.anthropic.com", "anthropic.com", "platform.claude.com"],
                     onSuccess: { result in
                         wizardState.showingAuthSheet = false
                         wizardState.apiSessionKey = result.sessionKey
@@ -319,13 +282,13 @@ struct APIEnterKeyStep: View {
             // OR divider
             HStack {
                 Rectangle()
-                    .fill(Color.secondary.opacity(0.3))
+                    .fill(AppTheme.Colors.textMuted.opacity(0.3))
                     .frame(height: 1)
                 Text("OR")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(.secondary)
                 Rectangle()
-                    .fill(Color.secondary.opacity(0.3))
+                    .fill(AppTheme.Colors.textMuted.opacity(0.3))
                     .frame(height: 1)
             }
             .padding(.vertical, 4)
@@ -467,7 +430,7 @@ struct APISelectOrgStep: View {
                                     .strokeBorder(
                                         wizardState.selectedOrgId == org.id
                                             ? Color.accentColor
-                                            : Color.secondary.opacity(0.3),
+                                            : AppTheme.Colors.textMuted.opacity(0.3),
                                         lineWidth: 1.5
                                     )
                                     .frame(width: 16, height: 16)
@@ -501,7 +464,7 @@ struct APISelectOrgStep: View {
                         .background(
                             wizardState.selectedOrgId == org.id
                                 ? Color.accentColor.opacity(0.06)
-                                : Color.primary.opacity(0.04)
+                                : AppTheme.Colors.card
                         )
                         .cornerRadius(6)
                         .overlay(
@@ -509,7 +472,7 @@ struct APISelectOrgStep: View {
                                 .strokeBorder(
                                     wizardState.selectedOrgId == org.id
                                         ? Color.accentColor.opacity(0.3)
-                                        : Color.primary.opacity(0.08),
+                                        : AppTheme.Colors.elevated,
                                     lineWidth: 1
                                 )
                         )

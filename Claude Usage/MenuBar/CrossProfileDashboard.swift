@@ -26,51 +26,92 @@ struct CrossProfileDashboard: View {
         profilesWithUsage.reduce(0) { $0 + $1.1.weeklyTokensUsed }
     }
 
+    private var highestRiskProfile: (Profile, ClaudeUsage)? {
+        profilesWithUsage.max { lhs, rhs in
+            max(lhs.1.effectiveSessionPercentage, lhs.1.weeklyPercentage) < max(rhs.1.effectiveSessionPercentage, rhs.1.weeklyPercentage)
+        }
+    }
+
+    private var sortedProfiles: [(Profile, ClaudeUsage)] {
+        profilesWithUsage.sorted {
+            max($0.1.effectiveSessionPercentage, $0.1.weeklyPercentage) > max($1.1.effectiveSessionPercentage, $1.1.weeklyPercentage)
+        }
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Header
-            HStack {
-                Text("All Profiles")
-                    .font(.system(size: 13, weight: .semibold))
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
+                Image(systemName: "person.2.fill")
+                    .font(AppTheme.Typography.smallSemibold)
+                    .foregroundColor(AppTheme.Colors.info)
+                    .frame(width: 22, height: 22)
+                    .background(
+                        Circle()
+                            .fill(AppTheme.Colors.info.opacity(0.12))
+                    )
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Profiles at a glance")
+                        .font(AppTheme.Typography.smallSemibold)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+
+                    Text(crossProfileGuidance)
+                        .font(AppTheme.Typography.tiny)
+                        .foregroundColor(AppTheme.Colors.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
 
                 Spacer()
 
                 Text("\(profilesWithUsage.count) profiles")
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
+                    .font(AppTheme.Typography.badge)
+                    .foregroundColor(AppTheme.Colors.textMuted)
             }
 
-            // Aggregate totals
-            HStack(spacing: 16) {
+            HStack(spacing: AppTheme.Spacing.sm) {
                 AggregateMetric(
-                    label: "Session Tokens",
+                    label: "Session",
                     value: "\(totalSessionTokens.formatted())",
                     icon: "flame.fill",
-                    color: .orange
+                    color: AppTheme.Colors.warning
                 )
 
                 AggregateMetric(
-                    label: "Weekly Tokens",
+                    label: "Weekly",
                     value: "\(totalWeeklyTokens.formatted())",
                     icon: "calendar",
-                    color: .blue
+                    color: AppTheme.Colors.info
                 )
             }
 
-            // Per-profile rows
-            VStack(spacing: 6) {
-                ForEach(profilesWithUsage, id: \.0.id) { profile, usage in
+            VStack(spacing: AppTheme.Spacing.xs) {
+                ForEach(sortedProfiles, id: \.0.id) { profile, usage in
                     ProfileUsageRow(profile: profile, usage: usage)
                 }
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
+        .padding(AppTheme.Spacing.sm)
         .background(
-            RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(AppTheme.Colors.card.opacity(0.9))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
         )
         .padding(.horizontal, 10)
+    }
+
+    private var crossProfileGuidance: String {
+        guard let highestRiskProfile else {
+            return "No profile usage has been refreshed yet."
+        }
+
+        let name = highestRiskProfile.0.name
+        let risk = max(highestRiskProfile.1.effectiveSessionPercentage, highestRiskProfile.1.weeklyPercentage)
+        if risk >= 80 { return "\(name) needs attention before more heavy work." }
+        if risk >= 50 { return "\(name) is the profile to watch next." }
+        return "All tracked profiles have comfortable capacity."
     }
 }
 
@@ -81,23 +122,32 @@ struct AggregateMetric: View {
     let color: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            HStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.system(size: 9))
-                    .foregroundColor(color)
+        HStack(spacing: AppTheme.Spacing.xs) {
+            Image(systemName: icon)
+                .font(AppTheme.Typography.tinySemibold)
+                .foregroundColor(color)
+
+            VStack(alignment: .leading, spacing: 1) {
                 Text(label)
-                    .font(.system(size: 9))
-                    .foregroundColor(.secondary)
+                    .font(AppTheme.Typography.nanoMedium)
+                    .foregroundColor(AppTheme.Colors.textMuted)
+                Text(value)
+                    .font(AppTheme.Typography.captionSemibold)
+                    .foregroundColor(AppTheme.Colors.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
-            Text(value)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundColor(.primary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(8)
-        .background(Color.primary.opacity(0.03))
-        .cornerRadius(6)
+        .padding(AppTheme.Spacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                .fill(color.opacity(0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                .strokeBorder(color.opacity(0.18), lineWidth: 0.5)
+        )
     }
 }
 
@@ -106,47 +156,66 @@ struct ProfileUsageRow: View {
     let usage: ClaudeUsage
 
     var body: some View {
-        HStack(spacing: 8) {
-            // Profile indicator
-            Circle()
-                .fill(usageColor)
-                .frame(width: 6, height: 6)
+        HStack(spacing: AppTheme.Spacing.sm) {
+            VStack(spacing: 2) {
+                Circle()
+                    .fill(usageColor)
+                    .frame(width: 7, height: 7)
 
-            Text(profile.name)
-                .font(.system(size: 11, weight: .medium))
-                .lineLimit(1)
+                Text(riskLabel)
+                    .font(AppTheme.Typography.nanoBold)
+                    .foregroundColor(usageColor)
+            }
+            .frame(width: 28)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(profile.name)
+                    .font(AppTheme.Typography.captionMedium)
+                    .foregroundColor(AppTheme.Colors.textPrimary)
+                    .lineLimit(1)
+
+                Text("Resets \(usage.sessionResetTime.timeRemainingString())")
+                    .font(AppTheme.Typography.nanoMedium)
+                    .foregroundColor(AppTheme.Colors.textMuted)
+            }
 
             Spacer()
 
-            // Session
-            HStack(spacing: 3) {
-                Text("\(Int(usage.effectiveSessionPercentage))%")
-                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+            VStack(alignment: .trailing, spacing: 2) {
+                Text("S \(Int(usage.effectiveSessionPercentage))%")
+                    .font(AppTheme.Typography.monoTiny)
                     .foregroundColor(usageColor)
-            }
 
-            // Weekly
-            HStack(spacing: 3) {
-                Text("\(Int(usage.weeklyPercentage))%")
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
+                Text("W \(Int(usage.weeklyPercentage))%")
+                    .font(AppTheme.Typography.monoTiny)
+                    .foregroundColor(AppTheme.Colors.textMuted)
             }
-            .frame(width: 32, alignment: .trailing)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 5)
+        .padding(AppTheme.Spacing.sm)
         .background(
-            RoundedRectangle(cornerRadius: 6)
-                .fill(Color.primary.opacity(profile.isSelectedForDisplay ? 0.05 : 0.02))
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                .fill(AppTheme.Colors.backgroundDeep.opacity(profile.isSelectedForDisplay ? 0.55 : 0.32))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                .strokeBorder(AppTheme.Colors.borderSubtle.opacity(0.75), lineWidth: 0.5)
         )
     }
 
+    private var riskLabel: String {
+        switch max(usage.effectiveSessionPercentage, usage.weeklyPercentage) {
+        case 80...: return "High"
+        case 50..<80: return "Watch"
+        default: return "OK"
+        }
+    }
+
     private var usageColor: Color {
-        let pct = usage.effectiveSessionPercentage
+        let pct = max(usage.effectiveSessionPercentage, usage.weeklyPercentage)
         switch pct {
-        case 0..<50: return .adaptiveGreen
-        case 50..<80: return .orange
-        default: return .red
+        case 0..<50: return AppTheme.Colors.success
+        case 50..<80: return AppTheme.Colors.warning
+        default: return AppTheme.Colors.error
         }
     }
 }

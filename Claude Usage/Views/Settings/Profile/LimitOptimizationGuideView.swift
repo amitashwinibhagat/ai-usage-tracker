@@ -28,7 +28,7 @@ struct LimitOptimizationGuideView: View {
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                                        .strokeBorder(selectedCategory == category ? Color.accentColor.opacity(0.4) : Color.secondary.opacity(0.15), lineWidth: 1)
+                                        .strokeBorder(selectedCategory == category ? Color.accentColor.opacity(0.4) : AppTheme.Colors.borderActive, lineWidth: 1)
                                 )
                         }
                         .buttonStyle(.plain)
@@ -104,7 +104,7 @@ struct TipCard: View {
                     .padding(.vertical, 2)
                     .background(
                         Capsule()
-                            .fill(Color.secondary.opacity(0.1))
+                            .fill(AppTheme.Colors.borderSubtle)
                     )
 
                 Text(tip.riskLevel.displayName)

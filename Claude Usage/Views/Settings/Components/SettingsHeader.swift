@@ -21,32 +21,43 @@ struct SettingsHeader: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.xs) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             if let icon = icon {
-                HStack(spacing: Spacing.md) {
+                HStack(spacing: AppTheme.Spacing.md) {
                     Image(systemName: icon)
-                        .font(.system(size: 24))
-                        .foregroundColor(.accentColor)
+                        .font(AppTheme.Typography.hero)
+                        .foregroundColor(AppTheme.Colors.accentHover)
 
-                    VStack(alignment: .leading, spacing: Spacing.xs) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                         Text(title)
-                            .font(Typography.title)
+                            .font(AppTheme.Typography.pageTitle)
+                            .foregroundColor(AppTheme.Colors.textPrimary)
 
                         Text(subtitle)
-                            .font(Typography.caption)
-                            .foregroundColor(.secondary)
+                            .font(AppTheme.Typography.bodySmall)
+                            .foregroundColor(AppTheme.Colors.textSecondary)
                     }
                 }
             } else {
-                VStack(alignment: .leading, spacing: Spacing.xs) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     Text(title)
-                        .font(Typography.title)
+                        .font(AppTheme.Typography.pageTitle)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
 
                     Text(subtitle)
-                        .font(Typography.caption)
-                        .foregroundColor(.secondary)
+                        .font(AppTheme.Typography.bodySmall)
+                        .foregroundColor(AppTheme.Colors.textSecondary)
                 }
             }
         }
+        .padding(AppTheme.Spacing.cardPadding)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.large)
+                .fill(AppTheme.Colors.cardElevated.opacity(0.88))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.large)
+                .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
+        )
     }
 }

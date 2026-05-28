@@ -181,7 +181,7 @@ struct PopoverContentView: View {
                 .padding(.vertical, 6)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.primary.opacity(0.03))
+                        .fill(AppTheme.Colors.card)
                 )
                 .padding(.horizontal, 10)
                 .padding(.top, 6)
@@ -277,8 +277,9 @@ struct PopoverContentView: View {
 
         }
         .padding(.bottom, 8)
-        .frame(width: 280)
-        .background(VisualEffectBackground())
+        .frame(width: 320)
+        .background(AppTheme.Colors.background)
+        .preferredColorScheme(.dark)
     }
 }
 
@@ -465,7 +466,7 @@ struct ProfileSwitcherBar: View {
             .padding(8)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(isHovered ? Color.primary.opacity(0.05) : Color.clear)
+                    .fill(isHovered ? AppTheme.Colors.card : Color.clear)
             )
         }
         .menuStyle(.borderlessButton)
@@ -605,7 +606,7 @@ struct HeaderIconButton: View {
             .frame(width: 24, height: 24, alignment: .center)
             .background(
                 RoundedRectangle(cornerRadius: 5)
-                    .fill(isHovered ? Color.primary.opacity(0.08) : Color.clear)
+                    .fill(isHovered ? AppTheme.Colors.elevated : Color.clear)
             )
             .contentShape(Rectangle())
         }
@@ -662,11 +663,16 @@ struct SmartUsageDashboard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            // Primary: Session Usage
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            UsageGuidanceCard(
+                sessionPercentage: usage.effectiveSessionPercentage,
+                weeklyPercentage: usage.weeklyPercentage,
+                sessionResetTime: usage.sessionResetTime
+            )
+
             UsageRow(
-                title: "menubar.session_usage".localized,
-                subtitle: "menubar.5_hour_window".localized,
+                title: "Current session",
+                subtitle: "5-hour Claude Code window",
                 usedPercentage: usage.effectiveSessionPercentage,
                 showRemaining: showRemainingPercentage,
                 resetTime: usage.sessionResetTime,
@@ -678,11 +684,10 @@ struct SmartUsageDashboard: View {
                 isPeakHighlighted: isPeakHours
             )
 
-            // All Models (Weekly)
             UsageRow(
-                title: "menubar.all_models".localized,
-                tag: "menubar.weekly".localized,
-                subtitle: nil,
+                title: "Weekly plan usage",
+                tag: "All models",
+                subtitle: "Resets on your weekly Claude schedule",
                 usedPercentage: usage.weeklyPercentage,
                 showRemaining: showRemainingPercentage,
                 resetTime: usage.weeklyResetTime,
@@ -754,7 +759,86 @@ struct SmartUsageDashboard: View {
             }
         }
         .padding(.horizontal, 14)
-        .padding(.vertical, 8)
+        .padding(.vertical, 10)
+    }
+}
+
+// MARK: - Usage Guidance Card
+
+struct UsageGuidanceCard: View {
+    let sessionPercentage: Double
+    let weeklyPercentage: Double
+    let sessionResetTime: Date
+
+    private var statusColor: Color {
+        switch max(sessionPercentage, weeklyPercentage) {
+        case 80...: return AppTheme.Colors.error
+        case 50..<80: return AppTheme.Colors.warning
+        default: return AppTheme.Colors.success
+        }
+    }
+
+    private var icon: String {
+        switch max(sessionPercentage, weeklyPercentage) {
+        case 80...: return "exclamationmark.triangle.fill"
+        case 50..<80: return "speedometer"
+        default: return "checkmark.circle.fill"
+        }
+    }
+
+    private var title: String {
+        if sessionPercentage >= 80 { return "Session is almost full" }
+        if weeklyPercentage >= 80 { return "Weekly pool is almost full" }
+        if sessionPercentage >= 50 || weeklyPercentage >= 50 { return "Keep an eye on usage" }
+        return "Safe to keep working"
+    }
+
+    private var detail: String {
+        if sessionPercentage >= 80 {
+            return "Wrap up large prompts until the session resets in \(sessionResetTime.timeRemainingString())."
+        }
+        if weeklyPercentage >= 80 {
+            return "Save capacity for high-value tasks before the weekly reset."
+        }
+        if sessionPercentage >= 50 || weeklyPercentage >= 50 {
+            return "You still have room, but heavier prompts can move usage quickly."
+        }
+        return "Plenty of session and weekly capacity remains right now."
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
+            Image(systemName: icon)
+                .font(AppTheme.Typography.smallSemibold)
+                .foregroundColor(statusColor)
+                .frame(width: 22, height: 22)
+                .background(
+                    Circle()
+                        .fill(statusColor.opacity(0.12))
+                )
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(AppTheme.Typography.smallSemibold)
+                    .foregroundColor(AppTheme.Colors.textPrimary)
+
+                Text(detail)
+                    .font(AppTheme.Typography.tiny)
+                    .foregroundColor(AppTheme.Colors.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(AppTheme.Spacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(statusColor.opacity(0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .strokeBorder(statusColor.opacity(0.24), lineWidth: 0.5)
+        )
     }
 }
 
@@ -802,7 +886,7 @@ struct UsageRow: View {
         if let pace = paceStatus {
             return pace.swiftUIColor
         }
-        return Color(nsColor: .labelColor)
+        return AppTheme.Colors.textPrimary
     }
 
     private var statusLevel: UsageStatusLevel {
@@ -815,85 +899,131 @@ struct UsageRow: View {
 
     private var statusColor: Color {
         switch statusLevel {
-        case .safe: return .adaptiveGreen
-        case .moderate: return .orange
-        case .critical: return .red
+        case .safe: return AppTheme.Colors.success
+        case .moderate: return AppTheme.Colors.warning
+        case .critical: return AppTheme.Colors.error
+        }
+    }
+
+    private var usedText: String {
+        "\(Int(usedPercentage.rounded()))% used"
+    }
+
+    private var remainingText: String {
+        "\(Int(max(0, 100 - usedPercentage).rounded()))% left"
+    }
+
+    private var primaryMetricText: String {
+        showRemaining ? remainingText : usedText
+    }
+
+    private var guidanceText: String {
+        switch statusLevel {
+        case .safe:
+            return "Plenty of room"
+        case .moderate:
+            return "Use larger prompts carefully"
+        case .critical:
+            return "Near limit"
         }
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            // Title row with percentage
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading, spacing: 1) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 5) {
                         Text(title)
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.primary)
+                            .font(AppTheme.Typography.labelBold)
+                            .foregroundColor(AppTheme.Colors.textPrimary)
 
                         if let tag = tag {
                             Text(tag)
-                                .font(.system(size: 9, weight: .medium))
-                                .foregroundColor(.secondary)
+                                .font(AppTheme.Typography.badge)
+                                .foregroundColor(AppTheme.Colors.textSecondary)
                                 .padding(.horizontal, 5)
                                 .padding(.vertical, 1)
                                 .background(
                                     Capsule()
-                                        .fill(Color.primary.opacity(0.08))
+                                        .fill(AppTheme.Colors.elevated.opacity(0.8))
                                 )
                         }
                     }
 
                     if let subtitle = subtitle {
                         Text(subtitle)
-                            .font(.system(size: 10))
-                            .foregroundColor(.secondary)
+                            .font(AppTheme.Typography.tiny)
+                            .foregroundColor(AppTheme.Colors.textMuted)
                     }
                 }
 
                 Spacer()
 
-                Text("\(Int(displayPercentage))%")
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
-                    .foregroundColor(statusColor)
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(primaryMetricText)
+                        .font(AppTheme.Typography.roundedSemibold)
+                        .foregroundColor(statusColor)
+
+                    if showRemaining {
+                        Text(usedText)
+                            .font(AppTheme.Typography.nanoMedium)
+                            .foregroundColor(AppTheme.Colors.textMuted)
+                    } else {
+                        Text(remainingText)
+                            .font(AppTheme.Typography.nanoMedium)
+                            .foregroundColor(AppTheme.Colors.textMuted)
+                    }
+                }
             }
 
-            // Progress bar
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 2.5)
-                        .fill(Color.primary.opacity(0.08))
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.pill)
+                        .fill(AppTheme.Colors.elevated.opacity(0.85))
 
-                    RoundedRectangle(cornerRadius: 2.5)
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.pill)
                         .fill(statusColor)
                         .frame(width: geometry.size.width * min(displayPercentage / 100.0, 1.0))
                         .animation(.easeInOut(duration: 0.6), value: displayPercentage)
                 }
                 .overlay(alignment: .leading) {
                     if let fraction = timeMarkerFraction {
-                        RoundedRectangle(cornerRadius: 1)
+                        RoundedRectangle(cornerRadius: AppTheme.Radius.micro)
                             .fill(timeMarkerColor)
-                            .frame(width: 2.5, height: 8)
+                            .frame(width: 2.5, height: 11)
                             .offset(x: round(geometry.size.width * fraction) - 0.75)
                     }
                 }
             }
-            .frame(height: 4)
+            .frame(height: 7)
 
-            // Reset time
-            if let reset = resetTime {
-                Text(resetTimeText(for: reset))
-                    .font(.system(size: 9))
-                    .foregroundColor(.secondary)
+            HStack(spacing: AppTheme.Spacing.xs) {
+                Text(guidanceText)
+                    .font(AppTheme.Typography.tinyMedium)
+                    .foregroundColor(statusColor)
+
+                if let reset = resetTime {
+                    Circle()
+                        .fill(AppTheme.Colors.textMuted.opacity(0.55))
+                        .frame(width: 3, height: 3)
+
+                    Text(resetTimeText(for: reset))
+                        .font(AppTheme.Typography.tiny)
+                        .foregroundColor(AppTheme.Colors.textMuted)
+                        .lineLimit(1)
+                }
             }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
+        .padding(AppTheme.Spacing.sm)
         .background(
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(AppTheme.Colors.card.opacity(0.9))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
                 .strokeBorder(
-                    isPeakHighlighted ? Color.red.opacity(0.6) : Color.primary.opacity(0.1),
-                    lineWidth: isPeakHighlighted ? 1.5 : 0.5
+                    isPeakHighlighted ? AppTheme.Colors.error.opacity(0.7) : AppTheme.Colors.borderSubtle,
+                    lineWidth: isPeakHighlighted ? 1.2 : 0.5
                 )
         )
     }
@@ -1157,7 +1287,7 @@ struct APICostCard: View {
         .padding(.vertical, 8)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
+                .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
         )
     }
 }
@@ -1215,7 +1345,7 @@ struct DailyCostChart: View {
             .chartYAxis {
                 AxisMarks(position: .leading, values: .automatic(desiredCount: 3)) { value in
                     AxisGridLine(stroke: StrokeStyle(lineWidth: 0.3))
-                        .foregroundStyle(Color.secondary.opacity(0.15))
+                        .foregroundStyle(AppTheme.Colors.borderActive)
                     AxisValueLabel {
                         if let v = value.as(Double.self) {
                             Text(formatDollars(v, max: maxValue))
@@ -1281,7 +1411,7 @@ struct APICostSourceRow: View {
                 .padding(.horizontal, 6)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.secondary.opacity(0.06))
+                        .fill(AppTheme.Colors.borderSubtle)
                 )
             }
             .buttonStyle(.plain)
@@ -1366,7 +1496,7 @@ struct APIUsageCard: View {
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 2.5)
-                        .fill(Color.primary.opacity(0.08))
+                        .fill(AppTheme.Colors.elevated)
 
                     RoundedRectangle(cornerRadius: 2.5)
                         .fill(usageColor)
@@ -1400,7 +1530,7 @@ struct APIUsageCard: View {
         .padding(.vertical, 8)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
+                .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
         )
     }
 
@@ -1457,56 +1587,79 @@ struct BurnRateCard: View {
     @State private var prediction: BurnRatePrediction?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
                 Image(systemName: "flame.fill")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(.orange)
+                    .font(AppTheme.Typography.smallSemibold)
+                    .foregroundColor(AppTheme.Colors.warning)
+                    .frame(width: 22, height: 22)
+                    .background(
+                        Circle()
+                            .fill(AppTheme.Colors.warning.opacity(0.12))
+                    )
 
-                Text("Burn Rate")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.primary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Pace forecast")
+                        .font(AppTheme.Typography.smallSemibold)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+
+                    Text("Will this session hit the cap?")
+                        .font(AppTheme.Typography.tiny)
+                        .foregroundColor(AppTheme.Colors.textMuted)
+                }
 
                 Spacer()
 
                 if let prediction = prediction, prediction.isReliable {
                     Image(systemName: prediction.trend.icon)
-                        .font(.system(size: 10))
+                        .font(AppTheme.Typography.tinySemibold)
                         .foregroundColor(trendColor(prediction.trend))
                 }
             }
 
             if let prediction = prediction {
                 if prediction.isReliable, let minutes = prediction.minutesToLimit {
-                    HStack(alignment: .firstTextBaseline, spacing: 4) {
-                        Text("Hit limit in")
-                            .font(.system(size: 11))
-                            .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack(alignment: .firstTextBaseline, spacing: 4) {
+                            Text("At this pace:")
+                                .font(AppTheme.Typography.tiny)
+                                .foregroundColor(AppTheme.Colors.textSecondary)
 
-                        Text(prediction.timeToLimitText)
-                            .font(.system(size: 13, weight: .semibold, design: .rounded))
-                            .foregroundColor(minutes < 15 ? .red : .orange)
+                            Text(minutes < 15 ? "limit soon" : prediction.timeToLimitText)
+                                .font(AppTheme.Typography.roundedSemibold)
+                                .foregroundColor(minutes < 15 ? AppTheme.Colors.error : AppTheme.Colors.warning)
+                        }
+
+                        Text("\(prediction.trend.description) · \(Int(prediction.tokensPerMinute.rounded())) tokens/min")
+                            .font(AppTheme.Typography.tiny)
+                            .foregroundColor(AppTheme.Colors.textMuted)
                     }
-
-                    Text(prediction.trend.description)
-                        .font(.system(size: 9))
-                        .foregroundColor(.secondary)
                 } else {
-                    Text(prediction.timeToLimitText)
-                        .font(.system(size: 11))
-                        .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Learning your pace")
+                            .font(AppTheme.Typography.roundedSemibold)
+                            .foregroundColor(AppTheme.Colors.textPrimary)
+
+                        Text("Use Claude normally for a few more minutes to forecast your session cap risk.")
+                            .font(AppTheme.Typography.tiny)
+                            .foregroundColor(AppTheme.Colors.textMuted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
             } else {
                 Text("Calculating...")
-                    .font(.system(size: 11))
-                    .foregroundColor(.secondary)
+                    .font(AppTheme.Typography.tiny)
+                    .foregroundColor(AppTheme.Colors.textMuted)
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
+        .padding(AppTheme.Spacing.sm)
         .background(
-            RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(Color.orange.opacity(0.2), lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(AppTheme.Colors.card.opacity(0.9))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .strokeBorder(AppTheme.Colors.warning.opacity(0.22), lineWidth: 0.5)
         )
         .padding(.horizontal, 10)
         .onAppear {
@@ -1519,10 +1672,10 @@ struct BurnRateCard: View {
 
     private func trendColor(_ trend: BurnTrend) -> Color {
         switch trend {
-        case .accelerating: return .red
-        case .steady: return .orange
-        case .decelerating: return .green
-        case .unknown: return .secondary
+        case .accelerating: return AppTheme.Colors.error
+        case .steady: return AppTheme.Colors.warning
+        case .decelerating: return AppTheme.Colors.success
+        case .unknown: return AppTheme.Colors.textMuted
         }
     }
 }
@@ -1533,40 +1686,58 @@ struct CostTransparencyCard: View {
     let breakdown: CostBreakdown
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
                 Image(systemName: "dollarsign.circle.fill")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(.green)
+                    .font(AppTheme.Typography.smallSemibold)
+                    .foregroundColor(AppTheme.Colors.success)
+                    .frame(width: 22, height: 22)
+                    .background(
+                        Circle()
+                            .fill(AppTheme.Colors.success.opacity(0.12))
+                    )
 
-                Text("API Cost Equivalent")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.primary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Claude value")
+                        .font(AppTheme.Typography.smallSemibold)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+
+                    Text("What today would cost at API rates")
+                        .font(AppTheme.Typography.tiny)
+                        .foregroundColor(AppTheme.Colors.textMuted)
+                }
 
                 Spacer()
             }
 
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
+            HStack(alignment: .firstTextBaseline, spacing: 5) {
                 Text(breakdown.formattedTotalCost)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundColor(.primary)
+                    .font(AppTheme.Typography.statMedium)
+                    .foregroundColor(AppTheme.Colors.textPrimary)
 
-                Text("today at API rates")
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
+                Text("estimated today")
+                    .font(AppTheme.Typography.tiny)
+                    .foregroundColor(AppTheme.Colors.textMuted)
             }
 
             if let savings = breakdown.formattedSavings {
                 Text("Saved \(savings) vs API pricing today")
-                    .font(.system(size: 9))
-                    .foregroundColor(.green)
+                    .font(AppTheme.Typography.tinyMedium)
+                    .foregroundColor(AppTheme.Colors.success)
+            } else {
+                Text("No paid API-equivalent usage detected yet today.")
+                    .font(AppTheme.Typography.tiny)
+                    .foregroundColor(AppTheme.Colors.textMuted)
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
+        .padding(AppTheme.Spacing.sm)
         .background(
-            RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(Color.green.opacity(0.2), lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(AppTheme.Colors.card.opacity(0.9))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .strokeBorder(AppTheme.Colors.success.opacity(0.22), lineWidth: 0.5)
         )
         .padding(.horizontal, 10)
     }
@@ -1634,7 +1805,7 @@ struct ConversationBreakdownCard: View {
                         .padding(.vertical, 3)
                         .background(
                             RoundedRectangle(cornerRadius: 4)
-                                .fill(Color.primary.opacity(0.03))
+                                .fill(AppTheme.Colors.card)
                         )
                     }
                 }
@@ -1781,7 +1952,7 @@ struct MultiAIDashboard: View {
         .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
+                .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
         )
         .padding(.horizontal, 10)
     }
@@ -1819,7 +1990,7 @@ struct ProviderUsageRow: View {
         .padding(.vertical, 5)
         .background(
             RoundedRectangle(cornerRadius: 6)
-                .fill(Color.primary.opacity(0.03))
+                .fill(AppTheme.Colors.card)
         )
     }
 

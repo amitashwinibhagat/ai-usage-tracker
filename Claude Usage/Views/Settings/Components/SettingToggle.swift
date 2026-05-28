@@ -30,9 +30,9 @@ struct SettingToggle: View {
 
         var color: Color {
             switch self {
-            case .beta: return SettingsColors.betaBadge
-            case .pro: return SettingsColors.proBadge
-            case .new: return SettingsColors.info
+            case .beta: return AppTheme.Colors.betaBadge
+            case .pro: return AppTheme.Colors.proBadge
+            case .new: return AppTheme.Colors.newBadge
             }
         }
     }
@@ -51,11 +51,11 @@ struct SettingToggle: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.extraSmall) {
-                HStack(spacing: DesignTokens.Spacing.small) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+                HStack(spacing: AppTheme.Spacing.sm) {
                     Text(title)
-                        .font(DesignTokens.Typography.body)
-                        .foregroundColor(.primary)
+                        .font(AppTheme.Typography.label)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
 
                     if let badge = badge {
                         BadgeView(badge: badge)
@@ -64,18 +64,28 @@ struct SettingToggle: View {
 
                 if let description = description {
                     Text(description)
-                        .font(DesignTokens.Typography.caption)
-                        .foregroundColor(.secondary)
+                        .font(AppTheme.Typography.small)
+                        .foregroundColor(AppTheme.Colors.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
 
-            Spacer(minLength: DesignTokens.Spacing.cardPadding)
+            Spacer(minLength: AppTheme.Spacing.cardPadding)
 
             Toggle("", isOn: $isOn)
                 .labelsHidden()
                 .toggleStyle(.switch)
+                .tint(AppTheme.Colors.accent)
         }
+        .padding(AppTheme.Spacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(AppTheme.Colors.backgroundDeep.opacity(0.45))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .strokeBorder(AppTheme.Colors.borderSubtle.opacity(0.75), lineWidth: 0.5)
+        )
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityLabelText)
     }
@@ -98,13 +108,17 @@ private struct BadgeView: View {
 
     var body: some View {
         Text(badge.text)
-            .font(.system(size: 9, weight: .bold))
-            .foregroundColor(.white)
+            .font(AppTheme.Typography.badge)
+            .foregroundColor(AppTheme.Colors.textPrimary)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
             .background(
                 Capsule()
-                    .fill(badge.color)
+                    .fill(badge.color.opacity(0.22))
+            )
+            .overlay(
+                Capsule()
+                    .strokeBorder(badge.color.opacity(0.45), lineWidth: 0.5)
             )
             .accessibilityHidden(true)
     }

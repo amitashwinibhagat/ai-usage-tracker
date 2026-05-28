@@ -8,7 +8,7 @@
 import SwiftUI
 import AppKit
 
-/// About page with app information and contributors
+/// About page with app information, direct-distribution details, and support actions.
 struct AboutView: View {
     @State private var contributors: [Contributor] = []
     @State private var isLoadingContributors = false
@@ -26,8 +26,7 @@ struct AboutView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: DesignTokens.Spacing.section) {
-                // Header with App Info
-                VStack(spacing: DesignTokens.Spacing.medium) {
+                VStack(spacing: AppTheme.Spacing.md) {
                     Image("AboutLogo")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -35,11 +34,12 @@ struct AboutView: View {
 
                     VStack(spacing: DesignTokens.Spacing.extraSmall) {
                         Text("app.name".localized)
-                            .font(DesignTokens.Typography.pageTitle)
+                            .font(AppTheme.Typography.pageTitle)
+                            .foregroundColor(AppTheme.Colors.textPrimary)
 
                         Text("about.version".localized(with: appVersion))
-                            .font(DesignTokens.Typography.caption)
-                            .foregroundColor(.secondary)
+                            .font(AppTheme.Typography.small)
+                            .foregroundColor(AppTheme.Colors.textSecondary)
 
                         // Check for Updates button
                         Button(action: {
@@ -51,7 +51,7 @@ struct AboutView: View {
                                 Text("about.check_updates".localized)
                                     .font(.system(size: 11))
                             }
-                            .foregroundColor(.blue)
+                            .foregroundColor(AppTheme.Colors.accentHover)
                         }
                         .buttonStyle(.plain)
                         .padding(.top, 4)
@@ -60,12 +60,18 @@ struct AboutView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.top, DesignTokens.Spacing.cardPadding)
 
-                Divider()
+                ProductInsightCard(
+                    icon: "shippingbox.fill",
+                    title: "Direct macOS distribution",
+                    message: "Claude Usage is distributed directly with Sparkle updates, so fixes and provider changes can ship faster than an App Store release cycle.",
+                    color: AppTheme.Colors.info
+                )
 
                 // Creator
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
-                    Text("about.created_by".localized)
-                        .font(DesignTokens.Typography.sectionTitle)
+                    Text("Built and maintained by")
+                        .font(AppTheme.Typography.cardTitle)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
 
                     Button(action: {
                         if let url = URL(string: "https://github.com/amitashwinibhagat") {
@@ -74,87 +80,38 @@ struct AboutView: View {
                     }) {
                         HStack(spacing: DesignTokens.Spacing.medium) {
                             Image(systemName: "person.circle.fill")
-                                .font(.system(size: 20))
-                                .foregroundColor(.secondary)
+                                .font(AppTheme.Typography.cardTitle)
+                                .foregroundColor(AppTheme.Colors.accentHover)
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("creator.name".localized)
-                                    .font(DesignTokens.Typography.body)
-                                    .foregroundColor(.primary)
+                                    .font(AppTheme.Typography.label)
+                                    .foregroundColor(AppTheme.Colors.textPrimary)
 
                                 Text("creator.username".localized)
-                                    .font(DesignTokens.Typography.caption)
-                                    .foregroundColor(.secondary)
+                                    .font(AppTheme.Typography.small)
+                                    .foregroundColor(AppTheme.Colors.textSecondary)
                             }
 
                             Spacer()
 
                             Image(systemName: "arrow.up.right")
-                                .font(.system(size: 10))
-                                .foregroundColor(.secondary)
+                                .font(AppTheme.Typography.tinySemibold)
+                                .foregroundColor(AppTheme.Colors.textMuted)
                         }
                     }
                     .buttonStyle(.plain)
                 }
 
-                // Contributors
-                if !contributors.isEmpty {
-                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
-                        Text("about.contributors".localized(with: contributors.count))
-                            .font(DesignTokens.Typography.sectionTitle)
-
-                        ContributorsGridView(contributors: contributors)
-                    }
-                } else if isLoadingContributors {
-                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
-                        Text("about.contributors_loading".localized)
-                            .font(DesignTokens.Typography.sectionTitle)
-
-                        ProgressView()
-                            .controlSize(.small)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.vertical, DesignTokens.Spacing.medium)
-                    }
-                } else if contributorsError != nil {
-                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
-                        Text("about.contributors".localized(with: 0))
-                            .font(DesignTokens.Typography.sectionTitle)
-
-                        HStack {
-                            Text("about.contributors_failed".localized)
-                                .font(DesignTokens.Typography.caption)
-                                .foregroundColor(.secondary)
-
-                            Spacer()
-
-                            Button(action: { fetchContributors() }) {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "arrow.clockwise")
-                                        .font(.system(size: 10))
-                                    Text("common.retry".localized)
-                                        .font(.system(size: 11))
-                                }
-                                .foregroundColor(.blue)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-
                 // Links
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
                     Text("about.links".localized)
-                        .font(DesignTokens.Typography.sectionTitle)
+                        .font(AppTheme.Typography.cardTitle)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
 
                     VStack(spacing: DesignTokens.Spacing.small) {
-                        LinkButton(title: "about.star_github".localized, icon: "star.fill") {
-                            if let url = URL(string: "https://github.com/amitashwinibhagat/claude-usage-tracker-private") {
-                                NSWorkspace.shared.open(url)
-                            }
-                        }
-
-                        LinkButton(title: "about.report_issue".localized, icon: "exclamationmark.triangle") {
-                            if let url = URL(string: "https://github.com/amitashwinibhagat/claude-usage-tracker-private/issues") {
+                        LinkButton(title: "Upgrade to Pro", icon: "star.fill") {
+                            if let url = LicenseManager.shared.proCheckoutURL {
                                 NSWorkspace.shared.open(url)
                             }
                         }
@@ -170,7 +127,13 @@ struct AboutView: View {
                             NotificationCenter.default.post(name: .showSetupWizard, object: nil)
                         }
 
-                        LinkButton(title: "about.reset_app_data".localized, icon: "trash") {
+                        LinkButton(
+                            title: "about.reset_app_data".localized,
+                            icon: "trash",
+                            tint: AppTheme.Colors.error,
+                            iconTint: AppTheme.Colors.error,
+                            trailingIcon: nil
+                        ) {
                             showResetConfirmation = true
                         }
                     }
@@ -186,13 +149,13 @@ struct AboutView: View {
 
                 // Footer
                 VStack(spacing: DesignTokens.Spacing.extraSmall) {
-                    Text("about.mit_license".localized)
-                        .font(DesignTokens.Typography.caption)
-                        .foregroundColor(.secondary)
+                    Text("Closed-source commercial macOS app")
+                        .font(AppTheme.Typography.small)
+                        .foregroundColor(AppTheme.Colors.textMuted)
 
-                    Text("© \(String(Calendar.current.component(.year, from: Date()))) Hamed Elfayome")
-                        .font(DesignTokens.Typography.caption)
-                        .foregroundColor(.secondary)
+                    Text("© \(String(Calendar.current.component(.year, from: Date()))) Amit Ashwini Bhagat")
+                        .font(AppTheme.Typography.small)
+                        .foregroundColor(AppTheme.Colors.textMuted)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, DesignTokens.Spacing.medium)
@@ -201,11 +164,7 @@ struct AboutView: View {
             }
             .padding(28)
         }
-        .onAppear {
-            if contributors.isEmpty && !isLoadingContributors {
-                fetchContributors()
-            }
-        }
+        .onAppear { }
         .sheet(isPresented: $showFeedbackForm) {
             FeedbackPromptView(
                 onSubmit: { _, _, _, _ in
@@ -264,25 +223,46 @@ struct AboutView: View {
 struct LinkButton: View {
     let title: String
     let icon: String
+    let tint: Color
+    let iconTint: Color
+    let trailingIcon: String?
     let action: () -> Void
+
+    init(
+        title: String,
+        icon: String,
+        tint: Color = AppTheme.Colors.textPrimary,
+        iconTint: Color = AppTheme.Colors.textSecondary,
+        trailingIcon: String? = "arrow.up.right",
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.icon = icon
+        self.tint = tint
+        self.iconTint = iconTint
+        self.trailingIcon = trailingIcon
+        self.action = action
+    }
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: DesignTokens.Spacing.iconText) {
                 Image(systemName: icon)
                     .font(.system(size: DesignTokens.Icons.small))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(iconTint)
                     .frame(width: DesignTokens.Spacing.cardPadding)
 
                 Text(title)
                     .font(DesignTokens.Typography.body)
-                    .foregroundColor(.primary)
+                    .foregroundColor(tint)
 
                 Spacer()
 
-                Image(systemName: "arrow.up.right")
-                    .font(.system(size: 9))
-                    .foregroundColor(.secondary)
+                if let trailingIcon {
+                    Image(systemName: trailingIcon)
+                        .font(.system(size: 9))
+                        .foregroundColor(AppTheme.Colors.textSecondary)
+                }
             }
         }
         .buttonStyle(.plain)
@@ -325,7 +305,7 @@ struct ContributorAvatar: View {
                         .clipShape(Circle())
                 } else {
                     Circle()
-                        .fill(Color.secondary.opacity(0.1))
+                        .fill(AppTheme.Colors.borderSubtle)
                         .frame(width: 40, height: 40)
                         .overlay(
                             Group {

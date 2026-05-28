@@ -57,7 +57,7 @@ struct APISettingsView: View {
                         .padding(Spacing.inputPadding)
                         .background(
                             RoundedRectangle(cornerRadius: Spacing.radiusMedium)
-                                .fill(Color(nsColor: .textBackgroundColor))
+                                .fill(AppTheme.Colors.inputBackground)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: Spacing.radiusMedium)
                                         .strokeBorder(Color.gray.opacity(0.2), lineWidth: 1)

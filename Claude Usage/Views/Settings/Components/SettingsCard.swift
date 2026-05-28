@@ -29,51 +29,50 @@ struct SettingsCard<Content: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header
             if title != nil || subtitle != nil {
-                VStack(alignment: .leading, spacing: Spacing.xs) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     if let title = title {
                         Text(title)
-                            .font(Typography.subtitle)
-                            .foregroundColor(.primary)
+                            .font(AppTheme.Typography.cardTitle)
+                            .foregroundColor(AppTheme.Colors.textPrimary)
                     }
 
                     if let subtitle = subtitle {
                         Text(subtitle)
-                            .font(Typography.caption)
-                            .foregroundColor(.secondary)
+                            .font(AppTheme.Typography.small)
+                            .foregroundColor(AppTheme.Colors.textSecondary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
-                .padding(.horizontal, Spacing.cardPadding)
-                .padding(.top, Spacing.cardPadding)
-                .padding(.bottom, Spacing.md)
+                .padding(.horizontal, AppTheme.Spacing.cardPadding)
+                .padding(.top, AppTheme.Spacing.cardPadding)
+                .padding(.bottom, AppTheme.Spacing.md)
             }
 
-            // Content
             content
-                .padding(.horizontal, Spacing.cardPadding)
-                .padding(.bottom, footer == nil ? Spacing.cardPadding : Spacing.md)
+                .padding(.horizontal, AppTheme.Spacing.cardPadding)
+                .padding(.top, title == nil && subtitle == nil ? AppTheme.Spacing.cardPadding : 0)
+                .padding(.bottom, footer == nil ? AppTheme.Spacing.cardPadding : AppTheme.Spacing.md)
 
-            // Footer
             if let footer = footer {
                 Text(footer)
-                    .font(Typography.caption)
-                    .foregroundColor(.secondary)
+                    .font(AppTheme.Typography.small)
+                    .foregroundColor(AppTheme.Colors.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal, Spacing.cardPadding)
-                    .padding(.bottom, Spacing.cardPadding)
+                    .padding(.horizontal, AppTheme.Spacing.cardPadding)
+                    .padding(.bottom, AppTheme.Spacing.cardPadding)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: Spacing.radiusLarge)
-                .fill(SettingsColors.cardBackground)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.large)
+                .fill(AppTheme.Colors.card.opacity(0.92))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: Spacing.radiusLarge)
-                .strokeBorder(SettingsColors.border, lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.large)
+                .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
         )
+        .shadow(color: AppTheme.Shadows.card.color, radius: AppTheme.Shadows.card.radius, x: AppTheme.Shadows.card.x, y: AppTheme.Shadows.card.y)
     }
 }
 

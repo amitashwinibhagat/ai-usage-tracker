@@ -9,24 +9,28 @@ struct ContextualTipCard: View {
     var body: some View {
         if let tip = currentTip,
            shouldShowTip {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 6) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+                HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
                     Image(systemName: "lightbulb.fill")
-                        .font(.system(size: 10))
-                        .foregroundColor(.yellow)
+                        .font(AppTheme.Typography.smallSemibold)
+                        .foregroundColor(AppTheme.Colors.caution)
+                        .frame(width: 22, height: 22)
+                        .background(
+                            Circle()
+                                .fill(AppTheme.Colors.caution.opacity(0.13))
+                        )
 
-                    Text("Tip")
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Usage tip")
+                            .font(AppTheme.Typography.tinySemibold)
+                            .foregroundColor(AppTheme.Colors.textMuted)
+                            .textCase(.uppercase)
 
-                    Spacer()
-                }
-
-                HStack(alignment: .top, spacing: 4) {
-                    Text(tip.titleKey.localized)
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(.primary)
-                        .lineLimit(2)
+                        Text(tip.titleKey.localized)
+                            .font(AppTheme.Typography.captionMedium)
+                            .foregroundColor(AppTheme.Colors.textPrimary)
+                            .lineLimit(2)
+                    }
 
                     Spacer()
 
@@ -42,22 +46,21 @@ struct ContextualTipCard: View {
                             }
                         } label: {
                             Image(systemName: copiedCommand == tip.actionData?.value ? "checkmark" : "doc.on.doc")
-                                .font(.system(size: 9))
-                                .foregroundColor(.secondary)
+                                .font(AppTheme.Typography.tinySemibold)
+                                .foregroundColor(copiedCommand == tip.actionData?.value ? AppTheme.Colors.success : AppTheme.Colors.textMuted)
                         }
                         .buttonStyle(.plain)
                     }
                 }
             }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+            .padding(AppTheme.Spacing.sm)
             .background(
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(Color.yellow.opacity(0.06))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 6)
-                            .strokeBorder(Color.yellow.opacity(0.2), lineWidth: 0.5)
-                    )
+                RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                    .fill(AppTheme.Colors.caution.opacity(0.08))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                    .strokeBorder(AppTheme.Colors.caution.opacity(0.22), lineWidth: 0.5)
             )
             .padding(.horizontal, 14)
             .onAppear {
@@ -65,6 +68,9 @@ struct ContextualTipCard: View {
             }
         } else {
             EmptyView()
+                .onAppear {
+                    loadTip()
+                }
         }
     }
 

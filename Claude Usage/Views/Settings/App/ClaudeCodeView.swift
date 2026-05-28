@@ -128,7 +128,7 @@ struct ClaudeCodeView: View {
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                                        .strokeBorder(colorMode == mode ? Color.accentColor.opacity(0.4) : Color.secondary.opacity(0.15), lineWidth: 1)
+                                        .strokeBorder(colorMode == mode ? Color.accentColor.opacity(0.4) : AppTheme.Colors.borderActive, lineWidth: 1)
                                 )
                             }
                             .buttonStyle(.plain)

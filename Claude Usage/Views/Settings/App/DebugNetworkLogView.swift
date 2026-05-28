@@ -312,7 +312,7 @@ struct NetworkLogDetailView: View {
                                 .textSelection(.enabled)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(8)
-                                .background(Color(nsColor: .textBackgroundColor))
+                                .background(AppTheme.Colors.inputBackground)
                                 .cornerRadius(6)
                         }
                     }
@@ -332,7 +332,7 @@ struct NetworkLogDetailView: View {
                                     .textSelection(.enabled)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(8)
-                                    .background(Color(nsColor: .textBackgroundColor))
+                                    .background(AppTheme.Colors.inputBackground)
                                     .cornerRadius(6)
                             }
                         }

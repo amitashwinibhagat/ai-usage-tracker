@@ -21,13 +21,18 @@ struct ProFeaturesView: View {
                 // Page Header
                 SettingsPageHeader(
                     title: "Pro Features",
-                    subtitle: "Unlock advanced tracking, predictions, and multi-AI support"
+                    subtitle: "Turn raw Claude limits into planning, forecasting, and cost visibility."
                 )
 
-                // Current Tier Badge
+                ProductInsightCard(
+                    icon: "target",
+                    title: "Built for avoiding surprise limits",
+                    message: "Pro is designed around the moments that cost time: hitting a session cap mid-work, losing track across profiles, or not knowing which AI account still has capacity.",
+                    color: AppTheme.Colors.proBadge
+                )
+
                 tierStatusCard
 
-                // Feature Grid
                 featureGrid
 
                 // Pricing Info (for free users)
@@ -74,80 +79,109 @@ struct ProFeaturesView: View {
 
     private var tierStatusCard: some View {
         SettingsContentCard {
-            HStack(spacing: DesignTokens.Spacing.medium) {
-                Image(systemName: featureFlags.isFree ? "lock.fill" : "checkmark.seal.fill")
-                    .font(.system(size: 24))
-                    .foregroundColor(featureFlags.isFree ? .orange : .green)
+            HStack(alignment: .top, spacing: AppTheme.Spacing.md) {
+                ZStack {
+                    Circle()
+                        .fill((featureFlags.isFree ? AppTheme.Colors.warning : AppTheme.Colors.success).opacity(0.14))
+                        .frame(width: 44, height: 44)
 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Current Plan: \(licenseManager.currentTier.displayName)")
-                        .font(DesignTokens.Typography.sectionTitle)
+                    Image(systemName: featureFlags.isFree ? "lock.fill" : "checkmark.seal.fill")
+                        .font(AppTheme.Typography.cardTitle)
+                        .foregroundColor(featureFlags.isFree ? AppTheme.Colors.warning : AppTheme.Colors.success)
+                }
+
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+                    Text("Current plan")
+                        .font(AppTheme.Typography.tinySemibold)
+                        .foregroundColor(AppTheme.Colors.textMuted)
+                        .textCase(.uppercase)
+
+                    Text(licenseManager.currentTier.displayName)
+                        .font(AppTheme.Typography.sectionTitle)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
 
                     if featureFlags.isFree {
-                        Text("Upgrade to Pro for unlimited profiles, burn rate predictions, cost transparency, and more.")
-                            .font(DesignTokens.Typography.caption)
-                            .foregroundColor(.secondary)
+                        Text("Free is enough for basic Claude tracking. Upgrade when you need forecasting, exports, multi-provider visibility, or more than two profiles.")
+                            .font(AppTheme.Typography.small)
+                            .foregroundColor(AppTheme.Colors.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
                     } else {
                         Text("You have access to all Pro features. Thank you for supporting development!")
-                            .font(DesignTokens.Typography.caption)
-                            .foregroundColor(.secondary)
+                            .font(AppTheme.Typography.small)
+                            .foregroundColor(AppTheme.Colors.textSecondary)
                     }
                 }
 
                 Spacer()
+
+                if featureFlags.isFree {
+                    SettingsButton.primary(title: "Upgrade", icon: "arrow.up.circle.fill") {
+                        if let url = licenseManager.proCheckoutURL {
+                            NSWorkspace.shared.open(url)
+                        }
+                    }
+                    .frame(width: 132)
+                }
             }
-            .padding(DesignTokens.Spacing.cardPadding)
         }
     }
 
     // MARK: - Feature Grid
 
     private var featureGrid: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
-            Text("Features")
-                .font(DesignTokens.Typography.sectionTitle)
-                .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("What Pro unlocks")
+                    .font(AppTheme.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Colors.textPrimary)
 
-            VStack(spacing: DesignTokens.Spacing.small) {
+                Spacer()
+
+                Text("Customer outcomes")
+                    .font(AppTheme.Typography.badge)
+                    .foregroundColor(AppTheme.Colors.textMuted)
+            }
+
+            VStack(spacing: AppTheme.Spacing.sm) {
                 FeatureRow(
                     icon: "person.2.fill",
                     title: "Unlimited Profiles",
-                    description: "Track all your Claude accounts and API keys",
+                    description: "Track every Claude account, client workspace, and API key without juggling menus.",
                     isLocked: !featureFlags.isAvailable(featureFlags.unlimitedProfiles)
                 )
 
                 FeatureRow(
                     icon: "flame.fill",
                     title: "Burn Rate Predictor",
-                    description: "'You'll hit the limit in 23 min at current pace'",
+                    description: "Know if your current work session will hit the cap before it interrupts you.",
                     isLocked: !featureFlags.isAvailable(featureFlags.burnRatePredictor)
                 )
 
                 FeatureRow(
                     icon: "dollarsign.circle.fill",
                     title: "Cost Transparency",
-                    description: "See API-equivalent cost for your usage",
+                    description: "Understand the API-equivalent value of your Claude usage and savings.",
                     isLocked: !featureFlags.isAvailable(featureFlags.costTransparency)
                 )
 
                 FeatureRow(
                     icon: "bell.badge.fill",
                     title: "Smart Notifications",
-                    description: "Contextual alerts with actionable next steps",
+                    description: "Get practical guidance when limits, pace, or reset timing need attention.",
                     isLocked: !featureFlags.isAvailable(featureFlags.smartNotifications)
                 )
 
                 FeatureRow(
                     icon: "chart.bar.xaxis",
                     title: "Usage History Export",
-                    description: "JSON/CSV export for billing reconciliation",
+                    description: "Export evidence for billing, reimbursements, client work, or usage audits.",
                     isLocked: !featureFlags.isAvailable(featureFlags.usageHistoryExport)
                 )
 
                 FeatureRow(
                     icon: "cpu.fill",
                     title: "Multi-AI Tracking",
-                    description: "Claude + Codex + Gemini + Copilot in one menu bar",
+                    description: "See Claude, Codex, Gemini, Copilot, and more from one menu bar view.",
                     isLocked: !featureFlags.isAvailable(featureFlags.multiAI)
                 )
 
@@ -172,37 +206,35 @@ struct ProFeaturesView: View {
 
     private var pricingCard: some View {
         SettingsContentCard {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
                 HStack {
-                    Text("Upgrade to Pro")
-                        .font(DesignTokens.Typography.sectionTitle)
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+                        Text("Upgrade when usage becomes work-critical")
+                            .font(AppTheme.Typography.cardTitle)
+                            .foregroundColor(AppTheme.Colors.textPrimary)
+
+                        Text("Monthly for flexibility, annual for the best value.")
+                            .font(AppTheme.Typography.small)
+                            .foregroundColor(AppTheme.Colors.textSecondary)
+                    }
 
                     Spacer()
 
                     Text("$4.99/mo")
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundColor(SettingsColors.primary)
+                        .font(AppTheme.Typography.statMedium)
+                        .foregroundColor(AppTheme.Colors.accentHover)
                 }
 
-                HStack(spacing: DesignTokens.Spacing.small) {
-                    Text("or $39.99/year (33% off)")
-                        .font(DesignTokens.Typography.caption)
-                        .foregroundColor(.secondary)
+                Text("$39.99/year saves 33% compared with monthly billing.")
+                    .font(AppTheme.Typography.smallMedium)
+                    .foregroundColor(AppTheme.Colors.success)
 
-                    Spacer()
-                }
-
-                SettingsButton(
-                    title: "Upgrade Now",
-                    icon: "arrow.up.circle.fill",
-                    style: .primary
-                ) {
+                SettingsButton.primary(title: "Upgrade Now", icon: "arrow.up.circle.fill") {
                     if let url = licenseManager.proCheckoutURL {
                         NSWorkspace.shared.open(url)
                     }
                 }
             }
-            .padding(DesignTokens.Spacing.cardPadding)
         }
     }
 
@@ -210,13 +242,14 @@ struct ProFeaturesView: View {
 
     private var activationCard: some View {
         SettingsContentCard {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
                 Text("Already have a license?")
-                    .font(DesignTokens.Typography.sectionTitle)
+                    .font(AppTheme.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Colors.textPrimary)
 
                 Text("Enter your license key to activate Pro features.")
-                    .font(DesignTokens.Typography.caption)
-                    .foregroundColor(.secondary)
+                    .font(AppTheme.Typography.small)
+                    .foregroundColor(AppTheme.Colors.textSecondary)
 
                 SettingsButton(
                     title: "Activate License",
@@ -226,7 +259,6 @@ struct ProFeaturesView: View {
                     showingActivationSheet = true
                 }
             }
-            .padding(DesignTokens.Spacing.cardPadding)
         }
     }
 }
@@ -241,55 +273,58 @@ struct FeatureRow: View {
     @State private var isHovered = false
 
     var body: some View {
-        HStack(spacing: DesignTokens.Spacing.medium) {
+        HStack(spacing: AppTheme.Spacing.md) {
             ZStack {
                 Circle()
-                    .fill(isLocked ? Color.orange.opacity(0.1) : Color.green.opacity(0.1))
+                    .fill((isLocked ? AppTheme.Colors.warning : AppTheme.Colors.success).opacity(0.12))
                     .frame(width: 32, height: 32)
 
                 Image(systemName: isLocked ? "lock.fill" : icon)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(isLocked ? .orange : .green)
+                    .font(AppTheme.Typography.smallSemibold)
+                    .foregroundColor(isLocked ? AppTheme.Colors.warning : AppTheme.Colors.success)
             }
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
                     Text(title)
-                        .font(DesignTokens.Typography.bodyMedium)
+                        .font(AppTheme.Typography.label)
+                        .foregroundColor(AppTheme.Colors.textPrimary)
 
                     if isLocked {
                         Text("PRO")
-                            .font(.system(size: 8, weight: .bold))
-                            .foregroundColor(.white)
+                            .font(AppTheme.Typography.badge)
+                            .foregroundColor(AppTheme.Colors.textPrimary)
                             .padding(.horizontal, 4)
                             .padding(.vertical, 1)
-                            .background(Color.purple)
-                            .cornerRadius(3)
+                            .background(AppTheme.Colors.proBadge.opacity(0.22))
+                            .clipShape(Capsule())
                     }
                 }
 
                 Text(description)
-                    .font(DesignTokens.Typography.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
+                    .font(AppTheme.Typography.small)
+                    .foregroundColor(AppTheme.Colors.textSecondary)
+                    .lineLimit(2)
             }
 
             Spacer()
 
             if !isLocked {
                 Image(systemName: "checkmark")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.green)
+                    .font(AppTheme.Typography.smallSemibold)
+                    .foregroundColor(AppTheme.Colors.success)
             }
         }
-        .padding(.horizontal, DesignTokens.Spacing.cardPadding)
-        .padding(.vertical, 10)
+        .padding(AppTheme.Spacing.sm)
         .background(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                .fill(isHovered ? Color.primary.opacity(0.03) : Color.clear)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(isHovered ? AppTheme.Colors.cardElevated : AppTheme.Colors.card.opacity(0.55))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .strokeBorder(AppTheme.Colors.borderSubtle.opacity(0.75), lineWidth: 0.5)
         )
         .onHover { isHovered = $0 }
-        .opacity(isLocked ? 0.7 : 1.0)
     }
 }
 
