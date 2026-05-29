@@ -47,52 +47,37 @@ final class FeatureFlags: ObservableObject {
     /// Cost transparency - API-equivalent cost display
     let costTransparency = ProFeature()
 
-    /// Smart notifications with contextual advice
-    let smartNotifications = ProFeature()
-
-    /// Per-session conversation breakdown
-    let perSessionBreakdown = ProFeature()
-
-    /// Cross-profile unified dashboard
-    let crossProfileDashboard = ProFeature()
-
-    /// Context window tracker for Claude Code
-    let contextWindowTracker = ProFeature()
-
-    /// Predictive throttling alerts
-    let predictiveThrottling = ProFeature()
-
     /// Usage history export (JSON/CSV)
     let usageHistoryExport = ProFeature()
 
-    /// Multi-AI tracking (all 9 providers)
+    /// Multi-AI tracking (non-Claude providers)
     let multiAI = ProFeature()
 
     /// Custom notification thresholds (free has fixed 75/90/95)
     let customThresholds = ProFeature()
 
-    /// Advanced icon styles
+    /// Advanced icon styles (free has ring only)
     let advancedIconStyles = ProFeature()
 
-    /// Weekly digest
+    // MARK: - Deferred Features (no UI yet)
+
+    /// Weekly digest — deferred
     let weeklyDigest = ProFeature()
 
-    // MARK: - Team Features
-
-    /// Shared team dashboard
+    /// Team tier — all deferred
     let teamDashboard = TeamFeature()
-
-    /// Budget alerts and webhooks
     let budgetAlerts = TeamFeature()
-
-    /// Admin controls and usage caps
     let adminControls = TeamFeature()
-
-    /// Aggregate reporting
     let aggregateReporting = TeamFeature()
-
-    /// SSO / SAML authentication
     let sso = TeamFeature()
+
+    // MARK: - Always-Available Features (formerly Pro-gated, now free)
+
+    /// Smart notifications — always contextual (simpler on Free)
+    /// Per-session conversation breakdown — always tracked
+    /// Cross-profile unified dashboard — always shown (if >1 profile)
+    /// Context window tracker — always shown (if using Claude Code)
+    /// Predictive throttling — merged into burn rate
 
     // MARK: - Convenience Checkers
 

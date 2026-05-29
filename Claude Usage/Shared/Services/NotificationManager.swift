@@ -154,41 +154,18 @@ class NotificationManager: NotificationServiceProtocol {
         let thresholds = settings.sortedThresholds
         for threshold in thresholds.reversed() {
             if sessionPercentage >= Double(threshold) {
-                // Use smart notifications if Pro, otherwise fall back to basic
-                if FeatureFlags.shared.isAvailable(FeatureFlags.shared.smartNotifications) {
-                    sendSmartNotification(
-                        usage: usage,
-                        percentage: sessionPercentage,
-                        thresholdLevel: threshold,
-                        profileName: profileName,
-                        soundName: settings.soundName
-                    )
-                } else {
-                    let alertType: AlertType
-                    switch threshold {
-                    case 95...:
-                        alertType = .sessionCritical
-                    case 90..<95:
-                        alertType = .sessionWarning
-                    default:
-                        alertType = .sessionInfo
-                    }
-                    sendProfileAlert(
-                        profileName: profileName,
-                        type: alertType,
-                        percentage: sessionPercentage,
-                        thresholdLevel: threshold,
-                        resetTime: usage.sessionResetTime,
-                        soundName: settings.soundName
-                    )
-                }
+                sendSmartNotification(
+                    usage: usage,
+                    percentage: sessionPercentage,
+                    thresholdLevel: threshold,
+                    profileName: profileName,
+                    soundName: settings.soundName
+                )
                 break
             }
         }
 
-        // Pro: Weekly limit smart notification
-        if FeatureFlags.shared.isAvailable(FeatureFlags.shared.smartNotifications) {
-            if let smartNotif = SmartNotificationGenerator.shared.weeklyLimitNotification(
+        if let smartNotif = SmartNotificationGenerator.shared.weeklyLimitNotification(
                 usage: usage,
                 profileName: profileName
             ) {
@@ -196,7 +173,6 @@ class NotificationManager: NotificationServiceProtocol {
                 guard !sentNotifications.contains(identifier) else { return }
                 sendSmartAlert(smartNotif, identifier: identifier)
             }
-        }
     }
 
     /// Checks usage and sends appropriate alerts (legacy, for backwards compatibility)

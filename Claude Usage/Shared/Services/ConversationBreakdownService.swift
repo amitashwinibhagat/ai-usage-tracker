@@ -78,8 +78,6 @@ final class ConversationBreakdownService {
 
     /// Records a usage check and estimates conversation tokens from delta
     func recordUsageCheck(profileId: UUID, currentUsage: ClaudeUsage) {
-        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.perSessionBreakdown) else { return }
-
         let lastTokens = lastKnownSessionTokens[profileId] ?? 0
         let delta = max(currentUsage.sessionTokensUsed - lastTokens, 0)
 

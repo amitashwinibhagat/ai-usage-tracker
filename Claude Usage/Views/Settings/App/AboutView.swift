@@ -14,7 +14,6 @@ struct AboutView: View {
     @State private var isLoadingContributors = false
     @State private var contributorsError: String?
     @State private var showResetConfirmation = false
-    @State private var showFeedbackForm = false
 
     private var appVersion: String {
         if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
@@ -117,7 +116,9 @@ struct AboutView: View {
                         }
 
                         LinkButton(title: "about.send_feedback".localized, icon: "bubble.left.and.text.bubble.right") {
-                            showFeedbackForm = true
+                            if let url = URL(string: "mailto:support@aiusagetracker.com") {
+                                NSWorkspace.shared.open(url)
+                            }
                         }
 
                         Divider()
@@ -165,23 +166,6 @@ struct AboutView: View {
             .padding(28)
         }
         .onAppear { }
-        .sheet(isPresented: $showFeedbackForm) {
-            FeedbackPromptView(
-                onSubmit: { _, _, _, _ in
-                    SharedDataStore.shared.saveHasSubmittedFeedback(true)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                        showFeedbackForm = false
-                    }
-                },
-                onRemindLater: {
-                    showFeedbackForm = false
-                },
-                onDontAskAgain: {
-                    SharedDataStore.shared.saveNeverShowFeedbackPrompt(true)
-                    showFeedbackForm = false
-                }
-            )
-        }
     }
 
     private func resetAppData() {

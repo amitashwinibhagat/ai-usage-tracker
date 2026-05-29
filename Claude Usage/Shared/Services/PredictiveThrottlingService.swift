@@ -42,10 +42,6 @@ final class PredictiveThrottlingService {
 
     /// Generates a predictive throttling alert based on historical patterns
     func predict(for profileId: UUID, currentUsage: ClaudeUsage) -> ThrottlingPrediction? {
-        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.predictiveThrottling) else {
-            return nil
-        }
-
         let history = UsageHistoryService.shared.loadHistory(for: profileId)
         let sessionSnapshots = history.sessionSnapshots
 
@@ -93,8 +89,6 @@ final class PredictiveThrottlingService {
 
     /// Checks if user typically burns most of their limit by a certain day
     func typicalBurnPattern(for profileId: UUID) -> String? {
-        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.predictiveThrottling) else { return nil }
-
         let history = UsageHistoryService.shared.loadHistory(for: profileId)
         let weeklySnapshots = history.weeklySnapshots
 

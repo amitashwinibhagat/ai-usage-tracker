@@ -64,13 +64,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             SharedDataStore.shared.saveFirstLaunchDate(Date())
         }
 
-        // Check if we should show feedback prompt
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) { [weak self] in
-            if SharedDataStore.shared.shouldShowFeedbackPrompt() {
-                self?.menuBarManager?.showFeedbackPrompt()
-            }
-        }
-
         // Headless support: delayed retry for Remote Desktop scenarios
         // If status bar failed to initialize (headless Mac), retry after a delay when displays connect
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in

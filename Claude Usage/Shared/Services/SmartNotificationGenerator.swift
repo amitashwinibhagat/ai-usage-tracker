@@ -49,11 +49,6 @@ final class SmartNotificationGenerator {
         profileName: String,
         usage: ClaudeUsage
     ) -> SmartNotification {
-        // Gate: Pro feature
-        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.smartNotifications) else {
-            return basicThresholdNotification(percentage: percentage, resetTime: resetTime, profileName: profileName)
-        }
-
         let context = buildContext(percentage: percentage, resetTime: resetTime, usage: usage)
 
         if percentage >= 95 {
@@ -69,8 +64,7 @@ final class SmartNotificationGenerator {
 
     /// Generates a burn rate alert notification
     func burnRateNotification(prediction: BurnRatePrediction, profileName: String) -> SmartNotification? {
-        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.smartNotifications),
-              FeatureFlags.shared.isAvailable(FeatureFlags.shared.burnRatePredictor),
+        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.burnRatePredictor),
               prediction.isReliable,
               let minutes = prediction.minutesToLimit,
               minutes < 30 else {
@@ -106,8 +100,7 @@ final class SmartNotificationGenerator {
 
     /// Generates a weekly limit approaching notification
     func weeklyLimitNotification(usage: ClaudeUsage, profileName: String) -> SmartNotification? {
-        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.smartNotifications),
-              usage.weeklyPercentage >= 80 else {
+        guard usage.weeklyPercentage >= 80 else {
             return nil
         }
 

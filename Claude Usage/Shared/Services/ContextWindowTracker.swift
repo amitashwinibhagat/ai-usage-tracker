@@ -55,10 +55,6 @@ final class ContextWindowTracker {
     /// NOTE: This is an approximation. Real context window data would need
     /// integration with Claude Code's /status or /context command output.
     func estimateContextWindow(sessionTokens: Int) -> ContextWindowUsage {
-        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.contextWindowTracker) else {
-            return ContextWindowUsage(currentTokens: 0, fileCount: nil, lastUpdated: Date())
-        }
-
         // Rough estimate: session tokens are roughly proportional to context window
         // In reality, context window includes conversation history + file contents
         let estimatedContext = min(sessionTokens, 200_000)
@@ -72,8 +68,6 @@ final class ContextWindowTracker {
 
     /// Returns a human-readable warning if context is getting full
     func contextWarning(usage: ContextWindowUsage) -> String? {
-        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.contextWindowTracker) else { return nil }
-
         if usage.isCritical {
             return "⚠️ Context window >95% full. Compaction imminent — save important context."
         } else if usage.isNearCompaction {

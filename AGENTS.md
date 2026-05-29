@@ -302,6 +302,20 @@ The app bundle is named **`AI Usage Tracker.app`**. The DMG is `AI-Usage-Tracker
   - **CRITICAL LEARNED:** `generate_appcast --download-url-prefix` always produces GitHub-style URLs. The enclosure URL MUST be hand-edited to point to Netlify before every deploy.
 - **Documented release infrastructure in AGENTS.md** — Added "Release & Deployment Infrastructure" section with exact Netlify site ID, deploy commands, and mandatory enclosure URL fix checklist.
 
+### Changes on 2026-05-29 (Part 2) — Apple PM-Style UX Redesign
+- **Complete UX redesign** guided by Apple design principles: clarity, progressive disclosure, context over features
+- **Onboarding rewritten** — 3-screen welcome experience (Welcome → How do you use Claude? → Set up credentials). Replaced 989-line 3-step wizard with 215-line NavigationStack. Auto-detects CLI credentials.
+- **Popover redesigned** — Collapsed from 15 stacked cards to 5-card layout: Usage Ring (large centered donut), Reset Countdown, Burn Rate (contextual Pro upsell), Contextual Tip, Details disclosure. Rewritten from 2258 lines to ~260 lines.
+- **Settings restructured** — Collapsed 18 sidebar sections to 6 groups: General, Profiles, Credentials, Notifications, Appearance, Account. Created 7 new consolidated settings views.
+- **Provider cleanup** — Hidden 5 non-functional Chinese providers (Kimi, DeepSeek, GLM, Qwen, MiniMax) from UI. Only Claude, Codex, Gemini, Copilot shown.
+- **Feature flag simplification** — Removed 7 dead-end Pro gates (`smartNotifications`, `perSessionBreakdown`, `crossProfileDashboard`, `contextWindowTracker`, `predictiveThrottling`, plus all Team features). These are now always-available, removing constant "upgrade to see this" friction.
+- **Monetization UX redesigned** — Pro features are revealed contextually instead of showing lock icons everywhere. The free product is now genuinely complete on its own.
+- **Deleted 7 obsolete view files** — MobileAppView, ShortcutsSettingsView, PopoverSettingsView, UpdatesSettingsView, LanguageSettingsView, GitHubStarPromptView, FeedbackPromptView
+- **Released v3.1.1 build 22**:
+  - Built DMG: `releases/AI-Usage-Tracker-3.1.1-22.dmg` (8.8M)
+  - Deployed appcast + DMG to Netlify: `https://rococo-fox-c631c0.netlify.app/`
+  - Fixed appcast enclosure URLs for builds 21 and 22 to point to Netlify
+
 ### Changes on 2026-05-28
 - **Created unified design system** (`Shared/DesignSystem/AppTheme.swift`) — Single source of truth replacing legacy `SettingsColors`, `Typography`, `Spacing`, and `DesignTokens`
   - **Colors**: 42 explicit hex tokens for dark-first premium aesthetic

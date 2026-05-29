@@ -165,13 +165,6 @@ struct ProFeaturesView: View {
                 )
 
                 FeatureRow(
-                    icon: "bell.badge.fill",
-                    title: "Smart Notifications",
-                    description: "Get practical guidance when limits, pace, or reset timing need attention.",
-                    isLocked: !featureFlags.isAvailable(featureFlags.smartNotifications)
-                )
-
-                FeatureRow(
                     icon: "chart.bar.xaxis",
                     title: "Usage History Export",
                     description: "Export evidence for billing, reimbursements, client work, or usage audits.",

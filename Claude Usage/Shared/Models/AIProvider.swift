@@ -95,6 +95,24 @@ enum AIProvider: String, Codable, CaseIterable, Identifiable {
         !isFreeTier
     }
 
+    /// Whether this provider is shown in the user interface
+    /// Only providers with real usage APIs are shown. Chinese providers
+    /// (Kimi, DeepSeek, GLM, Qwen, MiniMax) are hidden until real
+    /// usage APIs are implemented.
+    var isShownInUI: Bool {
+        switch self {
+        case .claude, .codex, .gemini, .copilot:
+            return true
+        case .kimi, .deepseek, .glm, .qwen, .minimax:
+            return false
+        }
+    }
+
+    /// Providers visible in the UI (subset of allCases)
+    static var visibleProviders: [AIProvider] {
+        allCases.filter { $0.isShownInUI }
+    }
+
     /// Whether this provider supports OAuth login (vs manual API key)
     var supportsOAuth: Bool {
         switch self {
