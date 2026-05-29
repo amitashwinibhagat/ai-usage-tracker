@@ -231,7 +231,48 @@ Every DMG release auto-increments `CURRENT_PROJECT_VERSION` (CFBundleVersion) in
 **Versioning convention:**
 - `MARKETING_VERSION` = `3.1.1` (semantic display version)
 - `CURRENT_PROJECT_VERSION` = incremental integer (16, 17, 18...)
-- DMG filename = `Claude-Usage-Tracker-3.1.1-16.dmg`
+- DMG filename = `AI-Usage-Tracker-{VERSION}-{BUILD}.dmg` (was `Claude-Usage-Tracker` prior to build 21)
+
+## Release & Deployment Infrastructure (CRITICAL — READ BEFORE EVERY RELEASE)
+
+### App Name
+The app bundle is named **`AI Usage Tracker.app`**. The DMG is `AI-Usage-Tracker-{VERSION}-{BUILD}.dmg`.
+
+### Release Script (`scripts/release.sh`)
+- `APP_NAME` must be `"AI Usage Tracker"` (exactly matches the built `.app` bundle name). Do NOT change this.
+- The script auto-increments `CURRENT_PROJECT_VERSION`, builds Release, creates DMG, and generates appcast.
+- After the script runs, you must **manually fix the enclosure URL** in `appcast.xml` (see below).
+
+### ⚠️ CRITICAL: Appcast Enclosure URLs Must Point to Netlify
+`generate_appcast` with `--download-url-prefix` produces GitHub Releases URLs by default. **The DMG is NOT on GitHub Releases** — it is only on Netlify. If the enclosure URL points to GitHub, Sparkle will 404 and users see "An error occurred while downloading the update."
+
+**After every release, manually edit `Claude Usage/Resources/appcast.xml`:**
+```xml
+<!-- WRONG — will 404 -->
+<enclosure url="https://github.com/amitashwinibhagat/.../download/v3.1.1/AI-Usage-Tracker-3.1.1-21.dmg" ... />
+
+<!-- CORRECT -->
+<enclosure url="https://rococo-fox-c631c0.netlify.app/AI-Usage-Tracker-3.1.1-21.dmg" ... />
+```
+
+### Netlify Deployment
+- **Site ID:** `aa06579d-df69-4e56-9096-963b3a4165f1`
+- **Site name:** `rococo-fox-c631c0`
+- **Production URL:** `https://rococo-fox-c631c0.netlify.app`
+- **Important:** The local Netlify CLI may be linked to a different project (`echoflow`). Always deploy with explicit site ID:
+  ```bash
+  netlify deploy --prod --dir=netlify-deploy --site=aa06579d-df69-4e56-9096-963b3a4165f1
+  ```
+- The `releases/` directory may contain old DMGs with conflicting build numbers. Remove old DMGs before running `generate_appcast` or Sparkle will error with "Duplicate updates are not supported."
+
+### Full Release Checklist
+1. Ensure `scripts/release.sh` has correct `APP_NAME`
+2. Run `./scripts/release.sh`
+3. Remove old conflicting DMGs from `releases/`
+4. Manually edit `appcast.xml` enclosure URL to point to Netlify
+5. Commit appcast fix: `git add -A && git commit -m "Fix appcast URL" && git push`
+6. Deploy to Netlify with explicit site ID
+7. Verify `curl -I https://rococo-fox-c631c0.netlify.app/AI-Usage-Tracker-{VERSION}-{BUILD}.dmg` returns 200
 
 ## Known Issues / TODOs
 
@@ -246,7 +287,20 @@ Every DMG release auto-increments `CURRENT_PROJECT_VERSION` (CFBundleVersion) in
 9. **Referral program** — Not implemented.
 10. **OAuth client IDs** — Google and GitHub OAuth client IDs are TODOs in `Info.plist` or build config. Must register apps before shipping.
 
-## Session Notes (Last Updated: 2026-05-28)
+## Session Notes (Last Updated: 2026-05-29)
+
+### Changes on 2026-05-29
+- **Removed non-functional Mobile App sidebar item** (`SettingsSection.mobileApp`) — Was a "painted door" page with no actual mobile app. Users clicking it would submit anonymous analytics to a Cloudflare Worker, which is not a useful feature.
+- **Updated remaining author references** to `amitashwinibhagat/claude-usage-tracker-private`:
+  - `Constants.swift:181` — `GitHub.owner` and `GitHub.repo`
+  - `GitHubService.swift:24` — `repoOwner` and `repoName`
+- **Fixed `scripts/release.sh` app name** (`APP_NAME`) — Changed from `"AI Usage"` to `"AI Usage Tracker"` to match the actual built `.app` bundle name. Without this, the script fails with "Could not find built AI Usage.app."
+- **Released v3.1.1 build 21**:
+  - Built DMG: `releases/AI-Usage-Tracker-3.1.1-21.dmg` (9.7M)
+  - Deployed appcast + DMG to Netlify: `https://rococo-fox-c631c0.netlify.app/`
+  - **CRITICAL FIX:** Manually corrected appcast enclosure URL from `github.com/.../releases/download/` to `rococo-fox-c631c0.netlify.app/...` — Sparkle was 404ing because the DMG is NOT on GitHub Releases, only Netlify.
+  - **CRITICAL LEARNED:** `generate_appcast --download-url-prefix` always produces GitHub-style URLs. The enclosure URL MUST be hand-edited to point to Netlify before every deploy.
+- **Documented release infrastructure in AGENTS.md** — Added "Release & Deployment Infrastructure" section with exact Netlify site ID, deploy commands, and mandatory enclosure URL fix checklist.
 
 ### Changes on 2026-05-28
 - **Created unified design system** (`Shared/DesignSystem/AppTheme.swift`) — Single source of truth replacing legacy `SettingsColors`, `Typography`, `Spacing`, and `DesignTokens`
