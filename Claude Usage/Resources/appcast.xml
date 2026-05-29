@@ -7,6 +7,14 @@
         <link>https://rococo-fox-c631c0.netlify.app/</link>
         <item>
             <title>3.1.1</title>
+            <pubDate>Fri, 29 May 2026 20:11:12 +0530</pubDate>
+            <sparkle:version>21</sparkle:version>
+            <sparkle:shortVersionString>3.1.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/amitashwinibhagat/claude-usage-tracker-private/releases/download/v3.1.1/AI-Usage-Tracker-3.1.1-21.dmg" length="10142927" type="application/octet-stream" sparkle:edSignature="tjY9CM067KtITQ2oFN5AxnzlPRv1sHaK0apOhGfrK11fyu2ENQGseAkhAf09wlzSpgRgO6I6WGxOl9qa6XWZCA=="/>
+        </item>
+        <item>
+            <title>3.1.1</title>
             <pubDate>Thu, 28 May 2026 19:05:51 +0530</pubDate>
             <sparkle:version>19</sparkle:version>
             <sparkle:shortVersionString>3.1.1</sparkle:shortVersionString>
@@ -23,17 +31,6 @@
             <sparkle:deltas>
                 <enclosure url="https://github.com/amitashwinibhagat/claude-usage-tracker-private/releases/download/v3.1.1/Claude%20Usage18-17.delta" sparkle:deltaFrom="17" length="107206" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="862672" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="AwC4qfV30W+NcDCiqjQzIsHSTjq5hFZxq/jBbGDsVoIclu8xIKs/OIXdASY6C/D04SMW7cLqMrDCnwT1bRC/Ag=="/>
                 <enclosure url="https://github.com/amitashwinibhagat/claude-usage-tracker-private/releases/download/v3.1.1/Claude%20Usage18-16.delta" sparkle:deltaFrom="16" length="926394" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="862672" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="xW6xtxD8pI8+/3zpUknDYszrzW8lGLkMqAh2rlKgNTjIGnuS0LLE60d1y/WEzZrUatkfrgG0NrAe9eCHocC6BQ=="/>
-            </sparkle:deltas>
-        </item>
-        <item>
-            <title>3.1.1</title>
-            <pubDate>Thu, 28 May 2026 11:38:56 +0530</pubDate>
-            <sparkle:version>17</sparkle:version>
-            <sparkle:shortVersionString>3.1.1</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/amitashwinibhagat/claude-usage-tracker-private/releases/download/v3.1.1/Claude-Usage-Tracker-3.1.1-17.dmg" length="10008606" type="application/octet-stream" sparkle:edSignature="3RrJhNekHo4v+8dynDguqmrCwU8phYfTAMW0AxU40Lc5uwhQRwbLVW8qWfC2rozC/N6/CC6nuqXA8XYd+lR7AA=="/>
-            <sparkle:deltas>
-                <enclosure url="https://github.com/amitashwinibhagat/claude-usage-tracker-private/releases/download/v3.1.1/Claude%20Usage17-16.delta" sparkle:deltaFrom="16" length="931654" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="862672" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="Xs0DlzWrZLM7cXa4H+5EtlcjmzTNP8DCjzB1gj/MDUDuyTOG4NIawOW2t87yrnPsFTXlSbREdymMPgoyVG/7Cg=="/>
             </sparkle:deltas>
         </item>
     </channel>

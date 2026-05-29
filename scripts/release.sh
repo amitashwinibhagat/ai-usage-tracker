@@ -19,7 +19,7 @@ set -euo pipefail
 PROJECT="Claude Usage.xcodeproj"
 PBXPROJ="${PROJECT}/project.pbxproj"
 SCHEME="Claude Usage"
-APP_NAME="AI Usage"
+APP_NAME="AI Usage Tracker"
 DMG_NAME="AI-Usage-Tracker"
 
 BUILD_DIR="$HOME/Library/Developer/Xcode/DerivedData/Claude_Usage-*/Build/Products/Release"
