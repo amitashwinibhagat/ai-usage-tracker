@@ -11,7 +11,7 @@
             <sparkle:version>21</sparkle:version>
             <sparkle:shortVersionString>3.1.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/amitashwinibhagat/claude-usage-tracker-private/releases/download/v3.1.1/AI-Usage-Tracker-3.1.1-21.dmg" length="10142927" type="application/octet-stream" sparkle:edSignature="tjY9CM067KtITQ2oFN5AxnzlPRv1sHaK0apOhGfrK11fyu2ENQGseAkhAf09wlzSpgRgO6I6WGxOl9qa6XWZCA=="/>
+            <enclosure url="https://rococo-fox-c631c0.netlify.app/AI-Usage-Tracker-3.1.1-21.dmg" length="10142927" type="application/octet-stream" sparkle:edSignature="tjY9CM067KtITQ2oFN5AxnzlPRv1sHaK0apOhGfrK11fyu2ENQGseAkhAf09wlzSpgRgO6I6WGxOl9qa6XWZCA=="/>
         </item>
         <item>
             <title>3.1.1</title>
