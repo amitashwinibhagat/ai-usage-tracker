@@ -178,8 +178,8 @@ enum Constants {
 
     // GitHub Repository Info
     enum GitHub {
-        static let owner = "hamed-elfayome"
-        static let repo = "Claude-Usage-Tracker"
+        static let owner = "amitashwinibhagat"
+        static let repo = "claude-usage-tracker-private"
         static let repoURL = "https://github.com/\(owner)/\(repo)"
     }
 }
