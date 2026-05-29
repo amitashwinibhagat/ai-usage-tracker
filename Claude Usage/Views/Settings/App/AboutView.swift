@@ -63,7 +63,7 @@ struct AboutView: View {
                 ProductInsightCard(
                     icon: "shippingbox.fill",
                     title: "Direct macOS distribution",
-                    message: "Claude Usage is distributed directly with Sparkle updates, so fixes and provider changes can ship faster than an App Store release cycle.",
+                    message: "AI Usage Tracker is distributed directly with Sparkle updates, so fixes and provider changes can ship faster than an App Store release cycle.",
                     color: AppTheme.Colors.info
                 )
 

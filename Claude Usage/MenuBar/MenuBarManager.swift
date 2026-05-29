@@ -9,6 +9,7 @@ class MenuBarManager: NSObject, ObservableObject {
     @Published private(set) var usage: ClaudeUsage = .empty
     @Published private(set) var status: ClaudeStatus = .unknown
     @Published private(set) var apiUsage: APIUsage?
+    @Published private(set) var multiAIResult: MultiAIUsageResult?
     @Published private(set) var isRefreshing: Bool = false
 
     // Error tracking for stale data / credential banners
@@ -59,6 +60,7 @@ class MenuBarManager: NSObject, ObservableObject {
 
     private let apiService = ClaudeAPIService()
     private let statusService = ClaudeStatusService()
+    private let multiAIService = MultiAIService.shared
     private let dataStore = DataStore.shared
     private let networkMonitor = NetworkMonitor.shared
     private let profileManager = ProfileManager.shared
@@ -1403,7 +1405,10 @@ class MenuBarManager: NSObject, ObservableObject {
             if let profile = await MainActor.run(body: { self.profileManager.activeProfile }),
                FeatureFlags.shared.isAvailable(FeatureFlags.shared.multiAI),
                profile.hasMultiAICredentials {
-                _ = await MultiAIService.shared.fetchAllUsage(for: profile)
+                let result = await MultiAIService.shared.fetchAllUsage(for: profile)
+                await MainActor.run {
+                    self.multiAIResult = result
+                }
             }
 
             // Clear loading state

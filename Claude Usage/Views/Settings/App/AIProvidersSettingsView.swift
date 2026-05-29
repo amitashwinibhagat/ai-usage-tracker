@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AIProvidersSettingsView: View {
+    @Binding var focusedProvider: AIProvider?
     @StateObject private var profileManager = ProfileManager.shared
     @StateObject private var featureFlags = FeatureFlags.shared
 
@@ -71,6 +72,68 @@ struct AIProvidersSettingsView: View {
         .sheet(item: $activeSheet) { sheet in
             credentialsSheet(for: sheet, profileId: profileManager.activeProfile?.id)
         }
+        .onAppear {
+            handleFocusedProvider()
+        }
+        .onChange(of: focusedProvider) { _, _ in
+            handleFocusedProvider()
+        }
+    }
+
+    private func handleFocusedProvider() {
+        guard let provider = focusedProvider,
+              let profile = profileManager.activeProfile else { return }
+
+        // Map provider to appropriate sheet
+        switch provider {
+        case .claude:
+            // Claude doesn't have a single sheet; it has multiple credential types
+            // Just navigate to the view, no auto-sheet
+            break
+        case .codex:
+            if featureFlags.isProOrHigher || provider.isFreeTier {
+                activeSheet = .codex
+            }
+        case .gemini:
+            if featureFlags.isProOrHigher || provider.isFreeTier {
+                if profile.geminiOAuthConnected {
+                    activeSheet = .geminiOAuth
+                } else {
+                    activeSheet = .gemini
+                }
+            }
+        case .copilot:
+            if featureFlags.isProOrHigher || provider.isFreeTier {
+                if profile.copilotOAuthConnected {
+                    activeSheet = .copilotOAuth
+                } else {
+                    activeSheet = .copilot
+                }
+            }
+        case .kimi:
+            if featureFlags.isProOrHigher || provider.isFreeTier {
+                activeSheet = .kimi
+            }
+        case .deepseek:
+            if featureFlags.isProOrHigher || provider.isFreeTier {
+                activeSheet = .deepseek
+            }
+        case .glm:
+            if featureFlags.isProOrHigher || provider.isFreeTier {
+                activeSheet = .glm
+            }
+        case .qwen:
+            if featureFlags.isProOrHigher || provider.isFreeTier {
+                activeSheet = .qwen
+            }
+        case .minimax:
+            if featureFlags.isProOrHigher || provider.isFreeTier {
+                activeSheet = .minimax
+            }
+        }
+
+        // Clear focus after handling
+        focusedProvider = nil
     }
 
     @ViewBuilder

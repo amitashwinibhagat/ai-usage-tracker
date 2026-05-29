@@ -223,11 +223,15 @@ struct TrafficLightButton: View {
 /// Professional, native macOS Settings interface with multi-profile support
 struct SettingsView: View {
     @State private var selectedSection: SettingsSection = .appearance
+    @State private var focusedProvider: AIProvider? = nil
     @StateObject private var profileManager = ProfileManager.shared
 
     var body: some View {
         HStack(spacing: 0) {
-            SettingsSidebar(selectedSection: $selectedSection)
+            SettingsSidebar(
+                selectedSection: $selectedSection,
+                focusedProvider: $focusedProvider
+            )
 
             Rectangle()
                 .fill(AppTheme.Colors.borderSubtle)
@@ -236,7 +240,7 @@ struct SettingsView: View {
             // Content
             Group {
                 switch selectedSection {
-                // Credentials
+                // Credentials (legacy — accessed via Providers section)
                 case .claudeAI:
                     PersonalUsageView()
                 case .apiConsole:
@@ -256,7 +260,7 @@ struct SettingsView: View {
 
                 // AI Providers
                 case .aiProviders:
-                    AIProvidersSettingsView()
+                    AIProvidersSettingsView(focusedProvider: $focusedProvider)
 
                 // Shared Settings
                 case .appSettings:
@@ -295,6 +299,7 @@ struct SettingsView: View {
 
 struct SettingsSidebar: View {
     @Binding var selectedSection: SettingsSection
+    @Binding var focusedProvider: AIProvider?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -311,7 +316,10 @@ struct SettingsSidebar: View {
 
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: AppTheme.Spacing.mdCompact) {
-                    ProfileSectionContainer(selectedSection: $selectedSection)
+                    ProfileSectionContainer(
+                        selectedSection: $selectedSection,
+                        focusedProvider: $focusedProvider
+                    )
                     AppSettingsSection(selectedSection: $selectedSection)
                 }
                 .padding(.horizontal, AppTheme.Spacing.mdCompact)
@@ -355,7 +363,7 @@ struct SidebarBrandHeader: View {
             .frame(width: 34, height: 34)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("Claude Usage")
+                Text("AI Usage")
                     .font(AppTheme.Typography.labelBold)
                     .foregroundColor(AppTheme.Colors.textPrimary)
 
@@ -382,6 +390,7 @@ struct SidebarBrandHeader: View {
 
 struct ProfileSectionContainer: View {
     @Binding var selectedSection: SettingsSection
+    @Binding var focusedProvider: AIProvider?
     @StateObject private var profileManager = ProfileManager.shared
 
     var profileSections: [SettingsSection] {
@@ -427,15 +436,18 @@ struct ProfileSectionContainer: View {
             Divider()
                 .overlay(AppTheme.Colors.divider)
 
-            // Credentials
+            // Providers
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-                Text("section.credentials".localized)
+                Text("section.providers".localized)
                     .font(AppTheme.Typography.microSemibold)
                     .foregroundColor(AppTheme.Colors.textMuted)
                     .padding(.horizontal, AppTheme.Spacing.sm)
 
-                ProfileCredentialCardsRow(selectedSection: $selectedSection)
-                    .padding(.horizontal, AppTheme.Spacing.xs)
+                ProvidersSidebarSection(
+                    selectedSection: $selectedSection,
+                    focusedProvider: $focusedProvider
+                )
+                .padding(.horizontal, AppTheme.Spacing.xs)
             }
 
             Divider()
@@ -683,7 +695,7 @@ enum SettingsSection: String, CaseIterable {
         case .general: return "section.general_desc".localized
         case .history: return "section.history_desc".localized
         case .proFeatures: return "Unlock Pro features and manage your subscription"
-        case .aiProviders: return "Manage credentials for Claude, Codex, Gemini, and Copilot"
+        case .aiProviders: return "Manage credentials for all AI providers"
         case .appSettings: return "section.app_settings_desc".localized
         case .manageProfiles: return "section.manage_profiles_desc".localized
         case .language: return "language.subtitle".localized
@@ -789,95 +801,111 @@ struct SidebarItem: View {
     }
 }
 
-// MARK: - Profile Credential Cards Row
+// MARK: - Providers Sidebar Section
 
-struct ProfileCredentialCardsRow: View {
+struct ProvidersSidebarSection: View {
     @Binding var selectedSection: SettingsSection
+    @Binding var focusedProvider: AIProvider?
     @StateObject private var profileManager = ProfileManager.shared
-    @State private var credentials: ProfileCredentials?
+    @StateObject private var featureFlags = FeatureFlags.shared
+
+    private var providers: [AIProvider] {
+        AIProvider.allCases
+    }
+
+    private func isConnected(_ provider: AIProvider, profile: Profile) -> Bool {
+        switch provider {
+        case .claude:
+            return profile.hasUsageCredentials
+        case .codex:
+            return profile.hasCodexCredentials
+        case .gemini:
+            return profile.hasGeminiCredentials
+        case .copilot:
+            return profile.hasCopilotCredentials
+        case .kimi:
+            return profile.hasKimiCredentials
+        case .deepseek:
+            return profile.hasDeepSeekCredentials
+        case .glm:
+            return profile.hasGLMCredentials
+        case .qwen:
+            return profile.hasQwenCredentials
+        case .minimax:
+            return profile.hasMiniMaxCredentials
+        }
+    }
+
+    private func isLocked(_ provider: AIProvider) -> Bool {
+        featureFlags.isFree && !provider.isFreeTier
+    }
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.xs) {
-            // Claude.ai Card
-            Button {
-                selectedSection = .claudeAI
-            } label: {
-                CredentialMiniCard(
-                    icon: "key.fill",
-                    title: "Claude.ai",
-                    isConnected: credentials?.hasClaudeAI ?? false,
-                    isSelected: selectedSection == .claudeAI
-                )
-            }
-            .buttonStyle(.plain)
+            ForEach(providers) { provider in
+                let profile = profileManager.activeProfile
+                let connected = profile.map { isConnected(provider, profile: $0) } ?? false
+                let locked = isLocked(provider)
 
-            // API Console Card
-            Button {
-                selectedSection = .apiConsole
-            } label: {
-                CredentialMiniCard(
-                    icon: "dollarsign.circle.fill",
-                    title: "API Console",
-                    isConnected: credentials?.apiSessionKey != nil,
-                    isSelected: selectedSection == .apiConsole
-                )
+                Button {
+                    if locked {
+                        // Open Pro upgrade on locked providers
+                        if let url = LicenseManager.shared.proCheckoutURL {
+                            NSWorkspace.shared.open(url)
+                        }
+                    } else {
+                        focusedProvider = provider
+                        selectedSection = .aiProviders
+                    }
+                } label: {
+                    ProviderSidebarRow(
+                        provider: provider,
+                        isConnected: connected,
+                        isLocked: locked,
+                        isSelected: selectedSection == .aiProviders && focusedProvider == provider
+                    )
+                }
+                .buttonStyle(.plain)
+                .disabled(profile == nil)
             }
-            .buttonStyle(.plain)
-
-            // CLI Account Card
-            Button {
-                selectedSection = .cliAccount
-            } label: {
-                CredentialMiniCard(
-                    icon: "terminal.fill",
-                    title: "CLI Account",
-                    isConnected: profileManager.activeProfile?.hasCliAccount ?? false,
-                    isSelected: selectedSection == .cliAccount
-                )
-            }
-            .buttonStyle(.plain)
         }
-        .onAppear {
-            loadCredentials()
-        }
-        .onChange(of: profileManager.activeProfile?.id) { _, _ in
-            loadCredentials()
-        }
-    }
-
-    private func loadCredentials() {
-        guard let profile = profileManager.activeProfile else { return }
-        credentials = try? ProfileStore.shared.loadProfileCredentials(profile.id)
     }
 }
 
-struct CredentialMiniCard: View {
-    let icon: String
-    let title: String
+struct ProviderSidebarRow: View {
+    let provider: AIProvider
     let isConnected: Bool
+    let isLocked: Bool
     let isSelected: Bool
     @State private var isHovered = false
 
     var body: some View {
         HStack(spacing: 8) {
-            // Icon
-            Image(systemName: icon)
+            Image(systemName: provider.icon)
                 .font(AppTheme.Typography.captionMedium)
-                .foregroundColor(isSelected ? AppTheme.Colors.accentHover : (isConnected ? AppTheme.Colors.success : AppTheme.Colors.textMuted))
+                .foregroundColor(isLocked ? AppTheme.Colors.textMuted.opacity(0.5) : (isConnected ? provider.brandColor : AppTheme.Colors.textMuted))
                 .frame(width: 16)
 
-            // Title
-            Text(title)
+            Text(provider.shortName)
                 .font(isSelected ? AppTheme.Typography.captionMedium : AppTheme.Typography.caption)
-                .foregroundColor(isSelected ? AppTheme.Colors.textPrimary : AppTheme.Colors.textSecondary)
+                .foregroundColor(isLocked ? AppTheme.Colors.textMuted.opacity(0.6) : (isSelected ? AppTheme.Colors.textPrimary : AppTheme.Colors.textSecondary))
                 .lineLimit(1)
 
             Spacer()
 
-            // Status indicator
-            Circle()
-                .fill(isConnected ? AppTheme.Colors.success : AppTheme.Colors.textMuted.opacity(0.35))
-                .frame(width: 6, height: 6)
+            if isLocked {
+                Image(systemName: "lock.fill")
+                    .font(AppTheme.Typography.microSemibold)
+                    .foregroundColor(AppTheme.Colors.warning)
+            } else if isConnected {
+                Circle()
+                    .fill(AppTheme.Colors.success)
+                    .frame(width: 6, height: 6)
+            } else {
+                Circle()
+                    .fill(AppTheme.Colors.textMuted.opacity(0.35))
+                    .frame(width: 6, height: 6)
+            }
         }
         .padding(.horizontal, AppTheme.Spacing.sm)
         .padding(.vertical, 6)
@@ -889,9 +917,7 @@ struct CredentialMiniCard: View {
             RoundedRectangle(cornerRadius: AppTheme.Radius.small)
                 .strokeBorder(isSelected ? AppTheme.Colors.accent.opacity(0.35) : Color.clear, lineWidth: 0.5)
         }
-        .onHover { hovering in
-            isHovered = hovering
-        }
+        .onHover { isHovered = $0 }
     }
 }
 

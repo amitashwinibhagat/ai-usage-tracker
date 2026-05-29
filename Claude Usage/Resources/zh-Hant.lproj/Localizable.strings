@@ -1,6 +1,6 @@
 /*
    Localizable.strings
-   Claude Usage Tracker
+   AI Usage Tracker
 
    繁體中文 (臺灣)
    Created by Claude Code on 2026-01-27.
@@ -9,10 +9,10 @@
 /* ==================== */
 /* MARK: - App Info */
 /* ==================== */
-"app.name" = "Claude Usage Tracker";
-"app.window.main" = "Claude Usage";
+"app.name" = "AI Usage Tracker";
+"app.window.main" = "AI Usage";
 "app.window.settings" = "設定";
-"app.window.github_prompt" = "支援 Claude Usage Tracker";
+"app.window.github_prompt" = "支援 AI Usage Tracker";
 
 /* ==================== */
 /* MARK: - Common Actions */
@@ -95,7 +95,7 @@
 /* MARK: - General Settings */
 /* ==================== */
 "general.launch_at_login" = "登入時啟動";
-"general.launch_at_login.description" = "登入 Mac 時自動啟動 Claude Usage Tracker";
+"general.launch_at_login.description" = "登入 Mac 時自動啟動 AI Usage Tracker";
 "general.refresh_interval" = "重新整理間隔";
 "general.refresh_interval.description" = "較短的間隔提供更即時的資料，但可能影響電池壽命";
 "general.check_overage_limit" = "檢查額外使用限制";
@@ -139,7 +139,7 @@
 /* ==================== */
 /* MARK: - Setup Wizard */
 /* ==================== */
-"setup.welcome.title" = "歡迎使用 Claude Usage Tracker";
+"setup.welcome.title" = "歡迎使用 AI Usage Tracker";
 "setup.welcome.subtitle" = "設定您的 API 存取以開始追蹤使用情況";
 "setup.step.get_session_key" = "取得您的 Session 金鑰";
 "setup.step.get_session_key.description" = "您需要從 claude.ai 取得您的 Session 金鑰";
@@ -286,7 +286,7 @@
 /* ==================== */
 /* MARK: - GitHub Star Prompt */
 /* ==================== */
-"github.enjoy_app" = "喜歡 Claude Usage Tracker 嗎？";
+"github.enjoy_app" = "喜歡 AI Usage Tracker 嗎？";
 "github.star_description" = "如果這個軟體對您有幫助，請在 GitHub 上給它一顆星！這有助於其他人發現專案並激勵持續開發。";
 "github.star_button" = "在 GitHub 上給星";
 "github.maybe_later" = "稍後再說";
@@ -653,6 +653,7 @@
 /* ==================== */
 /* MARK: - Settings Sections (Titles & Descriptions) */
 /* ==================== */
+"section.providers" = "提供商";
 "section.credentials" = "憑證";
 "section.active_profile" = "使用中的設定檔";
 "section.settings" = "設定";

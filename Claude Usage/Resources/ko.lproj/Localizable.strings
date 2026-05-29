@@ -1,6 +1,6 @@
 /*
    Localizable.strings
-   Claude Usage Tracker
+   AI Usage Tracker
 
    Korean (한국어)
    Created by Claude Code on 2026-01-11.
@@ -9,10 +9,10 @@
 /* ==================== */
 /* MARK: - App Info */
 /* ==================== */
-"app.name" = "Claude 사용량 추적기";
-"app.window.main" = "Claude 사용량";
+"app.name" = "AI Usage Tracker";
+"app.window.main" = "AI 사용량";
 "app.window.settings" = "설정";
-"app.window.github_prompt" = "Claude Usage Tracker 지원하기";
+"app.window.github_prompt" = "AI Usage Tracker 지원하기";
 
 /* ==================== */
 /* MARK: - Common Actions */
@@ -303,6 +303,7 @@
 /* ==================== */
 /* MARK: - Settings Sections */
 /* ==================== */
+"section.providers" = "제공자";
 "section.credentials" = "인증 정보";
 "section.active_profile" = "활성 프로필";
 "section.settings" = "설정";

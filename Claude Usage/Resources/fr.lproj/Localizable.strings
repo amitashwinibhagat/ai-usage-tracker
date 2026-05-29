@@ -1,6 +1,6 @@
 /*
    Localizable.strings
-   Claude Usage Tracker
+   AI Usage Tracker
 
    French (Français)
    Created by Claude Code on 2025-12-27.
@@ -9,10 +9,10 @@
 /* ==================== */
 /* MARK: - App Info */
 /* ==================== */
-"app.name" = "Suivi d'Utilisation Claude";
-"app.window.main" = "Utilisation de Claude";
+"app.name" = "AI Usage Tracker";
+"app.window.main" = "Utilisation IA";
 "app.window.settings" = "Paramètres";
-"app.window.github_prompt" = "Soutenir Claude Usage Tracker";
+"app.window.github_prompt" = "Soutenir AI Usage Tracker";
 
 /* ==================== */
 /* MARK: - Common Actions */
@@ -88,7 +88,7 @@
 /* MARK: - General Settings */
 /* ==================== */
 "general.launch_at_login" = "Lancer à la connexion";
-"general.launch_at_login.description" = "Démarrer automatiquement Claude Usage Tracker lors de la connexion à votre Mac";
+"general.launch_at_login.description" = "Démarrer automatiquement AI Usage Tracker lors de la connexion à votre Mac";
 "general.refresh_interval" = "Intervalle de Rafraîchissement";
 "general.refresh_interval.description" = "Des intervalles plus courts fournissent des données plus en temps réel mais peuvent affecter la batterie";
 "general.check_overage_limit" = "Vérifier la Limite d'Utilisation Supplémentaire";
@@ -132,7 +132,7 @@
 /* ==================== */
 /* MARK: - Setup Wizard */
 /* ==================== */
-"setup.welcome.title" = "Bienvenue dans Claude Usage Tracker";
+"setup.welcome.title" = "Bienvenue dans AI Usage Tracker";
 "setup.welcome.subtitle" = "Configurez votre accès API pour commencer le suivi d'utilisation";
 "setup.step.get_session_key" = "Obtenez Votre Clé de Session";
 "setup.step.get_session_key.description" = "Vous devrez extraire votre clé de session de claude.ai";
@@ -264,7 +264,7 @@
 /* ==================== */
 /* MARK: - GitHub Star Prompt */
 /* ==================== */
-"github.enjoy_app" = "Vous appréciez Claude Usage Tracker ?";
+"github.enjoy_app" = "Vous appréciez AI Usage Tracker ?";
 "github.star_description" = "Si cette application vous a été utile, pensez à lui donner une étoile sur GitHub ! Cela aide les autres à découvrir le projet et motive le développement continu.";
 "github.star_button" = "Étoile sur GitHub";
 "github.maybe_later" = "Peut-être Plus Tard";
@@ -650,6 +650,7 @@
 /* ==================== */
 /* MARK: - Settings Sections (Titles & Descriptions) */
 /* ==================== */
+"section.providers" = "FOURNISSEURS";
 "section.credentials" = "IDENTIFIANTS";
 "section.active_profile" = "Profil Actif";
 "section.settings" = "PARAMÈTRES";
@@ -796,7 +797,7 @@
 "history.export.csv" = "Exporter en CSV";
 "history.chart.now" = "Maintenant";
 "support.title" = "Soutenir le Projet";
-"support.subtitle" = "Claude Usage Tracker est gratuit et open source";
+"support.subtitle" = "AI Usage Tracker est gratuit et open source";
 "support.all_features_free" = "Toutes les Fonctionnalités Sont Gratuites";
 "support.all_features_desc" = "Chaque fonctionnalité de cette application est entièrement gratuite. Pas de niveaux premium, pas de paywall, pas d'abonnements.";
 "support.open_source" = "Open Source";

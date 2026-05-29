@@ -65,7 +65,7 @@ final class FeatureFlags: ObservableObject {
     /// Usage history export (JSON/CSV)
     let usageHistoryExport = ProFeature()
 
-    /// Multi-AI tracking (Claude + Codex + Gemini + Copilot)
+    /// Multi-AI tracking (all 9 providers)
     let multiAI = ProFeature()
 
     /// Custom notification thresholds (free has fixed 75/90/95)

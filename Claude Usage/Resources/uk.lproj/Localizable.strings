@@ -1,6 +1,6 @@
 /*
    Localizable.strings
-   Claude Usage Tracker
+   AI Usage Tracker
 
    Ukrainian Localization
    Created by Claude Code on 2026-03-13.
@@ -9,10 +9,10 @@
 /* ==================== */
 /* MARK: - App Info */
 /* ==================== */
-"app.name" = "Claude Usage Tracker";
-"app.window.main" = "Використання Claude";
+"app.name" = "AI Usage Tracker";
+"app.window.main" = "Використання AI";
 "app.window.settings" = "Налаштування";
-"app.window.github_prompt" = "Підтримати Claude Usage Tracker";
+"app.window.github_prompt" = "Підтримати AI Usage Tracker";
 
 /* ==================== */
 /* MARK: - Common Actions */
@@ -94,7 +94,7 @@
 /* MARK: - General Settings */
 /* ==================== */
 "general.launch_at_login" = "Запускати при вході";
-"general.launch_at_login.description" = "Автоматично запускати Claude Usage Tracker при вході в систему Mac";
+"general.launch_at_login.description" = "Автоматично запускати AI Usage Tracker при вході в систему Mac";
 "general.refresh_interval" = "Інтервал оновлення";
 "general.refresh_interval.description" = "Коротші інтервали дають більш актуальні дані, але можуть впливати на час роботи від батареї";
 "general.check_overage_limit" = "Перевірити ліміт перевищення";
@@ -138,7 +138,7 @@
 /* ==================== */
 /* MARK: - Setup Wizard */
 /* ==================== */
-"setup.welcome.title" = "Ласкаво просимо до Claude Usage Tracker";
+"setup.welcome.title" = "Ласкаво просимо до AI Usage Tracker";
 "setup.welcome.subtitle" = "Налаштуйте доступ до API для початку відстеження";
 "setup.step.get_session_key" = "Отримайте ключ сесії";
 "setup.step.get_session_key.description" = "Вам потрібно витягти ключ сесії з claude.ai";
@@ -285,7 +285,7 @@
 /* ==================== */
 /* MARK: - GitHub Star Prompt */
 /* ==================== */
-"github.enjoy_app" = "Подобається Claude Usage Tracker?";
+"github.enjoy_app" = "Подобається AI Usage Tracker?";
 "github.star_description" = "Якщо ця програма вам допомогла, будь ласка, додайте зірку на GitHub! Це допомагає іншим знайти проект та мотивує продовжувати розробку.";
 "github.star_button" = "Додати зірку на GitHub";
 "github.maybe_later" = "Можливо пізніше";
@@ -653,6 +653,7 @@
 /* ==================== */
 /* MARK: - Settings Sections (Titles & Descriptions) */
 /* ==================== */
+"section.providers" = "ПОСТАЧАЛЬНИКИ";
 "section.credentials" = "ОБЛІКОВІ ДАНІ";
 "section.active_profile" = "Активний профіль";
 "section.settings" = "НАЛАШТУВАННЯ";
@@ -972,7 +973,7 @@
 /* MARK: - Project Support */
 /* ==================== */
 "support.title" = "Підтримати проект";
-"support.subtitle" = "Claude Usage Tracker — безкоштовний та відкритий код";
+"support.subtitle" = "AI Usage Tracker — безкоштовний та відкритий код";
 "support.message" = "Якщо ця програма вам корисна, розгляньте можливість підтримати її розробку";
 "support.buy_coffee" = "Пригостити кавою";
 "support.star_github" = "Додати зірку на GitHub";

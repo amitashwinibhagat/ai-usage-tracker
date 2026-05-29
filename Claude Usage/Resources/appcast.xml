@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
     <channel>
-        <title>Claude Usage Tracker</title>
-        <description>Updates for Claude Usage Tracker</description>
+        <title>AI Usage Tracker</title>
+        <description>Updates for AI Usage Tracker</description>
         <language>en</language>
         <link>https://rococo-fox-c631c0.netlify.app/</link>
         <item>

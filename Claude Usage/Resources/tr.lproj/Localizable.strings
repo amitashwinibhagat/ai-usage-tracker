@@ -1,6 +1,6 @@
 /*
    Localizable.strings
-   Claude Usage Tracker
+   AI Usage Tracker
 
    Turkish (Türkçe)
    Created by Claude Code on 2026-03-10.
@@ -9,10 +9,10 @@
 /* ==================== */
 /* MARK: - App Info */
 /* ==================== */
-"app.name" = "Claude Kullanım Takibi";
-"app.window.main" = "Claude Kullanım";
+"app.name" = "AI Usage Tracker";
+"app.window.main" = "AI Kullanım";
 "app.window.settings" = "Ayarlar";
-"app.window.github_prompt" = "Claude Kullanım Takibi'ni Destekle";
+"app.window.github_prompt" = "AI Usage Tracker'ı Destekle";
 
 /* ==================== */
 /* MARK: - Common Actions */
@@ -653,6 +653,7 @@
 /* ==================== */
 /* MARK: - Settings Sections (Titles & Descriptions) */
 /* ==================== */
+"section.providers" = "SAĞLAYICILAR";
 "section.credentials" = "KİMLİK BİLGİLERİ";
 "section.active_profile" = "Etkin Profil";
 "section.settings" = "AYARLAR";

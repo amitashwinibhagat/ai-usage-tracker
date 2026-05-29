@@ -93,6 +93,7 @@ struct PopoverContentView: View {
             SmartHeader(
                 usage: displayUsage,
                 status: manager.status,
+                multiAIResult: manager.multiAIResult,
                 isRefreshing: isRefreshing,
                 onRefresh: {
                     withAnimation(.easeInOut(duration: 0.3)) {
@@ -494,6 +495,7 @@ struct ProfileSwitcherBar: View {
 struct SmartHeader: View {
     let usage: ClaudeUsage
     let status: ClaudeStatus
+    var multiAIResult: MultiAIUsageResult?
     let isRefreshing: Bool
     let onRefresh: () -> Void
     let onManageProfiles: () -> Void
@@ -510,6 +512,12 @@ struct SmartHeader: View {
         case .red: return .red
         case .gray: return .gray
         }
+    }
+
+    private var providerSummary: String? {
+        guard let result = multiAIResult, result.hasData else { return nil }
+        let count = result.activeProviderCount
+        return "\(count + 1) providers active"  // +1 for Claude
     }
 
     private var isMultiProfileMode: Bool {
@@ -536,24 +544,36 @@ struct SmartHeader: View {
             VStack(alignment: .leading, spacing: 2) {
                 ProfileSwitcherCompact(onManageProfiles: onManageProfiles)
 
-                // Status
-                Button(action: {
-                    if let url = URL(string: "https://status.claude.com") {
-                        NSWorkspace.shared.open(url)
-                    }
-                }) {
+                // Status or provider summary
+                if let summary = providerSummary {
                     HStack(spacing: 4) {
-                        Circle()
-                            .fill(statusColor)
-                            .frame(width: 6, height: 6)
+                        Image(systemName: "cpu.fill")
+                            .font(.system(size: 8, weight: .medium))
+                            .foregroundColor(.secondary)
 
-                        Text(status.description)
+                        Text(summary)
                             .font(.system(size: 9, weight: .medium))
                             .foregroundColor(.secondary)
                     }
+                } else {
+                    Button(action: {
+                        if let url = URL(string: "https://status.claude.com") {
+                            NSWorkspace.shared.open(url)
+                        }
+                    }) {
+                        HStack(spacing: 4) {
+                            Circle()
+                                .fill(statusColor)
+                                .frame(width: 6, height: 6)
+
+                            Text(status.description)
+                                .font(.system(size: 9, weight: .medium))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .help("Click to open status.claude.com")
                 }
-                .buttonStyle(.plain)
-                .help("Click to open status.claude.com")
             }
 
             Spacer()

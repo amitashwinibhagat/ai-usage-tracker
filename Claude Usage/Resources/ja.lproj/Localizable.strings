@@ -1,6 +1,6 @@
 /*
    Localizable.strings
-   Claude Usage Tracker
+   AI Usage Tracker
 
    Japanese (日本語)
    Created by Claude Code on 2026-01-05.
@@ -9,10 +9,10 @@
 /* ==================== */
 /* MARK: - App Info */
 /* ==================== */
-"app.name" = "Claude使用状況トラッカー";
-"app.window.main" = "Claude使用状況";
+"app.name" = "AI Usage Tracker";
+"app.window.main" = "AI使用状況";
 "app.window.settings" = "設定";
-"app.window.github_prompt" = "Claude使用状況トラッカーをサポート";
+"app.window.github_prompt" = "AI Usage Trackerをサポート";
 
 /* ==================== */
 /* MARK: - Common Actions */
@@ -672,6 +672,7 @@
 /* ==================== */
 /* MARK: - Settings Sections (Titles & Descriptions) */
 /* ==================== */
+"section.providers" = "プロバイダー";
 "section.credentials" = "認証情報";
 "section.active_profile" = "アクティブなプロファイル";
 "section.settings" = "設定";
