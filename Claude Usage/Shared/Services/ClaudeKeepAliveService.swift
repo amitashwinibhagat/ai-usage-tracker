@@ -7,6 +7,10 @@ import os.log
 /// cannot reset the web session, so those profiles are skipped with a clear log message.
 /// Uses the existing incognito conversation flow (create → send "Hi" → delete) so no chat history remains.
 /// On success, triggers a usage refresh so the UI reflects the 5-hour session reset.
+///
+/// Scheduling: a one-shot timer is scheduled for `max(lastPing + sessionWindow, now)`. When it fires,
+/// the ping is sent and the next one-shot is scheduled for `now + sessionWindow`. This guarantees the
+/// ping fires at the exact 5-hour mark from the last successful ping, regardless of app restarts.
 @MainActor
 final class ClaudeKeepAliveService {
     static let shared = ClaudeKeepAliveService()
@@ -15,6 +19,7 @@ final class ClaudeKeepAliveService {
     private let profileManager = ProfileManager.shared
     private let lastPingKeyPrefix = "keepalive.lastPing."
     private var timer: Timer?
+    private var inFlight = false
 
     private init() {
         NotificationCenter.default.addObserver(
@@ -25,21 +30,25 @@ final class ClaudeKeepAliveService {
         )
     }
 
-    /// Starts the keep-alive service. Sends immediately if 5 h have elapsed since last successful ping,
-    /// then schedules a repeating timer.
+    /// Starts the keep-alive service. Schedules the next ping to fire at the 5-hour mark from the
+    /// last successful ping, or immediately if that mark has already passed.
     func start() {
         timer?.invalidate()
-        sendIfNeeded()
-        timer = Timer.scheduledTimer(withTimeInterval: Constants.sessionWindow, repeats: true) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                self?.sendIfNeeded()
-            }
+        timer = nil
+
+        let nextFireAt = nextScheduledFireDate()
+        let interval = max(0, nextFireAt.timeIntervalSinceNow)
+
+        LoggingService.shared.log("KeepAlive: scheduling next ping in \(Int(interval / 60)) minutes", type: .default)
+
+        if interval <= 0 {
+            sendIfNeeded()
+        } else {
+            scheduleOneShot(at: nextFireAt)
         }
-        timer?.tolerance = Constants.sessionWindow * 0.1
-        LoggingService.shared.log("ClaudeKeepAliveService started (5-hour interval)", type: .default)
     }
 
-    /// Stops the repeating timer.
+    /// Stops the scheduled timer.
     func stop() {
         timer?.invalidate()
         timer = nil
@@ -47,10 +56,32 @@ final class ClaudeKeepAliveService {
     }
 
     /// Sends a keep-alive "Hi" immediately, bypassing the 5-hour gate.
-    /// Used by the manual trigger notification and can be hooked up to a UI control.
     @objc func pingNow() {
         LoggingService.shared.log("KeepAlive: manual ping requested", type: .default)
+        timer?.invalidate()
+        timer = nil
         sendPing(force: true)
+    }
+
+    private func nextScheduledFireDate() -> Date {
+        guard let profile = profileManager.activeProfile else { return .distantFuture }
+        let key = lastPingKeyPrefix + profile.id.uuidString
+        let lastPing = UserDefaults.standard.object(forKey: key) as? Date ?? .distantPast
+        let scheduled = lastPing.addingTimeInterval(Constants.sessionWindow)
+        return max(scheduled, Date())
+    }
+
+    private func scheduleOneShot(at fireDate: Date) {
+        timer?.invalidate()
+        let interval = max(0.1, fireDate.timeIntervalSinceNow)
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.sendIfNeeded()
+            }
+        }
+        if let timer = timer {
+            timer.tolerance = interval * 0.05
+        }
     }
 
     private func sendIfNeeded() {
@@ -60,6 +91,7 @@ final class ClaudeKeepAliveService {
     private func sendPing(force: Bool) {
         guard let profile = profileManager.activeProfile else {
             LoggingService.shared.log("KeepAlive: no active profile – skipping", type: .default)
+            reschedule()
             return
         }
 
@@ -67,6 +99,7 @@ final class ClaudeKeepAliveService {
         // CLI OAuth / API Console keys cannot reset the web 5-hour session window.
         guard profile.claudeSessionKey != nil else {
             LoggingService.shared.log("KeepAlive: active profile '\(profile.name)' has no Claude.ai session key – skipping (CLI/API Console auth cannot reset the web session)", type: .default)
+            reschedule()
             return
         }
 
@@ -77,23 +110,39 @@ final class ClaudeKeepAliveService {
         if !force, elapsed < Constants.sessionWindow {
             let remaining = Constants.sessionWindow - elapsed
             LoggingService.shared.log("KeepAlive: next ping for '\(profile.name)' in \(Int(remaining / 60)) minutes", type: .default)
+            reschedule()
+            return
+        }
+
+        if inFlight {
+            LoggingService.shared.log("KeepAlive: ping already in flight – skipping duplicate", type: .default)
+            reschedule()
             return
         }
 
         LoggingService.shared.log("KeepAlive: sending 'Hi' for profile '\(profile.name)' (last ping \(Int(elapsed / 60)) minutes ago)", type: .default)
+        inFlight = true
 
         Task {
             do {
                 try await apiService.sendInitializationMessage()
-                UserDefaults.standard.set(Date(), forKey: key)
-                LoggingService.shared.log("KeepAlive: 'Hi' sent and conversation deleted for profile '\(profile.name)'", type: .default)
+                let now = Date()
+                UserDefaults.standard.set(now, forKey: key)
+                LoggingService.shared.log("KeepAlive: 'Hi' sent and conversation deleted for profile '\(profile.name)' – next ping in \(Int(Constants.sessionWindow / 3600))h", type: .default)
 
                 // Trigger usage refresh so the 5-hour ring updates immediately
                 NotificationCenter.default.post(name: .credentialsChanged, object: nil)
             } catch {
                 LoggingService.shared.logError("KeepAlive: failed to send 'Hi' for profile '\(profile.name)' – \(error.localizedDescription)")
             }
+            inFlight = false
+            reschedule()
         }
+    }
+
+    private func reschedule() {
+        let next = Date().addingTimeInterval(Constants.sessionWindow)
+        scheduleOneShot(at: next)
     }
 }
 
