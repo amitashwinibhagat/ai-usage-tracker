@@ -106,11 +106,6 @@ final class CostTransparency {
 
     /// Calculates cost breakdown for current usage
     func calculate(usage: ClaudeUsage, subscriptionType: String? = nil) -> CostBreakdown? {
-        // Gate: Pro feature
-        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.costTransparency) else {
-            return nil
-        }
-
         let sessionCost = Double(usage.sessionTokensUsed) * effectiveCostPerToken
         let weeklyCost = Double(usage.weeklyTokensUsed) * effectiveCostPerToken
         let totalCost = sessionCost + weeklyCost

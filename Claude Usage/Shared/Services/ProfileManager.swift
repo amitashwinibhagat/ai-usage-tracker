@@ -59,22 +59,17 @@ class ProfileManager: ObservableObject {
 
     // MARK: - Profile Operations
 
-    /// Checks if a new profile can be created based on license tier limits
+    /// Profiles are unlimited — no gating logic needed
     var canCreateProfile: Bool {
-        FeatureFlags.shared.canCreateProfile
+        true
     }
 
-    /// Number of profiles the current tier allows (2 for Free, unlimited for Pro/Team)
+    /// Number of profiles allowed (unlimited)
     var maxProfiles: Int {
-        FeatureFlags.shared.maxProfiles
+        Int.max
     }
 
     func createProfile(name: String? = nil, copySettingsFrom: Profile? = nil) -> Profile? {
-        // Enforce profile limit for free tier
-        guard canCreateProfile else {
-            LoggingService.shared.log("Profile creation blocked: free tier limit reached (\(profiles.count)/\(maxProfiles))")
-            return nil
-        }
 
         let usedNames = profiles.map { $0.name }
         let profileName = name ?? FunnyNameGenerator.getRandomName(excluding: usedNames)

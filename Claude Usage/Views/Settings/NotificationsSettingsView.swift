@@ -10,7 +10,6 @@ import UserNotifications
 
 struct NotificationsSettingsView: View {
     @StateObject private var profileManager = ProfileManager.shared
-    @StateObject private var featureFlags = FeatureFlags.shared
     @StateObject private var planningService = SessionPlanningService.shared
 
     var body: some View {
@@ -127,35 +126,20 @@ struct NotificationsSettingsView: View {
 
     @ViewBuilder
     private func customThresholdsCard(profile: Profile) -> some View {
-        if featureFlags.isAvailable(featureFlags.customThresholds) {
-            SettingsSectionCard(
-                title: "notifications.custom_thresholds".localized,
-                subtitle: "Define your own alert percentages"
-            ) {
-                CustomThresholdsEditor(
-                    thresholds: Binding(
-                        get: { profile.notificationSettings.customThresholds },
-                        set: { newValue in
-                            var updated = profile
-                            updated.notificationSettings.customThresholds = newValue
-                            profileManager.updateProfile(updated)
-                        }
-                    )
+        SettingsSectionCard(
+            title: "notifications.custom_thresholds".localized,
+            subtitle: "Define your own alert percentages"
+        ) {
+            CustomThresholdsEditor(
+                thresholds: Binding(
+                    get: { profile.notificationSettings.customThresholds },
+                    set: { newValue in
+                        var updated = profile
+                        updated.notificationSettings.customThresholds = newValue
+                        profileManager.updateProfile(updated)
+                    }
                 )
-            }
-        } else {
-            SettingsContentCard {
-                HStack(spacing: AppTheme.Spacing.sm) {
-                    Image(systemName: "lock.fill")
-                        .font(AppTheme.Typography.smallSemibold)
-                        .foregroundColor(AppTheme.Colors.proBadge)
-                    Text("Custom thresholds available on Pro")
-                        .font(AppTheme.Typography.small)
-                        .foregroundColor(AppTheme.Colors.textSecondary)
-                    Spacer()
-                }
-                .padding(AppTheme.Spacing.sm)
-            }
+            )
         }
     }
 
@@ -258,9 +242,15 @@ struct NotificationsSettingsView: View {
             if settings.authorizationStatus == .authorized {
                 NotificationManager.shared.sendSimpleAlert(type: .notificationsEnabled)
             } else if settings.authorizationStatus == .notDetermined {
-                let granted = try? await center.requestAuthorization(options: [.alert, .sound, .badge])
-                if granted == true {
-                    NotificationManager.shared.sendSimpleAlert(type: .notificationsEnabled)
+                do {
+                    let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+                    if granted == true {
+                        NotificationManager.shared.sendSimpleAlert(type: .notificationsEnabled)
+                    } else {
+                        LoggingService.shared.log("Notification permission denied by user")
+                    }
+                } catch {
+                    LoggingService.shared.log("Notification permission request failed: \(error.localizedDescription)")
                 }
             }
         }

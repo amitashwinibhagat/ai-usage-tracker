@@ -10,7 +10,6 @@ import SwiftUI
 struct AIProvidersSettingsView: View {
     @Binding var focusedProvider: AIProvider?
     @StateObject private var profileManager = ProfileManager.shared
-    @StateObject private var featureFlags = FeatureFlags.shared
 
     // Sheet states
     @State private var activeSheet: ProviderSheet? = nil
@@ -18,7 +17,20 @@ struct AIProvidersSettingsView: View {
     enum ProviderSheet: Identifiable {
         case codex, gemini, copilot, kimi, deepseek, glm, qwen, minimax
         case geminiOAuth, copilotOAuth
-        var id: Int { hashValue }
+        var id: String {
+            switch self {
+            case .codex: return "codex"
+            case .gemini: return "gemini"
+            case .copilot: return "copilot"
+            case .kimi: return "kimi"
+            case .deepseek: return "deepseek"
+            case .glm: return "glm"
+            case .qwen: return "qwen"
+            case .minimax: return "minimax"
+            case .geminiOAuth: return "geminiOAuth"
+            case .copilotOAuth: return "copilotOAuth"
+            }
+        }
     }
 
     var body: some View {
@@ -36,22 +48,10 @@ struct AIProvidersSettingsView: View {
                     color: AppTheme.Colors.info
                 )
 
-                if featureFlags.isFree {
-                    ProUpsellCard(
-                        title: "Multi-AI Tracking (Pro)",
-                        message: "Track Claude, Codex, Gemini, Copilot, Kimi, DeepSeek, GLM, Qwen, and MiniMax together so your next provider choice is obvious.",
-                        actionTitle: "Upgrade to Pro"
-                    ) {
-                        if let url = LicenseManager.shared.proCheckoutURL {
-                            NSWorkspace.shared.open(url)
-                        }
-                    }
-                }
-
                 if let profile = profileManager.activeProfile {
                     providerSummary(profile: profile)
 
-                    SectionHeader(title: "Available on Free")
+                    SectionHeader(title: "Providers")
 
                     ProviderCard(
                         provider: .claude,
@@ -60,9 +60,7 @@ struct AIProvidersSettingsView: View {
                         usage: profile.claudeUsage?.sessionTokensUsed
                     )
 
-                    if featureFlags.isProOrHigher {
-                        providerSection(profile: profile)
-                    }
+                    providerSection(profile: profile)
                 }
 
                 Spacer()
@@ -91,45 +89,29 @@ struct AIProvidersSettingsView: View {
             // Just navigate to the view, no auto-sheet
             break
         case .codex:
-            if featureFlags.isProOrHigher || provider.isFreeTier {
-                activeSheet = .codex
-            }
+            activeSheet = .codex
         case .gemini:
-            if featureFlags.isProOrHigher || provider.isFreeTier {
-                if profile.geminiOAuthConnected {
-                    activeSheet = .geminiOAuth
-                } else {
-                    activeSheet = .gemini
-                }
+            if profile.geminiOAuthConnected {
+                activeSheet = .geminiOAuth
+            } else {
+                activeSheet = .gemini
             }
         case .copilot:
-            if featureFlags.isProOrHigher || provider.isFreeTier {
-                if profile.copilotOAuthConnected {
-                    activeSheet = .copilotOAuth
-                } else {
-                    activeSheet = .copilot
-                }
+            if profile.copilotOAuthConnected {
+                activeSheet = .copilotOAuth
+            } else {
+                activeSheet = .copilot
             }
         case .kimi:
-            if featureFlags.isProOrHigher || provider.isFreeTier {
-                activeSheet = .kimi
-            }
+            activeSheet = .kimi
         case .deepseek:
-            if featureFlags.isProOrHigher || provider.isFreeTier {
-                activeSheet = .deepseek
-            }
+            activeSheet = .deepseek
         case .glm:
-            if featureFlags.isProOrHigher || provider.isFreeTier {
-                activeSheet = .glm
-            }
+            activeSheet = .glm
         case .qwen:
-            if featureFlags.isProOrHigher || provider.isFreeTier {
-                activeSheet = .qwen
-            }
+            activeSheet = .qwen
         case .minimax:
-            if featureFlags.isProOrHigher || provider.isFreeTier {
-                activeSheet = .minimax
-            }
+            activeSheet = .minimax
         }
 
         // Clear focus after handling
@@ -138,8 +120,6 @@ struct AIProvidersSettingsView: View {
 
     @ViewBuilder
     private func providerSection(profile: Profile) -> some View {
-        SectionHeader(title: "Pro Providers")
-
         ProviderCard(
             provider: .codex,
             isConnected: profile.hasCodexCredentials,
@@ -178,8 +158,6 @@ struct AIProvidersSettingsView: View {
                 usage: profile.copilotUsage?.suggestionsAccepted
             ) { activeSheet = .copilot }
         }
-
-        SectionHeader(title: "Additional Providers")
 
         ProviderCard(
             provider: .kimi,
@@ -594,10 +572,12 @@ struct GeminiOAuthSheet: View {
 
     private func disconnect() {
         guard let profileId = profileId else { return }
-        isDisconnecting = true
-        ProfileManager.shared.disconnectOAuth(provider: .gemini, for: profileId)
-        isDisconnecting = false
-        dismiss()
+        Task {
+            isDisconnecting = true
+            ProfileManager.shared.disconnectOAuth(provider: .gemini, for: profileId)
+            isDisconnecting = false
+            dismiss()
+        }
     }
 }
 
@@ -641,10 +621,12 @@ struct CopilotOAuthSheet: View {
 
     private func disconnect() {
         guard let profileId = profileId else { return }
-        isDisconnecting = true
-        ProfileManager.shared.disconnectOAuth(provider: .copilot, for: profileId)
-        isDisconnecting = false
-        dismiss()
+        Task {
+            isDisconnecting = true
+            ProfileManager.shared.disconnectOAuth(provider: .copilot, for: profileId)
+            isDisconnecting = false
+            dismiss()
+        }
     }
 }
 

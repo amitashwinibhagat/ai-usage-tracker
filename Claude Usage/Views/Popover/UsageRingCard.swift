@@ -4,30 +4,51 @@ struct UsageRingCard: View {
     let usage: ClaudeUsage
     let apiUsage: APIUsage?
 
-    @State private var showingWeekly = false
-
-    private let ringSize: CGFloat = 140
-    private let ringLineWidth: CGFloat = 10
-
-    private var activePercentage: Double {
-        if showingWeekly {
-            return usage.weeklyPercentage
-        }
-        return usage.effectiveSessionPercentage
+    private enum DisplayMode {
+        case session
+        case weekly
     }
 
-    private var tokenLabel: String {
-        if showingWeekly {
-            return "\(usage.weeklyTokensUsed.formatted()) of \(usage.weeklyLimit.formatted()) tokens this week"
+    @State private var showingWeekly: Bool
+
+    private let ringSize: CGFloat = 130
+    private let ringLineWidth: CGFloat = 10
+
+    init(usage: ClaudeUsage, apiUsage: APIUsage?) {
+        self.usage = usage
+        self.apiUsage = apiUsage
+        // Default to whichever limit is closer to being hit.
+        _showingWeekly = State(initialValue: usage.weeklyPercentage > usage.effectiveSessionPercentage)
+    }
+
+    private var displayMode: DisplayMode {
+        showingWeekly ? .weekly : .session
+    }
+
+    private var activePercentage: Double {
+        switch displayMode {
+        case .weekly: return usage.weeklyPercentage
+        case .session: return usage.effectiveSessionPercentage
         }
-        return "\(usage.sessionTokensUsed.formatted()) of \(usage.sessionLimit.formatted()) tokens this session"
     }
 
     private var statusColor: Color {
         switch activePercentage {
-        case 90...: return AppTheme.Colors.error
-        case 75..<90: return AppTheme.Colors.warning
-        default: return AppTheme.Colors.success
+        case 0..<50: return AppTheme.Colors.success
+        case 50..<80: return AppTheme.Colors.caution
+        case 80..<95: return AppTheme.Colors.warning
+        default: return AppTheme.Colors.error
+        }
+    }
+
+    private var verdict: (text: String, color: Color) {
+        switch activePercentage {
+        case 0: return ("No usage yet", AppTheme.Colors.success)
+        case 0..<50: return ("Plenty of room", AppTheme.Colors.success)
+        case 50..<80: return ("Watch your pace", AppTheme.Colors.caution)
+        case 80..<95: return ("Slow down soon", AppTheme.Colors.warning)
+        case 95..<100: return ("Almost at limit", AppTheme.Colors.error)
+        default: return ("Limit reached", AppTheme.Colors.error)
         }
     }
 
@@ -35,95 +56,162 @@ struct UsageRingCard: View {
         "\(Int(activePercentage.rounded()))%"
     }
 
+    private var primaryLabel: String {
+        switch displayMode {
+        case .weekly: return "Weekly limit"
+        case .session: return "5-hour session limit"
+        }
+    }
+
+    private var tokenCountString: String {
+        let used = displayMode == .weekly ? usage.weeklyTokensUsed : usage.sessionTokensUsed
+        let limit = displayMode == .weekly ? usage.weeklyLimit : usage.sessionLimit
+        guard limit > 0 else { return "Limit not set" }
+        return "\(used.formatted()) / \(limit.formatted()) tokens"
+    }
+
+    private var secondaryDetail: String? {
+        switch displayMode {
+        case .weekly:
+            guard usage.sessionTokensUsed > 0 || usage.effectiveSessionPercentage > 0 else { return nil }
+            return "Session: \(Int(usage.effectiveSessionPercentage.rounded()))% · \(usage.sessionTokensUsed.formatted()) tokens"
+        case .session:
+            guard usage.weeklyTokensUsed > 0 || usage.weeklyPercentage > 0 else { return nil }
+            return "Weekly: \(Int(usage.weeklyPercentage.rounded()))% · \(usage.weeklyTokensUsed.formatted()) tokens"
+        }
+    }
+
     var body: some View {
-        VStack(spacing: AppTheme.Spacing.sm) {
+        VStack(spacing: AppTheme.Spacing.md) {
+            Text(verdict.text)
+                .font(AppTheme.Typography.captionSemibold)
+                .foregroundColor(verdict.color)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(
+                    Capsule()
+                        .fill(verdict.color.opacity(0.12))
+                )
+                .accessibilityLabel(verdict.text)
+
             ZStack {
                 Circle()
-                    .stroke(AppTheme.Colors.elevated.opacity(0.6), lineWidth: ringLineWidth)
+                    .stroke(AppTheme.Colors.elevated.opacity(0.5), lineWidth: ringLineWidth)
                     .frame(width: ringSize, height: ringSize)
 
                 Circle()
-                    .trim(from: 0, to: max(0.001, min(activePercentage / 100.0, 1.0)))
+                    .trim(from: 0, to: max(0, min(activePercentage / 100.0, 1.0)))
                     .stroke(
                         statusColor,
                         style: StrokeStyle(lineWidth: ringLineWidth, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
                     .frame(width: ringSize, height: ringSize)
-                    .animation(.easeInOut(duration: 0.8), value: activePercentage)
+                    .animation(.spring(response: 0.5, dampingFraction: 0.8), value: activePercentage)
 
                 VStack(spacing: 2) {
                     Text(percentageText)
                         .font(AppTheme.Typography.statLarge)
                         .foregroundColor(AppTheme.Colors.textPrimary)
 
-                    Text("USED")
-                        .font(AppTheme.Typography.tinySemibold)
+                    Text(primaryLabel)
+                        .font(AppTheme.Typography.microSemibold)
                         .foregroundColor(AppTheme.Colors.textMuted)
+                        .lineLimit(1)
                 }
-
-                VStack(spacing: 0) {
-                    Spacer()
-
-                    HStack(spacing: 6) {
-                        Button(action: {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                showingWeekly = false
-                            }
-                        }) {
-                            Text("Session")
-                                .font(AppTheme.Typography.pico)
-                                .foregroundColor(showingWeekly ? AppTheme.Colors.textMuted : AppTheme.Colors.textPrimary)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 3)
-                                .background(
-                                    Capsule()
-                                        .fill(showingWeekly ? Color.clear : statusColor.opacity(0.15))
-                                )
-                        }
-                        .buttonStyle(.plain)
-
-                        Button(action: {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                showingWeekly = true
-                            }
-                        }) {
-                            Text("Weekly")
-                                .font(AppTheme.Typography.pico)
-                                .foregroundColor(showingWeekly ? AppTheme.Colors.textPrimary : AppTheme.Colors.textMuted)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 3)
-                                .background(
-                                    Capsule()
-                                        .fill(showingWeekly ? statusColor.opacity(0.15) : Color.clear)
-                                )
-                        }
-                        .buttonStyle(.plain)
-                    }
-                    .padding(.bottom, 6)
-                }
-                .frame(width: ringSize, height: ringSize)
             }
             .frame(maxWidth: .infinity)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(percentageText) of \(primaryLabel.lowercased()) used")
 
-            Text(tokenLabel)
-                .font(AppTheme.Typography.captionMedium)
-                .foregroundColor(AppTheme.Colors.textSecondary)
-                .multilineTextAlignment(.center)
+            Picker("Usage window", selection: $showingWeekly) {
+                Text("5-hour session")
+                    .tag(false)
+                Text("Weekly")
+                    .tag(true)
+            }
+            .pickerStyle(.segmented)
+            .frame(width: 180)
+            .accessibilityLabel("Usage window")
+            .accessibilityHint("Switch between 5-hour session and weekly usage")
 
-            if let apiUsage = apiUsage, apiUsage.usagePercentage > 0 {
-                HStack(spacing: 4) {
-                    Image(systemName: "creditcard.fill")
-                        .font(AppTheme.Typography.nanoMedium)
-                        .foregroundColor(AppTheme.Colors.textMuted)
+            VStack(spacing: 2) {
+                Text(tokenCountString)
+                    .font(AppTheme.Typography.smallMedium)
+                    .foregroundColor(AppTheme.Colors.textSecondary)
+                    .multilineTextAlignment(.center)
 
-                    Text("API: \(apiUsage.formattedAPICost ?? "$0.00")")
+                if let secondaryDetail = secondaryDetail {
+                    Text(secondaryDetail)
                         .font(AppTheme.Typography.tiny)
                         .foregroundColor(AppTheme.Colors.textMuted)
+                        .multilineTextAlignment(.center)
                 }
             }
         }
         .padding(.horizontal, AppTheme.Spacing.md)
         .padding(.vertical, AppTheme.Spacing.sm)
     }
+}
+
+#Preview("Low weekly usage") {
+    UsageRingCard(
+        usage: ClaudeUsage(
+            sessionTokensUsed: 0,
+            sessionLimit: 10000,
+            sessionPercentage: 0,
+            sessionResetTime: Date().addingTimeInterval(5 * 60 * 60),
+            weeklyTokensUsed: 1200,
+            weeklyLimit: 1_000_000,
+            weeklyPercentage: 12,
+            weeklyResetTime: Date().nextMonday1259pm(),
+            opusWeeklyTokensUsed: 0,
+            opusWeeklyPercentage: 0,
+            sonnetWeeklyTokensUsed: 0,
+            sonnetWeeklyPercentage: 0,
+            sonnetWeeklyResetTime: nil,
+            costUsed: nil,
+            costLimit: nil,
+            costCurrency: nil,
+            overageBalance: nil,
+            overageBalanceCurrency: nil,
+            lastUpdated: Date(),
+            userTimezone: .current
+        ),
+        apiUsage: nil
+    )
+    .padding()
+    .background(AppTheme.Colors.background)
+    .preferredColorScheme(.dark)
+}
+
+#Preview("High session usage") {
+    UsageRingCard(
+        usage: ClaudeUsage(
+            sessionTokensUsed: 8750,
+            sessionLimit: 10000,
+            sessionPercentage: 87.5,
+            sessionResetTime: Date().addingTimeInterval(5 * 60 * 60),
+            weeklyTokensUsed: 1200,
+            weeklyLimit: 1_000_000,
+            weeklyPercentage: 12,
+            weeklyResetTime: Date().nextMonday1259pm(),
+            opusWeeklyTokensUsed: 0,
+            opusWeeklyPercentage: 0,
+            sonnetWeeklyTokensUsed: 0,
+            sonnetWeeklyPercentage: 0,
+            sonnetWeeklyResetTime: nil,
+            costUsed: nil,
+            costLimit: nil,
+            costCurrency: nil,
+            overageBalance: nil,
+            overageBalanceCurrency: nil,
+            lastUpdated: Date(),
+            userTimezone: .current
+        ),
+        apiUsage: nil
+    )
+    .padding()
+    .background(AppTheme.Colors.background)
+    .preferredColorScheme(.dark)
 }

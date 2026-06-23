@@ -149,59 +149,45 @@ struct UsageHistoryView: View {
 
     @ViewBuilder
     private var exportSection: some View {
-        if FeatureFlags.shared.isAvailable(FeatureFlags.shared.usageHistoryExport) {
-            VStack(spacing: 8) {
-                HStack {
-                    Spacer()
+        VStack(spacing: 8) {
+            HStack {
+                Spacer()
 
-                    Menu {
-                        Button(action: { exportHistory(format: .json) }) {
-                            Label("history.export.json".localized, systemImage: "doc.text")
-                        }
-                        Button(action: { exportHistory(format: .csv) }) {
-                            Label("history.export.csv".localized, systemImage: "tablecells")
-                        }
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "square.and.arrow.up")
-                                .font(.system(size: 12))
-                            Text("history.export.title".localized)
-                                .font(.system(size: 12))
-                        }
-                        .foregroundColor(.accentColor)
+                Menu {
+                    Button(action: { exportHistory(format: .json) }) {
+                        Label("history.export.json".localized, systemImage: "doc.text")
                     }
-                    .menuStyle(.borderlessButton)
-                }
-
-                // Date Range Export (Pro)
-                Button(action: { showingDateRangeExport = true }) {
+                    Button(action: { exportHistory(format: .csv) }) {
+                        Label("history.export.csv".localized, systemImage: "tablecells")
+                    }
+                } label: {
                     HStack(spacing: 6) {
-                        Image(systemName: "calendar.badge.clock")
-                            .font(.system(size: 11))
-                        Text("Export with Date Range...")
-                            .font(.system(size: 11))
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 12))
+                        Text("history.export.title".localized)
+                            .font(.system(size: 12))
                     }
                     .foregroundColor(.accentColor)
                 }
-                .buttonStyle(.plain)
+                .menuStyle(.borderlessButton)
             }
-            .padding(.top, 8)
-            .sheet(isPresented: $showingDateRangeExport) {
-                if let profileId = profileManager.activeProfile?.id {
-                    DateRangeExportView(profileId: profileId)
+
+            Button(action: { showingDateRangeExport = true }) {
+                HStack(spacing: 6) {
+                    Image(systemName: "calendar.badge.clock")
+                        .font(.system(size: 11))
+                    Text("Export with Date Range...")
+                        .font(.system(size: 11))
                 }
+                .foregroundColor(.accentColor)
             }
-        } else {
-            ProUpsellCard(
-                title: "Export Usage History (Pro)",
-                message: "Export your usage data to JSON or CSV for billing reconciliation and client invoicing.",
-                actionTitle: "Upgrade to Pro"
-            ) {
-                if let url = LicenseManager.shared.proCheckoutURL {
-                    NSWorkspace.shared.open(url)
-                }
+            .buttonStyle(.plain)
+        }
+        .padding(.top, 8)
+        .sheet(isPresented: $showingDateRangeExport) {
+            if let profileId = profileManager.activeProfile?.id {
+                DateRangeExportView(profileId: profileId)
             }
-            .padding(.top, 8)
         }
     }
 

@@ -2,18 +2,12 @@
 //  AccountSettingsView.swift
 //  Claude Usage - Consolidated Account Settings
 //
-//  Merges: ProFeaturesView, SupportView, AboutView
+//  Simplified About/Info page (no monetization)
 //
 
 import SwiftUI
 
 struct AccountSettingsView: View {
-    @StateObject private var licenseManager = LicenseManager.shared
-    @StateObject private var featureFlags = FeatureFlags.shared
-    @State private var showingActivationSheet = false
-    @State private var activationKey = ""
-    @State private var activationError: String?
-    @State private var isActivating = false
     @State private var showResetConfirmation = false
 
     private var appVersion: String {
@@ -29,25 +23,8 @@ struct AccountSettingsView: View {
             VStack(alignment: .leading, spacing: AppTheme.Spacing.section) {
                 SettingsPageHeader(
                     title: "Account",
-                    subtitle: "Manage your license, subscription, and app information."
+                    subtitle: "App information and support."
                 )
-
-                ProductInsightCard(
-                    icon: "target",
-                    title: "Built for avoiding surprise limits",
-                    message: "Pro is designed around the moments that cost time: hitting a session cap mid-work, losing track across profiles, or not knowing which AI account still has capacity.",
-                    color: AppTheme.Colors.proBadge
-                )
-
-                tierStatusCard
-
-                if featureFlags.isFree {
-                    pricingCard
-                }
-
-                if featureFlags.isFree {
-                    activationCard
-                }
 
                 versionInfoCard
 
@@ -61,30 +38,6 @@ struct AccountSettingsView: View {
             }
             .padding(28)
         }
-        .sheet(isPresented: $showingActivationSheet) {
-            LicenseActivationSheet(
-                licenseKey: $activationKey,
-                error: $activationError,
-                isActivating: $isActivating,
-                onActivate: {
-                    Task {
-                        isActivating = true
-                        activationError = nil
-                        let success = await licenseManager.activateLicense(activationKey)
-                        isActivating = false
-                        if success {
-                            showingActivationSheet = false
-                            activationKey = ""
-                        }
-                    }
-                },
-                onCancel: {
-                    showingActivationSheet = false
-                    activationKey = ""
-                    activationError = nil
-                }
-            )
-        }
         .alert("about.reset_confirmation_title".localized, isPresented: $showResetConfirmation) {
             Button("common.cancel".localized, role: .cancel) { }
             Button("about.reset_confirm".localized, role: .destructive) {
@@ -92,131 +45,6 @@ struct AccountSettingsView: View {
             }
         } message: {
             Text("about.reset_confirmation_message".localized)
-        }
-    }
-
-    // MARK: - Tier Status
-
-    private var tierStatusCard: some View {
-        SettingsContentCard {
-            HStack(alignment: .top, spacing: AppTheme.Spacing.md) {
-                ZStack {
-                    Circle()
-                        .fill((featureFlags.isFree ? AppTheme.Colors.warning : AppTheme.Colors.success).opacity(0.14))
-                        .frame(width: 44, height: 44)
-
-                    Image(systemName: featureFlags.isFree ? "lock.fill" : "checkmark.seal.fill")
-                        .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(featureFlags.isFree ? AppTheme.Colors.warning : AppTheme.Colors.success)
-                }
-
-                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-                    Text("Current plan")
-                        .font(AppTheme.Typography.tinySemibold)
-                        .foregroundColor(AppTheme.Colors.textMuted)
-                        .textCase(.uppercase)
-
-                    HStack(spacing: AppTheme.Spacing.sm) {
-                        Text(licenseManager.currentTier.displayName)
-                            .font(AppTheme.Typography.sectionTitle)
-                            .foregroundColor(AppTheme.Colors.textPrimary)
-
-                        if !featureFlags.isFree {
-                            Text("PRO")
-                                .font(AppTheme.Typography.badge)
-                                .foregroundColor(AppTheme.Colors.textPrimary)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(
-                                    Capsule()
-                                        .fill(AppTheme.Colors.proBadge.opacity(0.22))
-                                )
-                        }
-                    }
-
-                    if featureFlags.isFree {
-                        Text("Free is enough for basic Claude tracking. Upgrade when you need forecasting, exports, multi-provider visibility, or more than two profiles.")
-                            .font(AppTheme.Typography.small)
-                            .foregroundColor(AppTheme.Colors.textSecondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    } else {
-                        Text("You have access to all Pro features. Thank you for supporting development!")
-                            .font(AppTheme.Typography.small)
-                            .foregroundColor(AppTheme.Colors.textSecondary)
-                    }
-                }
-
-                Spacer()
-
-                if featureFlags.isFree {
-                    SettingsButton.primary(title: "Upgrade", icon: "arrow.up.circle.fill") {
-                        if let url = licenseManager.proCheckoutURL {
-                            NSWorkspace.shared.open(url)
-                        }
-                    }
-                    .frame(width: 132)
-                }
-            }
-        }
-    }
-
-    // MARK: - Pricing
-
-    private var pricingCard: some View {
-        SettingsContentCard {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-                HStack {
-                    VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-                        Text("Upgrade when usage becomes work-critical")
-                            .font(AppTheme.Typography.cardTitle)
-                            .foregroundColor(AppTheme.Colors.textPrimary)
-
-                        Text("Monthly for flexibility, annual for the best value.")
-                            .font(AppTheme.Typography.small)
-                            .foregroundColor(AppTheme.Colors.textSecondary)
-                    }
-
-                    Spacer()
-
-                    Text("$4.99/mo")
-                        .font(AppTheme.Typography.statMedium)
-                        .foregroundColor(AppTheme.Colors.accentHover)
-                }
-
-                Text("$39.99/year saves 33% compared with monthly billing.")
-                    .font(AppTheme.Typography.smallSemibold)
-                    .foregroundColor(AppTheme.Colors.success)
-
-                SettingsButton.primary(title: "Upgrade Now", icon: "arrow.up.circle.fill") {
-                    if let url = licenseManager.proCheckoutURL {
-                        NSWorkspace.shared.open(url)
-                    }
-                }
-            }
-        }
-    }
-
-    // MARK: - Activation
-
-    private var activationCard: some View {
-        SettingsContentCard {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-                Text("Already have a license?")
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(AppTheme.Colors.textPrimary)
-
-                Text("Enter your license key to activate Pro features.")
-                    .font(AppTheme.Typography.small)
-                    .foregroundColor(AppTheme.Colors.textSecondary)
-
-                SettingsButton(
-                    title: "Activate License",
-                    icon: "key.fill",
-                    style: .secondary
-                ) {
-                    showingActivationSheet = true
-                }
-            }
         }
     }
 
@@ -257,7 +85,7 @@ struct AccountSettingsView: View {
                         .font(AppTheme.Typography.label)
                         .foregroundColor(AppTheme.Colors.textSecondary)
                     Spacer()
-                    Text("Closed-source commercial")
+                    Text("Free, no monetization")
                         .font(AppTheme.Typography.small)
                         .foregroundColor(AppTheme.Colors.textPrimary)
                 }
@@ -291,13 +119,6 @@ struct AccountSettingsView: View {
 
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                     SupportValueRow(
-                        icon: "sparkles",
-                        color: AppTheme.Colors.proBadge,
-                        title: "Upgrade for planning features",
-                        message: "Pro adds forecasting, exports, multi-provider tracking, custom thresholds, and unlimited profiles."
-                    )
-
-                    SupportValueRow(
                         icon: "bubble.left.and.bubble.right.fill",
                         color: AppTheme.Colors.info,
                         title: "Need help or want a feature?",
@@ -323,12 +144,6 @@ struct AccountSettingsView: View {
             subtitle: nil
         ) {
             VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-                LinkButton(title: "Upgrade to Pro", icon: "star.fill") {
-                    if let url = LicenseManager.shared.proCheckoutURL {
-                        NSWorkspace.shared.open(url)
-                    }
-                }
-
                 LinkButton(title: "about.send_feedback".localized, icon: "bubble.left.and.text.bubble.right") {
                     if let url = URL(string: "mailto:support@aiusagetracker.com") {
                         NSWorkspace.shared.open(url)
@@ -358,7 +173,7 @@ struct AccountSettingsView: View {
 
     private var footerSection: some View {
         VStack(spacing: AppTheme.Spacing.xs) {
-            Text("Closed-source commercial macOS app")
+            Text("Free macOS app — all features included")
                 .font(AppTheme.Typography.small)
                 .foregroundColor(AppTheme.Colors.textMuted)
 
@@ -374,7 +189,9 @@ struct AccountSettingsView: View {
 
     private func resetAppData() {
         MigrationService.shared.resetAppData()
-        NSApplication.shared.terminate(nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            NSApplication.shared.terminate(nil)
+        }
     }
 }
 

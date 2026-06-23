@@ -20,89 +20,113 @@ struct ResetCountdownCard: View {
         return interval > 0 && interval < 24 * 60 * 60
     }
 
-    private var accentColor: Color {
-        isUrgent ? AppTheme.Colors.warning : AppTheme.Colors.textSecondary
-    }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             if profileManager.profiles.count > 1 {
-                ForEach(profileManager.profiles) { profile in
-                    if let profileUsage = profile.claudeUsage {
-                        HStack(spacing: AppTheme.Spacing.sm) {
-                            Circle()
-                                .fill(resetCountdownColor(for: profileUsage))
-                                .frame(width: 6, height: 6)
-
-                            Text(profile.name)
-                                .font(AppTheme.Typography.captionMedium)
-                                .foregroundColor(AppTheme.Colors.textPrimary)
-                                .lineLimit(1)
-
-                            Spacer()
-
-                            Text(resetCountdownLabel(for: profileUsage))
-                                .font(AppTheme.Typography.caption)
-                                .foregroundColor(AppTheme.Colors.textMuted)
-                        }
-                        .padding(.vertical, 2)
-                    }
-                }
+                multiProfileContent
             } else {
-                HStack(spacing: AppTheme.Spacing.sm) {
-                    Image(systemName: "clock.fill")
-                        .font(AppTheme.Typography.captionSemibold)
-                        .foregroundColor(accentColor)
-                        .frame(width: 18, height: 18)
-                        .background(
-                            Circle()
-                                .fill(accentColor.opacity(0.12))
-                        )
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("NEXT RESET")
-                            .font(AppTheme.Typography.tinySemibold)
-                            .foregroundColor(AppTheme.Colors.textMuted)
-
-                        HStack(spacing: 6) {
-                            if usage.sessionResetTime > Date() {
-                                Text("Session \(usage.sessionResetTime.resetTimeString())")
-                                    .font(AppTheme.Typography.captionMedium)
-                                    .foregroundColor(AppTheme.Colors.textPrimary)
-                                    .lineLimit(1)
-                            }
-
-                            if usage.weeklyResetTime > Date() {
-                                Text("Weekly \(usage.weeklyResetTime.resetTimeString())")
-                                    .font(AppTheme.Typography.captionMedium)
-                                    .foregroundColor(AppTheme.Colors.textPrimary)
-                                    .lineLimit(1)
-                            }
-                        }
-                    }
-
-                    Spacer()
-
-                    Text(nearestReset.timeRemainingString())
-                        .font(AppTheme.Typography.roundedSemibold)
-                        .foregroundColor(isUrgent ? AppTheme.Colors.warning : AppTheme.Colors.textSecondary)
-                }
+                singleProfileContent
             }
         }
         .padding(AppTheme.Spacing.sm)
         .background(
             RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
-                .fill(isUrgent ? AppTheme.Colors.warning.opacity(0.08) : AppTheme.Colors.card.opacity(0.5))
+                .fill(AppTheme.Colors.card.opacity(0.5))
         )
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
-                .strokeBorder(
-                    isUrgent ? AppTheme.Colors.warning.opacity(0.3) : AppTheme.Colors.borderSubtle,
-                    lineWidth: 0.5
-                )
+                .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
         )
         .padding(.horizontal, 10)
     }
+
+    // MARK: - Single Profile
+
+    private var singleProfileContent: some View {
+        HStack(spacing: AppTheme.Spacing.sm) {
+            // Icon
+            ZStack {
+                Circle()
+                    .fill(isUrgent ? AppTheme.Colors.warning.opacity(0.12) : AppTheme.Colors.textMuted.opacity(0.08))
+                    .frame(width: 28, height: 28)
+
+                Image(systemName: "clock.fill")
+                    .font(AppTheme.Typography.tinySemibold)
+                    .foregroundColor(isUrgent ? AppTheme.Colors.warning : AppTheme.Colors.textMuted)
+            }
+
+            // Info
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 4) {
+                    if usage.sessionResetTime > Date() {
+                        Label {
+                            Text("Session \(usage.sessionResetTime.resetTimeString())")
+                                .font(AppTheme.Typography.captionMedium)
+                        } icon: {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 4))
+                                .foregroundColor(AppTheme.Colors.success)
+                        }
+                    }
+
+                    if usage.weeklyResetTime > Date() {
+                        Label {
+                            Text("Weekly \(usage.weeklyResetTime.resetTimeString())")
+                                .font(AppTheme.Typography.captionMedium)
+                        } icon: {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 4))
+                                .foregroundColor(AppTheme.Colors.info)
+                        }
+                    }
+                }
+                .foregroundColor(AppTheme.Colors.textSecondary)
+            }
+
+            Spacer()
+
+            // Time remaining
+            VStack(alignment: .trailing, spacing: 0) {
+                Text(nearestReset.timeRemainingString())
+                    .font(AppTheme.Typography.roundedSemibold)
+                    .foregroundColor(isUrgent ? AppTheme.Colors.warning : AppTheme.Colors.textSecondary)
+
+                Text("until reset")
+                    .font(AppTheme.Typography.micro)
+                    .foregroundColor(AppTheme.Colors.textMuted)
+            }
+        }
+    }
+
+    // MARK: - Multi Profile
+
+    private var multiProfileContent: some View {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+            ForEach(profileManager.profiles) { profile in
+                if let profileUsage = profile.claudeUsage {
+                    HStack(spacing: AppTheme.Spacing.sm) {
+                        Circle()
+                            .fill(resetCountdownColor(for: profileUsage))
+                            .frame(width: 6, height: 6)
+
+                        Text(profile.name)
+                            .font(AppTheme.Typography.captionMedium)
+                            .foregroundColor(AppTheme.Colors.textPrimary)
+                            .lineLimit(1)
+
+                        Spacer()
+
+                        Text(resetCountdownLabel(for: profileUsage))
+                            .font(AppTheme.Typography.caption)
+                            .foregroundColor(AppTheme.Colors.textMuted)
+                    }
+                    .padding(.vertical, 2)
+                }
+            }
+        }
+    }
+
+    // MARK: - Helpers
 
     private func resetCountdownColor(for profileUsage: ClaudeUsage) -> Color {
         let now = Date()
@@ -112,6 +136,10 @@ struct ResetCountdownCard: View {
         var intervals: [TimeInterval] = []
         if sessionOk { intervals.append(profileUsage.sessionResetTime.timeIntervalSince(now)) }
         if weeklyOk { intervals.append(profileUsage.weeklyResetTime.timeIntervalSince(now)) }
+
+        if intervals.isEmpty {
+            return AppTheme.Colors.textMuted
+        }
 
         let nearest = intervals.min() ?? 0
         if nearest > 0 && nearest < 24 * 60 * 60 {
@@ -136,6 +164,6 @@ struct ResetCountdownCard: View {
         if let nearest = candidates.min(by: { $0.1 < $1.1 }) {
             return nearest.0
         }
-        return "Reset"
+        return "Reset passed"
     }
 }

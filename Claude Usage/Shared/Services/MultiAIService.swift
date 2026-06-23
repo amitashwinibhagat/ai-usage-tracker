@@ -272,11 +272,8 @@ final class MultiAIService {
         }
     }
 
-    /// Returns which providers are available for fetching (visible + license-compatible)
+    /// Returns which providers are available for fetching (all providers always available)
     var availableProviders: [AIProvider] {
-        AIProvider.visibleProviders.filter { provider in
-            if provider.isFreeTier { return true }
-            return FeatureFlags.shared.isAvailable(FeatureFlags.shared.multiAI)
-        }
+        AIProvider.visibleProviders
     }
 }

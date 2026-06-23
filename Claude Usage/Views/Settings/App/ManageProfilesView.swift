@@ -39,23 +39,11 @@ struct ManageProfilesView: View {
                     }
                 }
 
-                if profileManager.canCreateProfile {
-                    SettingsButton.primary(
-                        title: "profiles.create_new".localized,
-                        icon: "plus.circle.fill"
-                    ) {
-                        showingCreateProfile = true
-                    }
-                } else {
-                    ProUpsellCard(
-                        title: "Upgrade to Pro for Unlimited Profiles",
-                        message: "You've reached the free limit of 2 profiles. Pro removes profile limits so every account, client, and API key can be tracked separately.",
-                        actionTitle: "Upgrade for $4.99/mo"
-                    ) {
-                        if let url = LicenseManager.shared.proCheckoutURL {
-                            NSWorkspace.shared.open(url)
-                        }
-                    }
+                SettingsButton.primary(
+                    title: "profiles.create_new".localized,
+                    icon: "plus.circle.fill"
+                ) {
+                    showingCreateProfile = true
                 }
 
                 // Multi-Profile Display Section
@@ -364,7 +352,7 @@ struct ManageProfilesView: View {
                         .font(AppTheme.Typography.sectionTitle)
                         .foregroundColor(AppTheme.Colors.textPrimary)
 
-                    Text(profileManager.canCreateProfile ? "Add another profile when a new account or project needs separate tracking." : "Free tier profile capacity is full. Existing profiles remain usable.")
+                    Text("Add another profile when a new account or project needs separate tracking.")
                         .font(AppTheme.Typography.small)
                         .foregroundColor(AppTheme.Colors.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -372,14 +360,14 @@ struct ManageProfilesView: View {
 
                 Spacer()
 
-                Text(profileManager.canCreateProfile ? "Ready" : "Limit")
+                Text("Unlimited")
                     .font(AppTheme.Typography.badge)
-                    .foregroundColor(profileManager.canCreateProfile ? AppTheme.Colors.success : AppTheme.Colors.warning)
+                    .foregroundColor(AppTheme.Colors.success)
                     .padding(.horizontal, AppTheme.Spacing.sm)
                     .padding(.vertical, 4)
                     .background(
                         Capsule()
-                            .fill((profileManager.canCreateProfile ? AppTheme.Colors.success : AppTheme.Colors.warning).opacity(0.14))
+                            .fill(AppTheme.Colors.success.opacity(0.14))
                     )
             }
         }
@@ -387,9 +375,10 @@ struct ManageProfilesView: View {
 
     private func createNewProfile() {
         let name = newProfileName.isEmpty ? nil : newProfileName
-        let profile = profileManager.createProfile(name: name)
-        if profile == nil {
-            errorMessage = "Profile limit reached. Upgrade to Pro for unlimited profiles."
+        do {
+            try profileManager.createProfile(name: name)
+        } catch {
+            errorMessage = error.localizedDescription
         }
         showingCreateProfile = false
         newProfileName = ""
@@ -559,9 +548,17 @@ struct ProfileRow: View {
 
     private func deleteProfile() {
         do {
+            let deletedProfileId = profile.id
             try profileManager.deleteProfile(profile.id)
+            if deletedProfileId == profileManager.activeProfile?.id {
+                if let firstRemaining = profileManager.profiles.first(where: { $0.id != deletedProfileId }) {
+                    Task {
+                        await profileManager.activateProfile(firstRemaining.id)
+                    }
+                }
+            }
         } catch {
-            // Error handled by ProfileManager
+            LoggingService.shared.log("Failed to delete profile: \(error.localizedDescription)")
         }
     }
 }

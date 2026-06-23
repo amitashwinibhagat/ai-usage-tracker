@@ -29,4 +29,7 @@ extension Notification.Name {
 
     /// Posted when the peak hours indicator setting is toggled
     static let peakHoursSettingChanged = Notification.Name("peakHoursSettingChanged")
+
+    /// Posted when the manage profiles view should be shown
+    static let showManageProfiles = Notification.Name("showManageProfiles")
 }

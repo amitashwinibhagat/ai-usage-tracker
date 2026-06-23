@@ -71,11 +71,6 @@ final class BurnRatePredictor {
 
     /// Calculates burn rate prediction for a profile's current session
     func predict(for profileId: UUID, currentUsage: ClaudeUsage) -> BurnRatePrediction {
-        // Gate: Pro feature
-        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.burnRatePredictor) else {
-            return unreliablePrediction()
-        }
-
         let history = UsageHistoryService.shared.getSessionSnapshots(for: profileId)
         let recentSnapshots = history.filter {
             $0.timestamp > Date().addingTimeInterval(-analysisWindow)
@@ -113,10 +108,6 @@ final class BurnRatePredictor {
 
     /// Quick prediction using just current usage and elapsed time
     func quickPredict(currentUsage: ClaudeUsage) -> BurnRatePrediction {
-        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.burnRatePredictor) else {
-            return unreliablePrediction()
-        }
-
         let resetTime = currentUsage.sessionResetTime
         let elapsed = resetTime.timeIntervalSince(Date())
         let sessionDuration: TimeInterval = 5 * 60 * 60 // 5 hour window
@@ -248,7 +239,7 @@ final class BurnRatePredictor {
             minutesToLimit: nil,
             weeklyMinutesToLimit: nil,
             trend: .unknown,
-            timeToLimitText: "Upgrade to Pro for predictions",
+            timeToLimitText: "Not enough data yet",
             isReliable: false
         )
     }

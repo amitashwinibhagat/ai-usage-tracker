@@ -614,6 +614,12 @@ class MenuBarManager: NSObject, ObservableObject {
         refreshItem.target = self
         menu.addItem(refreshItem)
 
+        #if DEBUG
+        let pingItem = NSMenuItem(title: "Send Keep-Alive Ping", action: #selector(contextMenuKeepAlivePing), keyEquivalent: "")
+        pingItem.target = self
+        menu.addItem(pingItem)
+        #endif
+
         menu.addItem(NSMenuItem.separator())
 
         let settingsItem = NSMenuItem(title: "common.settings".localized, action: #selector(preferencesClicked), keyEquivalent: ",")
@@ -641,6 +647,12 @@ class MenuBarManager: NSObject, ObservableObject {
         refreshUsage()
     }
 
+    #if DEBUG
+    @objc private func contextMenuKeepAlivePing() {
+        NotificationCenter.default.post(name: .claudeKeepAlivePingNow, object: nil)
+    }
+    #endif
+
     private func closePopover() {
         popover?.performClose(nil)
         stopMonitoringForOutsideClicks()
@@ -666,7 +678,7 @@ class MenuBarManager: NSObject, ObservableObject {
         }
     }
 
-    private func closePopoverOrWindow() {
+    func closePopoverOrWindow() {
         if let window = detachedWindow {
             window.close()
             detachedWindow = nil
@@ -1395,9 +1407,8 @@ class MenuBarManager: NSObject, ObservableObject {
                 }
             }
 
-            // Fetch multi-AI provider usage (Pro feature)
+            // Fetch multi-AI provider usage
             if let profile = await MainActor.run(body: { self.profileManager.activeProfile }),
-               FeatureFlags.shared.isAvailable(FeatureFlags.shared.multiAI),
                profile.hasMultiAICredentials {
                 let result = await MultiAIService.shared.fetchAllUsage(for: profile)
                 await MainActor.run {

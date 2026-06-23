@@ -137,7 +137,9 @@ struct SetupMethodView: View {
                     }
                     return
                 }
-            } catch { }
+            } catch {
+                LoggingService.shared.log("CLI detection failed: \(error.localizedDescription)")
+            }
 
             await MainActor.run {
                 cliDetected = false

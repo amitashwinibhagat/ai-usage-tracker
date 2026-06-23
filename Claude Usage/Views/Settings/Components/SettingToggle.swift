@@ -17,13 +17,11 @@ struct SettingToggle: View {
 
     enum BadgeType {
         case beta
-        case pro
         case new
 
         var text: String {
             switch self {
             case .beta: return "BETA"
-            case .pro: return "PRO"
             case .new: return "NEW"
             }
         }
@@ -31,7 +29,6 @@ struct SettingToggle: View {
         var color: Color {
             switch self {
             case .beta: return AppTheme.Colors.betaBadge
-            case .pro: return AppTheme.Colors.proBadge
             case .new: return AppTheme.Colors.newBadge
             }
         }
@@ -149,16 +146,6 @@ private struct BadgeView: View {
         description: "Enable experimental features that may be unstable",
         badge: .beta,
         isOn: .constant(true)
-    )
-    .padding()
-}
-
-#Preview("Toggle with Pro Badge") {
-    SettingToggle(
-        title: "Export analytics",
-        description: "Export detailed usage analytics to CSV",
-        badge: .pro,
-        isOn: .constant(false)
     )
     .padding()
 }

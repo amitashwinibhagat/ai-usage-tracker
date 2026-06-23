@@ -7,165 +7,146 @@ struct BurnRateCard: View {
     @State private var prediction: BurnRatePrediction?
     @State private var sparklinePoints: [Double] = []
 
-    private var isPro: Bool {
-        FeatureFlags.shared.isProOrHigher
-    }
-
-    private var freeShouldUpsell: Bool {
-        !isPro && usage.effectiveSessionPercentage > 50
-    }
-
     var body: some View {
-        Group {
-            if isPro {
-                proContent
-            } else if freeShouldUpsell {
-                freeUpsellContent
-            }
-        }
-        .onAppear {
-            if isPro {
-                prediction = BurnRatePredictor.shared.quickPredict(currentUsage: usage)
+        content
+            .onAppear {
+                computePrediction()
                 loadSparklineData()
             }
-        }
-        .onChange(of: usage.sessionTokensUsed) { _, _ in
-            prediction = BurnRatePredictor.shared.quickPredict(currentUsage: usage)
-            loadSparklineData()
-        }
+            .onChange(of: usage.sessionTokensUsed) { _, _ in
+                computePrediction()
+                loadSparklineData()
+            }
     }
 
-    // MARK: - Pro Content
+    private var hasUsableForecast: Bool {
+        guard let prediction = prediction else { return false }
+        return prediction.isReliable && usage.sessionTokensUsed > 0
+    }
 
-    private var proContent: some View {
+    private var content: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-            HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
-                Image(systemName: "flame.fill")
+            HStack(spacing: AppTheme.Spacing.sm) {
+                Image(systemName: "chart.line.uptrend.xyaxis")
                     .font(AppTheme.Typography.smallSemibold)
-                    .foregroundColor(AppTheme.Colors.warning)
+                    .foregroundColor(AppTheme.Colors.info)
                     .frame(width: 22, height: 22)
                     .background(
                         Circle()
-                            .fill(AppTheme.Colors.warning.opacity(0.12))
+                            .fill(AppTheme.Colors.info.opacity(0.12))
                     )
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Pace forecast")
-                        .font(AppTheme.Typography.smallSemibold)
-                        .foregroundColor(AppTheme.Colors.textPrimary)
-
-                    if let prediction = prediction, prediction.isReliable {
-                        Text("\(Int(prediction.tokensPerMinute.rounded())) tokens/min")
-                            .font(AppTheme.Typography.tiny)
-                            .foregroundColor(AppTheme.Colors.textSecondary)
-                    }
-                }
+                Text("Pace forecast")
+                    .font(AppTheme.Typography.smallSemibold)
+                    .foregroundColor(AppTheme.Colors.textPrimary)
 
                 Spacer()
 
-                if let prediction = prediction, prediction.isReliable {
-                    Image(systemName: prediction.trend.icon)
-                        .font(AppTheme.Typography.tinySemibold)
-                        .foregroundColor(trendColor(prediction.trend))
+                if hasUsableForecast, let prediction = prediction {
+                    HStack(spacing: 3) {
+                        Image(systemName: prediction.trend.icon)
+                            .font(AppTheme.Typography.tinySemibold)
+                        Text(prediction.trend.description)
+                            .font(AppTheme.Typography.tinyMedium)
+                    }
+                    .foregroundColor(trendColor(prediction.trend))
                 }
             }
 
-            if !sparklinePoints.isEmpty {
+            if hasUsableForecast {
+                forecastBody
+            } else {
+                insufficientDataBody
+            }
+        }
+        .padding(AppTheme.Spacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(AppTheme.Colors.card.opacity(0.5))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
+        )
+        .padding(.horizontal, 10)
+        .accessibilityElement(children: .combine)
+    }
+
+    private var forecastBody: some View {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            if hasMeaningfulSparkline {
                 SparklineView(points: sparklinePoints)
-                    .frame(height: 32)
+                    .frame(height: 28)
                     .padding(.horizontal, AppTheme.Spacing.xs)
             }
 
-            if let prediction = prediction, prediction.isReliable, let minutes = prediction.minutesToLimit {
-                HStack(alignment: .firstTextBaseline, spacing: 4) {
-                    Text("At this pace:")
+            if let minutes = limitingMinutes, minutes < 7 * 24 * 60 {
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text("At this pace, limit in")
                         .font(AppTheme.Typography.tiny)
                         .foregroundColor(AppTheme.Colors.textSecondary)
 
-                    Text(minutes < 15 ? "limit soon" : prediction.timeToLimitText)
+                    Text(formatMinutes(minutes))
                         .font(AppTheme.Typography.roundedSemibold)
                         .foregroundColor(minutes < 15 ? AppTheme.Colors.error : AppTheme.Colors.warning)
                 }
-
-                Text("\(prediction.trend.description)  \(Int(prediction.tokensPerMinute.rounded())) tokens/min")
-                    .font(AppTheme.Typography.tiny)
-                    .foregroundColor(AppTheme.Colors.textMuted)
-            } else if prediction != nil && !(prediction?.isReliable ?? true) {
-                Text("Learning your pace")
-                    .font(AppTheme.Typography.roundedSemibold)
-                    .foregroundColor(AppTheme.Colors.textPrimary)
             } else {
-                Text("Calculating...")
-                    .font(AppTheme.Typography.tiny)
-                    .foregroundColor(AppTheme.Colors.textMuted)
-            }
-        }
-        .padding(AppTheme.Spacing.sm)
-        .background(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
-                .fill(AppTheme.Colors.card.opacity(0.9))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
-                .strokeBorder(AppTheme.Colors.warning.opacity(0.22), lineWidth: 0.5)
-        )
-        .padding(.horizontal, 10)
-    }
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text("Current pace is sustainable")
+                        .font(AppTheme.Typography.tiny)
+                        .foregroundColor(AppTheme.Colors.textSecondary)
 
-    // MARK: - Free Upsell Content
-
-    private var freeUpsellContent: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-            HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
-                Image(systemName: "flame.fill")
-                    .font(AppTheme.Typography.smallSemibold)
-                    .foregroundColor(AppTheme.Colors.warning)
-                    .frame(width: 22, height: 22)
-                    .background(
-                        Circle()
-                            .fill(AppTheme.Colors.warning.opacity(0.12))
-                    )
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("You're using tokens faster than usual. Upgrade to Pro for burn rate predictions.")
-                        .font(AppTheme.Typography.captionMedium)
-                        .foregroundColor(AppTheme.Colors.textPrimary)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    Button(action: {
-                        if let url = LicenseManager.shared.proCheckoutURL {
-                            NSWorkspace.shared.open(url)
-                        }
-                    }) {
-                        Text("Upgrade")
-                            .font(AppTheme.Typography.tinySemibold)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 5)
-                            .background(
-                                Capsule()
-                                    .fill(AppTheme.Colors.accent)
-                            )
-                    }
-                    .buttonStyle(.plain)
+                    Text("plenty of headroom")
+                        .font(AppTheme.Typography.roundedSemibold)
+                        .foregroundColor(AppTheme.Colors.success)
                 }
-
-                Spacer()
             }
         }
-        .padding(AppTheme.Spacing.sm)
-        .background(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
-                .fill(AppTheme.Colors.accentMuted)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
-                .strokeBorder(AppTheme.Colors.accent.opacity(0.25), lineWidth: 0.5)
-        )
-        .padding(.horizontal, 10)
     }
 
-    // MARK: - Helpers
+    private var insufficientDataBody: some View {
+        HStack(spacing: AppTheme.Spacing.sm) {
+            Image(systemName: "clock.arrow.circlepath")
+                .font(AppTheme.Typography.tinySemibold)
+                .foregroundColor(AppTheme.Colors.textMuted)
+                .frame(width: 16, height: 16)
+
+            Text("Not enough usage yet to forecast pace")
+                .font(AppTheme.Typography.tiny)
+                .foregroundColor(AppTheme.Colors.textMuted)
+                .lineLimit(2)
+
+            Spacer()
+        }
+        .padding(.vertical, 2)
+    }
+
+    private var limitingMinutes: Double? {
+        guard let prediction = prediction else { return nil }
+        let candidates = [prediction.minutesToLimit, prediction.weeklyMinutesToLimit].compactMap { $0 }
+        guard !candidates.isEmpty else { return nil }
+        return candidates.min()
+    }
+
+    private var hasMeaningfulSparkline: Bool {
+        guard sparklinePoints.count >= 3 else { return false }
+        let minVal = sparklinePoints.min() ?? 0
+        let maxVal = sparklinePoints.max() ?? 0
+        return maxVal - minVal > 0.5
+    }
+
+    private func formatMinutes(_ minutes: Double) -> String {
+        if minutes <= 0 { return "Limit reached soon" }
+        if minutes < 1 { return "Less than a minute" }
+        if minutes < 60 {
+            return "\(Int(minutes)) min"
+        }
+        let hours = minutes / 60.0
+        if hours < 24 {
+            return String(format: "%.1f hours", hours)
+        }
+        return String(format: "%.1f days", hours / 24.0)
+    }
 
     private func trendColor(_ trend: BurnTrend) -> Color {
         switch trend {
@@ -173,6 +154,15 @@ struct BurnRateCard: View {
         case .steady: return AppTheme.Colors.warning
         case .decelerating: return AppTheme.Colors.success
         case .unknown: return AppTheme.Colors.textMuted
+        }
+    }
+
+    private func computePrediction() {
+        let fullPrediction = BurnRatePredictor.shared.predict(for: profileId, currentUsage: usage)
+        if fullPrediction.isReliable {
+            prediction = fullPrediction
+        } else {
+            prediction = BurnRatePredictor.shared.quickPredict(currentUsage: usage)
         }
     }
 
@@ -204,6 +194,36 @@ struct SparklineView: View {
                 let range = max(maxVal - minVal, 1)
 
                 Path { path in
+                    guard let firstPoint = points.first else { return }
+                    let firstX: CGFloat = 0
+                    let firstY = height * CGFloat(1.0 - (firstPoint - minVal) / range)
+                    path.move(to: CGPoint(x: firstX, y: firstY))
+
+                    for (index, point) in points.enumerated().dropFirst() {
+                        let x = width * CGFloat(index) / CGFloat(max(points.count - 1, 1))
+                        let y = height * CGFloat(1.0 - (point - minVal) / range)
+                        path.addLine(to: CGPoint(x: x, y: y))
+                    }
+
+                    if let last = points.last {
+                        let lastX = width * CGFloat(points.count - 1) / CGFloat(max(points.count - 1, 1))
+                        path.addLine(to: CGPoint(x: lastX, y: height))
+                        path.addLine(to: CGPoint(x: 0, y: height))
+                        path.closeSubpath()
+                    }
+                }
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            AppTheme.Colors.warning.opacity(0.15),
+                            AppTheme.Colors.warning.opacity(0.02)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+
+                Path { path in
                     for (index, point) in points.enumerated() {
                         let x = width * CGFloat(index) / CGFloat(max(points.count - 1, 1))
                         let y = height * CGFloat(1.0 - (point - minVal) / range)
@@ -219,20 +239,17 @@ struct SparklineView: View {
                     AppTheme.Colors.warning,
                     style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round)
                 )
-
-                Path { path in
-                    if let last = points.last, let first = points.first {
-                        let firstY = height * CGFloat(1.0 - (first - minVal) / range)
-                        let lastY = height * CGFloat(1.0 - (last - minVal) / range)
-                        path.move(to: CGPoint(x: 0, y: firstY))
-                        path.addLine(to: CGPoint(x: width, y: lastY))
-                    }
-                }
-                .stroke(
-                    AppTheme.Colors.textMuted.opacity(0.4),
-                    style: StrokeStyle(lineWidth: 1, dash: [3, 3])
-                )
             }
         }
     }
+}
+
+#Preview {
+    BurnRateCard(
+        usage: ClaudeUsage.empty,
+        profileId: UUID()
+    )
+    .padding()
+    .background(AppTheme.Colors.background)
+    .preferredColorScheme(.dark)
 }

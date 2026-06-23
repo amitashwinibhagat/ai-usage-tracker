@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ProfilesSettingsView: View {
     @StateObject private var profileManager = ProfileManager.shared
-    @StateObject private var featureFlags = FeatureFlags.shared
     @State private var showingCreateProfile = false
     @State private var newProfileName = ""
     @State private var errorMessage: String?
@@ -36,23 +35,11 @@ struct ProfilesSettingsView: View {
 
                 profileListCard
 
-                if profileManager.canCreateProfile {
-                    SettingsButton.primary(
-                        title: "profiles.create_new".localized,
-                        icon: "plus.circle.fill"
-                    ) {
-                        showingCreateProfile = true
-                    }
-                } else {
-                    ProUpsellCard(
-                        title: "Upgrade to Pro for Unlimited Profiles",
-                        message: "You've reached the free limit of 2 profiles. Pro removes profile limits so every account, client, and API key can be tracked separately.",
-                        actionTitle: "Upgrade for $4.99/mo"
-                    ) {
-                        if let url = LicenseManager.shared.proCheckoutURL {
-                            NSWorkspace.shared.open(url)
-                        }
-                    }
+                SettingsButton.primary(
+                    title: "profiles.create_new".localized,
+                    icon: "plus.circle.fill"
+                ) {
+                    showingCreateProfile = true
                 }
 
                 multiProfileCard
@@ -91,45 +78,33 @@ struct ProfilesSettingsView: View {
                         }
                         .buttonStyle(.plain)
 
-                        if featureFlags.isAvailable(featureFlags.usageHistoryExport) {
-                            Button(action: { showingDateRangeExport = true }) {
-                                HStack {
-                                    Image(systemName: "calendar.badge.clock")
-                                        .font(AppTheme.Typography.smallSemibold)
-                                        .foregroundColor(AppTheme.Colors.accent)
-                                    Text("Export with Date Range...")
-                                        .font(AppTheme.Typography.label)
-                                        .foregroundColor(AppTheme.Colors.textPrimary)
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .font(AppTheme.Typography.tinySemibold)
-                                        .foregroundColor(AppTheme.Colors.textMuted)
-                                }
-                                .padding(AppTheme.Spacing.sm)
-                                .background(
-                                    RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
-                                        .fill(AppTheme.Colors.backgroundDeep.opacity(0.45))
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
-                                        .strokeBorder(AppTheme.Colors.borderSubtle.opacity(0.75), lineWidth: 0.5)
-                                )
+                        Button(action: { showingDateRangeExport = true }) {
+                            HStack {
+                                Image(systemName: "calendar.badge.clock")
+                                    .font(AppTheme.Typography.smallSemibold)
+                                    .foregroundColor(AppTheme.Colors.accent)
+                                Text("Export with Date Range...")
+                                    .font(AppTheme.Typography.label)
+                                    .foregroundColor(AppTheme.Colors.textPrimary)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(AppTheme.Typography.tinySemibold)
+                                    .foregroundColor(AppTheme.Colors.textMuted)
                             }
-                            .buttonStyle(.plain)
-                            .sheet(isPresented: $showingDateRangeExport) {
-                                if let profileId = profileManager.activeProfile?.id {
-                                    DateRangeExportView(profileId: profileId)
-                                }
-                            }
-                        } else {
-                            ProUpsellCard(
-                                title: "Export Usage History (Pro)",
-                                message: "Export your usage data to JSON or CSV for billing reconciliation and client invoicing.",
-                                actionTitle: "Upgrade to Pro"
-                            ) {
-                                if let url = LicenseManager.shared.proCheckoutURL {
-                                    NSWorkspace.shared.open(url)
-                                }
+                            .padding(AppTheme.Spacing.sm)
+                            .background(
+                                RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                                    .fill(AppTheme.Colors.backgroundDeep.opacity(0.45))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                                    .strokeBorder(AppTheme.Colors.borderSubtle.opacity(0.75), lineWidth: 0.5)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .sheet(isPresented: $showingDateRangeExport) {
+                            if let profileId = profileManager.activeProfile?.id {
+                                DateRangeExportView(profileId: profileId)
                             }
                         }
                     }
@@ -383,9 +358,10 @@ struct ProfilesSettingsView: View {
 
     private func createNewProfile() {
         let name = newProfileName.isEmpty ? nil : newProfileName
-        let profile = profileManager.createProfile(name: name)
-        if profile == nil {
-            errorMessage = "Profile limit reached. Upgrade to Pro for unlimited profiles."
+        do {
+            try profileManager.createProfile(name: name)
+        } catch {
+            errorMessage = "profiles.create_failed".localized
         }
         showingCreateProfile = false
         newProfileName = ""

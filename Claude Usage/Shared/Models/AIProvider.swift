@@ -82,30 +82,10 @@ enum AIProvider: String, Codable, CaseIterable, Identifiable {
         }
     }
 
-    /// Whether this provider is available on the free tier
-    var isFreeTier: Bool {
-        switch self {
-        case .claude: return true
-        case .codex, .gemini, .copilot, .kimi, .deepseek, .glm, .qwen, .minimax: return false
-        }
-    }
-
-    /// Whether this provider requires Pro
-    var requiresPro: Bool {
-        !isFreeTier
-    }
-
     /// Whether this provider is shown in the user interface
-    /// Only providers with real usage APIs are shown. Chinese providers
-    /// (Kimi, DeepSeek, GLM, Qwen, MiniMax) are hidden until real
-    /// usage APIs are implemented.
+    /// All providers are now universally available.
     var isShownInUI: Bool {
-        switch self {
-        case .claude, .codex, .gemini, .copilot:
-            return true
-        case .kimi, .deepseek, .glm, .qwen, .minimax:
-            return false
-        }
+        true
     }
 
     /// Providers visible in the UI (subset of allCases)

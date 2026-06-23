@@ -9,7 +9,6 @@ import SwiftUI
 
 struct CredentialsSettingsView: View {
     @StateObject private var profileManager = ProfileManager.shared
-    @StateObject private var featureFlags = FeatureFlags.shared
     @State private var activeSheet: ProviderSheet?
     @State private var selectedProvider: AIProvider?
 
@@ -130,33 +129,10 @@ struct CredentialsSettingsView: View {
                     .font(AppTheme.Typography.sectionTitle)
                     .foregroundColor(AppTheme.Colors.textPrimary)
                 Spacer()
-                if featureFlags.isFree {
-                    Text("PRO")
-                        .font(AppTheme.Typography.badge)
-                        .foregroundColor(AppTheme.Colors.textPrimary)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(
-                            Capsule()
-                                .fill(AppTheme.Colors.proBadge.opacity(0.22))
-                        )
-                }
             }
 
-            if featureFlags.isFree {
-                ProUpsellCard(
-                    title: "Multi-AI Tracking (Pro)",
-                    message: "Track Claude, Codex, Gemini, Copilot, Kimi, DeepSeek, GLM, Qwen, and MiniMax together so your next provider choice is obvious.",
-                    actionTitle: "Upgrade to Pro"
-                ) {
-                    if let url = LicenseManager.shared.proCheckoutURL {
-                        NSWorkspace.shared.open(url)
-                    }
-                }
-            } else {
-                ForEach(AIProvider.visibleProviders.filter { $0 != .claude }) { provider in
-                    providerRow(provider: provider, profile: profile)
-                }
+            ForEach(AIProvider.allCases.filter { $0 != .claude }) { provider in
+                providerRow(provider: provider, profile: profile)
             }
         }
     }
@@ -166,11 +142,7 @@ struct CredentialsSettingsView: View {
         let connected = isConnected(provider, profile: profile)
 
         Button(action: {
-            if !featureFlags.isFree || provider.isFreeTier {
-                openProviderSheet(provider: provider, profile: profile)
-            } else if let url = LicenseManager.shared.proCheckoutURL {
-                NSWorkspace.shared.open(url)
-            }
+            openProviderSheet(provider: provider, profile: profile)
         }) {
             HStack(spacing: AppTheme.Spacing.md) {
                 ZStack {
@@ -187,18 +159,6 @@ struct CredentialsSettingsView: View {
                         Text(provider.shortName)
                             .font(AppTheme.Typography.label)
                             .foregroundColor(AppTheme.Colors.textPrimary)
-
-                        if provider.requiresPro && featureFlags.isFree {
-                            Text("PRO")
-                                .font(AppTheme.Typography.badge)
-                                .foregroundColor(AppTheme.Colors.textPrimary)
-                                .padding(.horizontal, 4)
-                                .padding(.vertical, 1)
-                                .background(
-                                    Capsule()
-                                        .fill(AppTheme.Colors.proBadge.opacity(0.22))
-                                )
-                        }
                     }
 
                     Text(provider.description)

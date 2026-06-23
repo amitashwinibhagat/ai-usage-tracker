@@ -64,8 +64,7 @@ final class SmartNotificationGenerator {
 
     /// Generates a burn rate alert notification
     func burnRateNotification(prediction: BurnRatePrediction, profileName: String) -> SmartNotification? {
-        guard FeatureFlags.shared.isAvailable(FeatureFlags.shared.burnRatePredictor),
-              prediction.isReliable,
+        guard prediction.isReliable,
               let minutes = prediction.minutesToLimit,
               minutes < 30 else {
             return nil

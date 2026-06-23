@@ -50,15 +50,6 @@ struct VisualEffectBackground: NSViewRepresentable {
     }
 }
 
-// MARK: - Native Divider
-
-struct PopoverDivider: View {
-    var body: some View {
-        Divider()
-            .padding(.horizontal, 16)
-    }
-}
-
 // MARK: - Profile Switcher Compact (header dropdown)
 
 struct ProfileSwitcherCompact: View {
@@ -229,7 +220,7 @@ struct StatusBannerView: View {
     }
 }
 
-// MARK: - Popover Content (5-Card Layout)
+// MARK: - Popover Content (4-Card Layout)
 
 struct PopoverContentView: View {
     @ObservedObject var manager: MenuBarManager
@@ -256,7 +247,7 @@ struct PopoverContentView: View {
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 8) {
                 SimpleHeader(
                     isRefreshing: isRefreshing,
                     onRefresh: {
@@ -270,11 +261,14 @@ struct PopoverContentView: View {
                             }
                         }
                     },
-                    onManageProfiles: onPreferences,
+                    onManageProfiles: {
+                        manager.closePopoverOrWindow()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            NotificationCenter.default.post(name: .showManageProfiles, object: nil)
+                        }
+                    },
                     onPreferences: onPreferences
                 )
-
-                PopoverDivider()
 
                 // Error banners
                 if manager.hasCredentialError {
@@ -351,75 +345,46 @@ struct PopoverContentView: View {
 
                 // Card 1: Usage Ring
                 UsageRingCard(usage: displayUsage, apiUsage: displayAPIUsage)
-                    .padding(.top, 6)
-
-                PopoverDivider()
+                    .padding(.top, 4)
 
                 // Card 2: Reset Countdown
                 ResetCountdownCard(usage: displayUsage)
 
-                PopoverDivider()
-                    .padding(.top, 6)
-
-                // Card 3: Burn Rate (conditional)
-                if shouldShowBurnRateCard {
-                    if let profile = activeProfile {
-                        BurnRateCard(usage: displayUsage, profileId: profile.id)
-                    }
-                    PopoverDivider()
-                        .padding(.top, 6)
-                }
-
-                // Card 4: Contextual Tip
+                // Card 3: Burn Rate
                 if let profile = activeProfile {
-                    ContextualTipCard(profile: profile, usage: displayUsage)
-                    PopoverDivider()
-                        .padding(.top, 6)
+                    BurnRateCard(usage: displayUsage, profileId: profile.id)
                 }
 
-                // Card 5: Details Disclosure
+                // Card 4: Details Disclosure
                 DetailsDisclosure(
                     usage: displayUsage,
                     apiUsage: displayAPIUsage,
                     manager: manager
                 )
-                .padding(.top, 6)
 
                 // Footer: Settings
-                HStack {
-                    Spacer()
-                    Button(action: onPreferences) {
-                        HStack(spacing: 5) {
-                            Image(systemName: "gearshape.fill")
-                                .font(AppTheme.Typography.tinyMedium)
-                            Text("common.settings".localized)
-                                .font(AppTheme.Typography.captionMedium)
-                        }
-                        .foregroundColor(AppTheme.Colors.textSecondary)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
+                Button(action: onPreferences) {
+                    HStack(spacing: 5) {
+                        Image(systemName: "gearshape")
+                            .font(AppTheme.Typography.captionMedium)
+                        Text("common.settings".localized)
+                            .font(AppTheme.Typography.captionMedium)
                     }
-                    .buttonStyle(.plain)
-                    Spacer()
+                    .foregroundColor(AppTheme.Colors.textMuted)
                 }
-                .padding(.vertical, 6)
-
+                .buttonStyle(.plain)
+                .accessibilityHint("Opens settings")
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, 8)
             }
             .padding(.bottom, 8)
         }
-        .frame(width: 320)
+        .frame(width: 400)
         .background(AppTheme.Colors.background)
         .preferredColorScheme(.dark)
     }
 
     // MARK: - Helpers
-
-    private var shouldShowBurnRateCard: Bool {
-        if FeatureFlags.shared.isProOrHigher {
-            return true
-        }
-        return displayUsage.effectiveSessionPercentage > 50
-    }
 
     private func profileInitials(for name: String) -> String {
         let words = name.split(separator: " ")

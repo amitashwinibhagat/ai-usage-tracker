@@ -109,12 +109,6 @@ struct AboutView: View {
                         .foregroundColor(AppTheme.Colors.textPrimary)
 
                     VStack(spacing: DesignTokens.Spacing.small) {
-                        LinkButton(title: "Upgrade to Pro", icon: "star.fill") {
-                            if let url = LicenseManager.shared.proCheckoutURL {
-                                NSWorkspace.shared.open(url)
-                            }
-                        }
-
                         LinkButton(title: "about.send_feedback".localized, icon: "bubble.left.and.text.bubble.right") {
                             if let url = URL(string: "mailto:support@aiusagetracker.com") {
                                 NSWorkspace.shared.open(url)
@@ -150,7 +144,7 @@ struct AboutView: View {
 
                 // Footer
                 VStack(spacing: DesignTokens.Spacing.extraSmall) {
-                    Text("Closed-source commercial macOS app")
+                    Text("Free macOS app — all features included")
                         .font(AppTheme.Typography.small)
                         .foregroundColor(AppTheme.Colors.textMuted)
 

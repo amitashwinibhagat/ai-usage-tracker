@@ -7,13 +7,25 @@
         <link>https://rococo-fox-c631c0.netlify.app/</link>
         <item>
             <title>3.1.1</title>
+            <pubDate>Mon, 01 Jun 2026 14:46:33 +0530</pubDate>
+            <sparkle:version>23</sparkle:version>
+            <sparkle:shortVersionString>3.1.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://rococo-fox-c631c0.netlify.app/AI-Usage-Tracker-3.1.1-23.dmg" length="9023664" type="application/octet-stream" sparkle:edSignature="bViK0PQAawGmvXkOp3DxY0VV2yUiDNWVbjv4I2NwIqYAB3Z6ttSTwD87zkhR4BtqmuShfWD94RvjfwzkWkVyCw=="/>
+            <sparkle:deltas>
+                <enclosure url="https://rococo-fox-c631c0.netlify.app/AI%20Usage%20Tracker23-22.delta" sparkle:deltaFrom="22" length="1098494" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="862672" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="JWAcwb7uIFuPf11152tfmhW5u8D49AhY8UXhxWbM3NPr1UmUloO86/tkKRml54+nbnN8c5OECp/qjGMayid2Dw=="/>
+                <enclosure url="https://rococo-fox-c631c0.netlify.app/AI%20Usage%20Tracker23-21.delta" sparkle:deltaFrom="21" length="1845698" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="862672" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="RKhgjmaV5HuTF11DN0bMgvhwTIsH5WqH9rtgo1cWIWYlq7qqyCLAK36Ck4aNuZblXxmvxnQeNo1rfMviHGZCBA=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
+            <title>3.1.1</title>
             <pubDate>Fri, 29 May 2026 23:29:05 +0530</pubDate>
             <sparkle:version>22</sparkle:version>
             <sparkle:shortVersionString>3.1.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <enclosure url="https://rococo-fox-c631c0.netlify.app/AI-Usage-Tracker-3.1.1-22.dmg" length="9259080" type="application/octet-stream" sparkle:edSignature="6LBVufam7oKPkL+LbZB8dVCwo2ZY3VOroFGcy0UNP9r/256ZVNkBpk04BpI6LE0gSKi4B8ww6SulWCC6SUHRDg=="/>
             <sparkle:deltas>
-                <enclosure url="https://github.com/amitashwinibhagat/claude-usage-tracker-private/releases/download/v3.1.1/AI%20Usage%20Tracker22-21.delta" sparkle:deltaFrom="21" length="1908982" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="862672" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="yfp4lxshaupmMuanzWVauSQjlhwnTLVMKkCOYNv+VA79luKTicThLcHzNJ0t03RYSn7sAZW1WMgxyQSn+H8qAw=="/>
+                <enclosure url="https://rococo-fox-c631c0.netlify.app/AI%20Usage%20Tracker22-21.delta" sparkle:deltaFrom="21" length="1908982" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="862672" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="yfp4lxshaupmMuanzWVauSQjlhwnTLVMKkCOYNv+VA79luKTicThLcHzNJ0t03RYSn7sAZW1WMgxyQSn+H8qAw=="/>
             </sparkle:deltas>
         </item>
         <item>
@@ -23,14 +35,6 @@
             <sparkle:shortVersionString>3.1.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <enclosure url="https://rococo-fox-c631c0.netlify.app/AI-Usage-Tracker-3.1.1-21.dmg" length="10142927" type="application/octet-stream" sparkle:edSignature="tjY9CM067KtITQ2oFN5AxnzlPRv1sHaK0apOhGfrK11fyu2ENQGseAkhAf09wlzSpgRgO6I6WGxOl9qa6XWZCA=="/>
-        </item>
-        <item>
-            <title>3.1.1</title>
-            <pubDate>Thu, 28 May 2026 19:05:51 +0530</pubDate>
-            <sparkle:version>19</sparkle:version>
-            <sparkle:shortVersionString>3.1.1</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://rococo-fox-c631c0.netlify.app/Claude-Usage-Tracker-3.1.1-19.dmg" length="10122902" type="application/octet-stream" sparkle:edSignature="tU/yeoeWncrVznX/lS1lUBvLQ4pol2oK1B58fERBF9PFAkCpOD6fStPZRgiuNu7Y/gaBhBFrvi9SbR0pvb/aBg=="/>
         </item>
     </channel>
 </rss>

@@ -21,11 +21,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         // Load profiles into ProfileManager (synchronously)
         ProfileManager.shared.loadProfiles()
 
-        // Validate license on launch (async, non-blocking)
-        Task {
-            await LicenseManager.shared.validateIfNeeded()
-        }
-
         // Initialize update manager to enable automatic update checks
         _ = UpdateManager.shared
 
@@ -49,6 +44,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         // Start 24-hour heartbeat ping to track active app usage
         HeartbeatService.shared.start()
+
+        // Start 5-hour keep-alive ping for active profile
+        ClaudeKeepAliveService.shared.start()
 
         if !shouldShowSetupWizard() {
             // Initialize menu bar with active profile

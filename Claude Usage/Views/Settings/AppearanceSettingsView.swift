@@ -15,7 +15,6 @@ enum AppColorScheme: String, CaseIterable {
 
 struct AppearanceSettingsView: View {
     @StateObject private var profileManager = ProfileManager.shared
-    @StateObject private var featureFlags = FeatureFlags.shared
     @State private var configuration: MenuBarIconConfiguration = .default
     @State private var saveDebounceTimer: Timer?
     @AppStorage("appColorScheme") private var selectedColorSchemeRaw: String = AppColorScheme.system.rawValue
@@ -262,13 +261,7 @@ struct AppearanceSettingsView: View {
             title: "appearance.global_settings".localized,
             subtitle: "appearance.global_subtitle".localized
         ) {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-                SettingToggle(
-                    title: "appearance.show_remaining_title".localized,
-                    description: "appearance.show_remaining_description".localized,
-                    isOn: .constant(true)
-                )
-            }
+            EmptyView()
         }
     }
 

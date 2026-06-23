@@ -45,9 +45,9 @@ struct ContextualTipCard: View {
                                 }
                             }
                         } label: {
-                            Image(systemName: copiedCommand == tip.actionData?.value ? "checkmark" : "doc.on.doc")
+                            Image(systemName: copiedCommand == actionData.value ? "checkmark" : "doc.on.doc")
                                 .font(AppTheme.Typography.tinySemibold)
-                                .foregroundColor(copiedCommand == tip.actionData?.value ? AppTheme.Colors.success : AppTheme.Colors.textMuted)
+                                .foregroundColor(copiedCommand == actionData.value ? AppTheme.Colors.success : AppTheme.Colors.textMuted)
                         }
                         .buttonStyle(.plain)
                     }
@@ -56,14 +56,17 @@ struct ContextualTipCard: View {
             .padding(AppTheme.Spacing.sm)
             .background(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
-                    .fill(AppTheme.Colors.caution.opacity(0.08))
+                    .fill(AppTheme.Colors.card.opacity(0.5))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
-                    .strokeBorder(AppTheme.Colors.caution.opacity(0.22), lineWidth: 0.5)
+                    .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
             )
-            .padding(.horizontal, 14)
+            .padding(.horizontal, 10)
             .onAppear {
+                loadTip()
+            }
+            .onChange(of: usage.sessionTokensUsed) { _, _ in
                 loadTip()
             }
         } else {

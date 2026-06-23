@@ -20,7 +20,7 @@ struct DetailsDisclosure: View {
                 }
             }) {
                 HStack(spacing: 6) {
-                    Text(isExpanded ? "Details" : "Details")
+                    Text("Details")
                         .font(AppTheme.Typography.captionMedium)
                         .foregroundColor(AppTheme.Colors.textSecondary)
 
@@ -181,67 +181,40 @@ struct DetailsDisclosure: View {
         }
     }
 
-    // MARK: - Cost Transparency Row (Pro)
+    // MARK: - Cost Transparency Row
 
     @ViewBuilder
     private var costTransparencyRow: some View {
-        if FeatureFlags.shared.isAvailable(FeatureFlags.shared.costTransparency) {
-            if let breakdown = CostTransparency.shared.calculate(usage: usage) {
-                HStack(spacing: AppTheme.Spacing.sm) {
-                    Image(systemName: "dollarsign.circle.fill")
-                        .font(AppTheme.Typography.tinySemibold)
-                        .foregroundColor(AppTheme.Colors.textSecondary)
-                        .frame(width: 16)
-
-                    Text("API value")
-                        .font(AppTheme.Typography.captionMedium)
-                        .foregroundColor(AppTheme.Colors.textPrimary)
-
-                    Spacer()
-
-                    Text(breakdown.formattedTotalCost)
-                        .font(AppTheme.Typography.roundedSemibold)
-                        .foregroundColor(AppTheme.Colors.success)
-
-                    Text("est. today")
-                        .font(AppTheme.Typography.tiny)
-                        .foregroundColor(AppTheme.Colors.textMuted)
-                }
-                .padding(.vertical, 2)
-            }
-        } else if !FeatureFlags.shared.isProOrHigher {
+        if let breakdown = CostTransparency.shared.calculate(usage: usage) {
             HStack(spacing: AppTheme.Spacing.sm) {
                 Image(systemName: "dollarsign.circle.fill")
                     .font(AppTheme.Typography.tinySemibold)
-                    .foregroundColor(AppTheme.Colors.textMuted)
+                    .foregroundColor(AppTheme.Colors.textSecondary)
                     .frame(width: 16)
 
                 Text("API value")
                     .font(AppTheme.Typography.captionMedium)
-                    .foregroundColor(AppTheme.Colors.textMuted)
+                    .foregroundColor(AppTheme.Colors.textPrimary)
 
                 Spacer()
 
-                Text("Pro")
-                    .font(AppTheme.Typography.badge)
-                    .foregroundColor(AppTheme.Colors.proBadge)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(
-                        Capsule()
-                            .fill(AppTheme.Colors.proBadge.opacity(0.15))
-                    )
+                Text(breakdown.formattedTotalCost)
+                    .font(AppTheme.Typography.roundedSemibold)
+                    .foregroundColor(AppTheme.Colors.success)
+
+                Text("est. today")
+                    .font(AppTheme.Typography.tiny)
+                    .foregroundColor(AppTheme.Colors.textMuted)
             }
             .padding(.vertical, 2)
         }
     }
 
-    // MARK: - Multi-AI Row (Pro)
+    // MARK: - Multi-AI Row
 
     @ViewBuilder
     private var multiAIRow: some View {
-        if FeatureFlags.shared.isProOrHigher,
-           let profile = activeProfile,
+        if let profile = activeProfile,
            profile.hasMultiAICredentials {
             let providerCount = profile.configuredProviders.count - 1
 
@@ -264,30 +237,6 @@ struct DetailsDisclosure: View {
                 Text("connected")
                     .font(AppTheme.Typography.tiny)
                     .foregroundColor(AppTheme.Colors.textMuted)
-            }
-            .padding(.vertical, 2)
-        } else if !FeatureFlags.shared.isProOrHigher {
-            HStack(spacing: AppTheme.Spacing.sm) {
-                Image(systemName: "cpu")
-                    .font(AppTheme.Typography.tinySemibold)
-                    .foregroundColor(AppTheme.Colors.textMuted)
-                    .frame(width: 16)
-
-                Text("All providers")
-                    .font(AppTheme.Typography.captionMedium)
-                    .foregroundColor(AppTheme.Colors.textMuted)
-
-                Spacer()
-
-                Text("Pro")
-                    .font(AppTheme.Typography.badge)
-                    .foregroundColor(AppTheme.Colors.proBadge)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(
-                        Capsule()
-                            .fill(AppTheme.Colors.proBadge.opacity(0.15))
-                    )
             }
             .padding(.vertical, 2)
         }
