@@ -48,10 +48,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         // Start 5-hour keep-alive ping for active profile
         ClaudeKeepAliveService.shared.start()
 
-        if !shouldShowSetupWizard() {
-            // Initialize menu bar with active profile
-            menuBarManager?.setup()
-        } else {
+        // Always set up the menu bar so the status-bar icon is present
+        // even on first launch when the setup wizard is also shown. The
+        // wizard and the status bar are independent surfaces — the user
+        // needs the menu bar icon regardless of which setup flow they
+        // are in. (See click-test audit BUG 11.)
+        menuBarManager?.setup()
+
+        if shouldShowSetupWizard() {
             showSetupWizardManually()
             // Mark that wizard has been shown once
             SharedDataStore.shared.markWizardShown()

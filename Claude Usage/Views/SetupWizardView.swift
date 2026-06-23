@@ -24,6 +24,7 @@ struct SetupWizardView: View {
     @State private var selectedMethods: Set<OnboardingMethod> = []
     @State private var hasClaudeCodeCredentials = false
     @State private var navigationPath = NavigationPath()
+    @State private var lastErrorMessage: String?
 
     var body: some View {
         Group {
@@ -78,6 +79,14 @@ struct SetupWizardView: View {
                 }
             }
         }
+        .alert("Setup Error", isPresented: Binding(
+            get: { lastErrorMessage != nil },
+            set: { if !$0 { lastErrorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) { lastErrorMessage = nil }
+        } message: {
+            Text(lastErrorMessage ?? "")
+        }
     }
 
     private var loadingView: some View {
@@ -113,8 +122,12 @@ struct SetupWizardView: View {
     }
 
     private func startTrackingWithCLI(credentials: String) {
+        // BUG 6 from the click audit: surface a clear error when
+        // there is no active profile, instead of silently falling
+        // back to manual setup. The user should know what happened.
         guard let profileId = ProfileManager.shared.activeProfile?.id else {
-            setupMode = .manualSetup
+            LoggingService.shared.logError("SetupWizard: no active profile when trying to sync CLI credentials")
+            lastErrorMessage = "No active profile exists yet. Please use the manual setup to create a profile first."
             return
         }
 
@@ -125,7 +138,7 @@ struct SetupWizardView: View {
             dismiss()
         } catch {
             LoggingService.shared.logError("Failed to sync CLI credentials: \(error)")
-            setupMode = .manualSetup
+            lastErrorMessage = "Failed to sync Claude Code credentials: \(error.localizedDescription)"
         }
     }
 }

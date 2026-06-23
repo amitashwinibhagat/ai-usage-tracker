@@ -23,6 +23,7 @@ struct AppearanceSettingsView: View {
         set { selectedColorSchemeRaw = newValue.rawValue }
     }
     @State private var popoverWidthIndex: Int = 0
+    @State private var selectedIconStyleKey: String = "ring"
 
     private var isMultiProfileMode: Bool {
         profileManager.displayMode == .multi
@@ -60,11 +61,17 @@ struct AppearanceSettingsView: View {
         .onAppear {
             if let activeProfile = profileManager.activeProfile {
                 configuration = activeProfile.iconConfig
+                selectedIconStyleKey = Self.keyForIconStyle(
+                    configuration.metrics.first?.iconStyle ?? .icon
+                )
             }
         }
         .onChange(of: profileManager.activeProfile?.id) { _, _ in
             if let activeProfile = profileManager.activeProfile {
                 configuration = activeProfile.iconConfig
+                selectedIconStyleKey = Self.keyForIconStyle(
+                    configuration.metrics.first?.iconStyle ?? .icon
+                )
             }
         }
     }
@@ -248,10 +255,37 @@ struct AppearanceSettingsView: View {
     }
 
     private var currentIconStyle: String {
-        return "ring"
+        selectedIconStyleKey
     }
 
     private func selectIconStyle(_ style: String) {
+        guard style != selectedIconStyleKey else { return }
+        selectedIconStyleKey = style
+        guard let mapped = Self.iconStyleForKey(style) else { return }
+        // Apply the chosen style to every metric so the menu bar icon
+        // actually reflects the selection. (BUG 1 from the click audit.)
+        for index in configuration.metrics.indices {
+            configuration.metrics[index].iconStyle = mapped
+        }
+        saveConfiguration()
+    }
+
+    private static func iconStyleForKey(_ key: String) -> MenuBarIconStyle? {
+        switch key {
+        case "ring":    return .icon
+        case "bar":     return .progressBar
+        case "numeric": return .percentageOnly
+        default:        return nil
+        }
+    }
+
+    private static func keyForIconStyle(_ style: MenuBarIconStyle) -> String {
+        switch style {
+        case .icon:            return "ring"
+        case .progressBar:     return "bar"
+        case .percentageOnly:  return "numeric"
+        default:               return "ring"
+        }
     }
 
     // MARK: - Display Toggles

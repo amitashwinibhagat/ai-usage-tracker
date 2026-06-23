@@ -281,7 +281,53 @@ struct GeneralSettingsView: View {
                     updateManager.checkForUpdates()
                 }
                 .disabled(!updateManager.canCheckForUpdates)
+
+                // BUG 5 from the click audit: surface the result of
+                // the most recent check so the user knows whether
+                // Sparkle did anything.
+                if updateManager.lastCheckOutcome != .idle {
+                    updateOutcomeBanner
+                }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var updateOutcomeBanner: some View {
+        let (icon, text, tint) = updateOutcomeDetails
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+            Text(text)
+                .font(AppTheme.Typography.tiny)
+            Spacer()
+            Button(action: { updateManager.acknowledgeLastCheckOutcome() }) {
+                Image(systemName: "xmark")
+                    .font(AppTheme.Typography.tiny)
+            }
+            .buttonStyle(.plain)
+        }
+        .foregroundColor(tint)
+        .padding(AppTheme.Spacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                .fill(tint.opacity(0.10))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                .strokeBorder(tint.opacity(0.35), lineWidth: 0.5)
+        )
+    }
+
+    private var updateOutcomeDetails: (String, String, Color) {
+        switch updateManager.lastCheckOutcome {
+        case .idle, .checking:
+            return ("hourglass", "Checking for updates…", AppTheme.Colors.textMuted)
+        case .upToDate:
+            return ("checkmark.circle.fill", "You’re on the latest version.", AppTheme.Colors.success)
+        case .updateAvailable(let version):
+            return ("arrow.down.circle.fill", "Update available: v\(version). Sparkle will install it.", AppTheme.Colors.accent)
+        case .failed(let message):
+            return ("exclamationmark.triangle.fill", "Update check failed: \(message)", AppTheme.Colors.warning)
         }
     }
 

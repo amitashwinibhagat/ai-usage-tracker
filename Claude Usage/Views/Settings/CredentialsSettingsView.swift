@@ -15,7 +15,22 @@ struct CredentialsSettingsView: View {
     enum ProviderSheet: Identifiable {
         case codex, gemini, copilot, kimi, deepseek, glm, qwen, minimax
         case geminiOAuth, copilotOAuth
-        var id: Int { hashValue }
+        // Use a stable per-case string id rather than hashValue, which
+        // is randomised per process. (BUG 3 from the click audit.)
+        var id: String {
+            switch self {
+            case .codex:        return "provider.codex"
+            case .gemini:       return "provider.gemini"
+            case .copilot:      return "provider.copilot"
+            case .kimi:         return "provider.kimi"
+            case .deepseek:     return "provider.deepseek"
+            case .glm:          return "provider.glm"
+            case .qwen:         return "provider.qwen"
+            case .minimax:      return "provider.minimax"
+            case .geminiOAuth:  return "provider.gemini.oauth"
+            case .copilotOAuth: return "provider.copilot.oauth"
+            }
+        }
     }
 
     var body: some View {
@@ -140,6 +155,7 @@ struct CredentialsSettingsView: View {
     @ViewBuilder
     private func providerRow(provider: AIProvider, profile: Profile) -> some View {
         let connected = isConnected(provider, profile: profile)
+        let isImplemented = provider.isImplemented
 
         Button(action: {
             openProviderSheet(provider: provider, profile: profile)
@@ -159,6 +175,22 @@ struct CredentialsSettingsView: View {
                         Text(provider.shortName)
                             .font(AppTheme.Typography.label)
                             .foregroundColor(AppTheme.Colors.textPrimary)
+
+                        // BUG 4 from the click audit: show a "Coming soon"
+                        // badge inline for providers that do not yet fetch
+                        // real usage data, so the user knows the row is a
+                        // dead-end before they tap it.
+                        if !isImplemented {
+                            Text("Coming soon")
+                                .font(AppTheme.Typography.tiny)
+                                .foregroundColor(AppTheme.Colors.textMuted)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(
+                                    Capsule()
+                                        .fill(AppTheme.Colors.backgroundDeep.opacity(0.6))
+                                )
+                        }
                     }
 
                     Text(provider.description)
@@ -186,8 +218,10 @@ struct CredentialsSettingsView: View {
                 RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
                     .strokeBorder(AppTheme.Colors.borderSubtle.opacity(0.75), lineWidth: 0.5)
             )
+            .opacity(isImplemented ? 1.0 : 0.6)
         }
         .buttonStyle(.plain)
+        .disabled(!isImplemented)
     }
 
     private func isConnected(_ provider: AIProvider, profile: Profile) -> Bool {

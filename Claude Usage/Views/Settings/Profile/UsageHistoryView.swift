@@ -57,7 +57,7 @@ struct UsageHistoryView: View {
                     .frame(width: 110)
                 }
 
-                if let _ = profileManager.activeProfile {
+                if let activeProfile = profileManager.activeProfile {
                     // Combined Usage Chart (session + weekly)
                     CombinedUsageChart(
                         sessionSnapshots: historyData.sessionSnapshots,
@@ -70,6 +70,9 @@ struct UsageHistoryView: View {
 
                     // Export Button
                     exportSection
+                    // Reference activeProfile so the compiler doesn't warn
+                    // about the unused binding. (BUG 8 from the click audit.)
+                    .onAppear { _ = activeProfile.id }
 
                 } else {
                     noProfileView
@@ -325,8 +328,10 @@ struct SimpleUsageChart: View {
                         .font(.system(size: 11, weight: .medium))
                 }
                 .buttonStyle(.plain)
-                .disabled(!canGoBack)
-                .opacity(canGoBack ? 1 : 0.3)
+                // BUG 7 from the click audit: disable chart navigation
+                // buttons when there is no data to navigate.
+                .disabled(!canGoBack || snapshots.isEmpty)
+                .opacity((canGoBack && !snapshots.isEmpty) ? 1 : 0.3)
 
                 Spacer()
 
@@ -342,16 +347,16 @@ struct SimpleUsageChart: View {
                         .font(.system(size: 10, weight: .medium))
                 }
                 .buttonStyle(.plain)
-                .disabled(timeOffset == 0)
-                .opacity(timeOffset == 0 ? 0.3 : 1)
+                .disabled(timeOffset == 0 || snapshots.isEmpty)
+                .opacity((timeOffset == 0 || snapshots.isEmpty) ? 0.3 : 1)
 
                 Button(action: { withAnimation(.easeInOut(duration: 0.2)) { timeOffset += stepHours } }) {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 11, weight: .medium))
                 }
                 .buttonStyle(.plain)
-                .disabled(!canGoForward)
-                .opacity(canGoForward ? 1 : 0.3)
+                .disabled(!canGoForward || snapshots.isEmpty)
+                .opacity((canGoForward && !snapshots.isEmpty) ? 1 : 0.3)
             }
             .padding(.horizontal, 12)
             .padding(.bottom, 10)
@@ -432,6 +437,10 @@ struct CombinedUsageChart: View {
     @Binding var timeScale: ChartTimeScale
 
     @State private var timeOffset: Double = 0
+
+    private var hasNoData: Bool {
+        sessionSnapshots.isEmpty && weeklySnapshots.isEmpty
+    }
 
     private var windowHours: Double {
         timeScale.rawValue
@@ -574,8 +583,10 @@ struct CombinedUsageChart: View {
                         .font(.system(size: 11, weight: .medium))
                 }
                 .buttonStyle(.plain)
-                .disabled(!canGoBack)
-                .opacity(canGoBack ? 1 : 0.3)
+                // BUG 7 from the click audit: disable chart navigation
+                // buttons when there is no data to navigate.
+                .disabled(!canGoBack || hasNoData)
+                .opacity((canGoBack && !hasNoData) ? 1 : 0.3)
 
                 Spacer()
 
@@ -590,16 +601,16 @@ struct CombinedUsageChart: View {
                         .font(.system(size: 10, weight: .medium))
                 }
                 .buttonStyle(.plain)
-                .disabled(timeOffset == 0)
-                .opacity(timeOffset == 0 ? 0.3 : 1)
+                .disabled(timeOffset == 0 || hasNoData)
+                .opacity((timeOffset == 0 || hasNoData) ? 0.3 : 1)
 
                 Button(action: { withAnimation(.easeInOut(duration: 0.2)) { timeOffset += stepHours } }) {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 11, weight: .medium))
                 }
                 .buttonStyle(.plain)
-                .disabled(!canGoForward)
-                .opacity(canGoForward ? 1 : 0.3)
+                .disabled(!canGoForward || hasNoData)
+                .opacity((canGoForward && !hasNoData) ? 1 : 0.3)
             }
             .padding(.horizontal, 12)
             .padding(.bottom, 10)

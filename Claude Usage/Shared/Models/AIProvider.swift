@@ -101,6 +101,19 @@ enum AIProvider: String, Codable, CaseIterable, Identifiable {
         }
     }
 
+    /// Whether this provider has a real usage-fetching implementation.
+    /// The five Chinese providers (Kimi, DeepSeek, GLM, Qwen, MiniMax)
+    /// currently only validate API keys against their model list — no
+    /// real usage data is fetched. Use this to render a "Coming soon"
+    /// badge and disable the row's tap action.
+    /// (BUG 4 from the click audit.)
+    var isImplemented: Bool {
+        switch self {
+        case .kimi, .deepseek, .glm, .qwen, .minimax: return false
+        case .claude, .codex, .gemini, .copilot:        return true
+        }
+    }
+
     /// Description for settings UI
     var description: String {
         switch self {

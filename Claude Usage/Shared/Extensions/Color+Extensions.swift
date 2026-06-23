@@ -43,18 +43,7 @@ extension Color {
 
     /// Convert Color to hex string (e.g., "#FF5733")
     var hexString: String {
-        guard let components = NSColor(self).usingColorSpace(.sRGB)?.cgColor.components else {
-            return "#000000"
-        }
-
-        let r = components.count > 0 ? components[0] : 0
-        let g = components.count > 1 ? components[1] : 0
-        let b = components.count > 2 ? components[2] : 0
-
-        return String(format: "#%02X%02X%02X",
-                      Int(r * 255),
-                      Int(g * 255),
-                      Int(b * 255))
+        toHex() ?? "#000000"
     }
 
     /// Convert Color to hex string (e.g., "#FF5733") - method variant for compatibility
@@ -67,10 +56,13 @@ extension Color {
         let g = components.count > 1 ? components[1] : 0
         let b = components.count > 2 ? components[2] : 0
 
+        // BUG 10 from the click audit: round the channel value before
+        // truncation so the round-trip Color(hex: c.toHex() ?? "") returns
+        // a color indistinguishable from `c` at the byte level.
         return String(format: "#%02X%02X%02X",
-                      Int(r * 255),
-                      Int(g * 255),
-                      Int(b * 255))
+                      Int((r * 255).rounded()),
+                      Int((g * 255).rounded()),
+                      Int((b * 255).rounded()))
     }
 }
 

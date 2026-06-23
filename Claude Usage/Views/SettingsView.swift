@@ -354,15 +354,12 @@ struct SettingsSidebar: View {
                 .padding(.horizontal, AppTheme.Spacing.mdCompact)
 
             VStack(spacing: AppTheme.Spacing.sm) {
+                // BUG 9 from the click audit: removed the duplicate
+                // "About" button from the bottom bar — the sidebar
+                // already has an "Account" item that shows the same
+                // page. The bottom bar now only hosts the Quit
+                // action, which has no other surface in the UI.
                 HStack(spacing: 0) {
-                    bottomBarButton(
-                        icon: "info.circle.fill",
-                        label: "About",
-                        isSelected: selectedSection == .account
-                    ) {
-                        selectedSection = .account
-                    }
-
                     bottomBarButton(
                         icon: "power",
                         label: "common.quit".localized,
