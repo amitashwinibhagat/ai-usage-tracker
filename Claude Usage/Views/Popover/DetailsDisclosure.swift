@@ -39,7 +39,6 @@ struct DetailsDisclosure: View {
                     sessionBreakdownRow
                     contextWindowRow
                     costTransparencyRow
-                    multiAIRow
                 }
                 .padding(.horizontal, 14)
                 .padding(.bottom, AppTheme.Spacing.sm)
@@ -210,35 +209,7 @@ struct DetailsDisclosure: View {
         }
     }
 
-    // MARK: - Multi-AI Row
+    // MARK: - Multi-AI Row (removed; ProviderAvailabilityStrip now surfaces this)
 
-    @ViewBuilder
-    private var multiAIRow: some View {
-        if let profile = activeProfile,
-           profile.hasMultiAICredentials {
-            let providerCount = profile.configuredProviders.count - 1
-
-            HStack(spacing: AppTheme.Spacing.sm) {
-                Image(systemName: "cpu")
-                    .font(AppTheme.Typography.tinySemibold)
-                    .foregroundColor(AppTheme.Colors.textSecondary)
-                    .frame(width: 16)
-
-                Text("All providers")
-                    .font(AppTheme.Typography.captionMedium)
-                    .foregroundColor(AppTheme.Colors.textPrimary)
-
-                Spacer()
-
-                Text("\(providerCount)")
-                    .font(AppTheme.Typography.roundedSemibold)
-                    .foregroundColor(AppTheme.Colors.textPrimary)
-
-                Text("connected")
-                    .font(AppTheme.Typography.tiny)
-                    .foregroundColor(AppTheme.Colors.textMuted)
-            }
-            .padding(.vertical, 2)
-        }
-    }
+    // Empty — intentionally kept as a comment marker for future contributors.
 }

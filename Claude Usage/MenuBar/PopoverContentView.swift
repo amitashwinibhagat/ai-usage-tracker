@@ -299,63 +299,43 @@ struct PopoverContentView: View {
                     }
                 }
 
-                // Multi-profile viewing tag
-                if profileManager.displayMode == .multi,
-                   let viewingProfile = manager.clickedProfileId.flatMap({ id in
-                       profileManager.profiles.first(where: { $0.id == id })
-                   }) ?? profileManager.activeProfile {
-                    HStack(spacing: 8) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.accentColor.opacity(0.15))
-                                .frame(width: 20, height: 20)
-                            Text(profileInitials(for: viewingProfile.name))
-                                .font(AppTheme.Typography.nanoBold)
-                                .foregroundColor(.accentColor)
-                        }
+                // Empty / no-credentials state
+                if activeProfile != nil, !(activeProfile?.hasUsageCredentials ?? false) {
+                    EmptyCredentialsState(onConnect: onPreferences)
+                        .padding(.horizontal, 10)
+                        .padding(.top, 6)
+                } else {
+                    // Card 1: Dual-metric hero (session + weekly rings + status badge)
+                    DualMetricHero(usage: displayUsage, apiUsage: displayAPIUsage)
+                        .padding(.top, 4)
 
-                        Text(viewingProfile.name)
-                            .font(AppTheme.Typography.captionSemibold)
-                            .foregroundColor(.primary)
-                            .lineLimit(1)
-
-                        Spacer()
-
-                        if viewingProfile.id == profileManager.activeProfile?.id {
-                            Text("Active")
-                                .font(AppTheme.Typography.nanoSemibold)
-                                .foregroundColor(.accentColor)
-                                .padding(.horizontal, 5)
-                                .padding(.vertical, 2)
-                                .background(
-                                    Capsule()
-                                        .fill(Color.accentColor.opacity(0.12))
-                                )
-                        }
+                    // Card 2: Smart summary (next reset + pace forecast)
+                    if let profile = activeProfile {
+                        SmartSummaryBar(usage: displayUsage, profileId: profile.id)
                     }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 6)
-                    .background(
-                        RoundedRectangle(cornerRadius: AppTheme.Radius.compact)
-                            .fill(AppTheme.Colors.card)
+                }
+
+                // Card 3: Other providers strip (multi-AI) — only when configured
+                if let profile = activeProfile, profile.hasMultiAICredentials {
+                    ProviderAvailabilityStrip(
+                        profile: profile,
+                        multiAIResult: manager.multiAIResult,
+                        onTapProvider: { _ in onPreferences() }
                     )
-                    .padding(.horizontal, 10)
-                    .padding(.top, 6)
                 }
 
-                // Card 1: Usage Ring
-                UsageRingCard(usage: displayUsage, apiUsage: displayAPIUsage)
-                    .padding(.top, 4)
-
-                // Card 2: Reset Countdown
-                ResetCountdownCard(usage: displayUsage)
-
-                // Card 3: Burn Rate
-                if let profile = activeProfile {
-                    BurnRateCard(usage: displayUsage, profileId: profile.id)
+                // Card 4: Multi-profile accordion — only when >1 profile
+                if profileManager.profiles.count > 1 {
+                    CrossProfileAccordion(
+                        profiles: profileManager.profiles,
+                        activeProfileId: profileManager.activeProfile?.id,
+                        onSelectProfile: { id in
+                            Task { await profileManager.activateProfile(id) }
+                        }
+                    )
                 }
 
-                // Card 4: Details Disclosure
+                // Card 5: Details disclosure (API cost, context window, etc.)
                 DetailsDisclosure(
                     usage: displayUsage,
                     apiUsage: displayAPIUsage,
@@ -379,7 +359,7 @@ struct PopoverContentView: View {
             }
             .padding(.bottom, 8)
         }
-        .frame(width: 400)
+        .frame(width: 360)
         .background(AppTheme.Colors.background)
         .preferredColorScheme(.dark)
     }
@@ -394,5 +374,52 @@ struct PopoverContentView: View {
             return String(first.prefix(2)).uppercased()
         }
         return "?"
+    }
+}
+
+// MARK: - Empty state for missing credentials
+
+struct EmptyCredentialsState: View {
+    let onConnect: () -> Void
+
+    var body: some View {
+        VStack(spacing: AppTheme.Spacing.sm) {
+            Image(systemName: "key.fill")
+                .font(AppTheme.Typography.sectionTitle)
+                .foregroundColor(AppTheme.Colors.warning)
+                .frame(width: 44, height: 44)
+                .background(
+                    Circle().fill(AppTheme.Colors.warning.opacity(0.12))
+                )
+
+            Text("Connect Claude.ai to start tracking")
+                .font(AppTheme.Typography.cardTitle)
+                .foregroundColor(AppTheme.Colors.textPrimary)
+                .multilineTextAlignment(.center)
+
+            Text("Track your 5-hour session and weekly usage right from the menu bar.")
+                .font(AppTheme.Typography.small)
+                .foregroundColor(AppTheme.Colors.textSecondary)
+                .multilineTextAlignment(.center)
+
+            Button(action: onConnect) {
+                Text("Set up")
+                    .font(AppTheme.Typography.labelBold)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 6)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(AppTheme.Colors.accent)
+        }
+        .padding(AppTheme.Spacing.md)
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .fill(AppTheme.Colors.card.opacity(0.5))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.standard)
+                .strokeBorder(AppTheme.Colors.borderSubtle, lineWidth: 0.5)
+        )
     }
 }
