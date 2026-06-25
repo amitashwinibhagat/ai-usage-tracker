@@ -1,25 +1,15 @@
 import SwiftUI
 
 /// Compact card combining the next reset time and burn-rate forecast into a
-/// single scannable line. Replaces the standalone ResetCountdownCard and
-/// BurnRateCard in the popover.
+/// single scannable card. Replaces the standalone ResetCountdownCard and
+/// BurnRateCard in the popover. Surfaces BOTH session and weekly reset times
+/// stacked in the reset column so users never lose visibility of the weekly
+/// limit.
 struct SmartSummaryBar: View {
     let usage: ClaudeUsage
     let profileId: UUID
 
     @State private var prediction: BurnRatePrediction?
-
-    private var nearestReset: Date {
-        let now = Date()
-        let candidates = [usage.sessionResetTime, usage.weeklyResetTime]
-            .filter { $0 > now }
-        return candidates.min() ?? usage.sessionResetTime
-    }
-
-    private var resetIsUrgent: Bool {
-        let interval = nearestReset.timeIntervalSince(Date())
-        return interval > 0 && interval < 24 * 3600
-    }
 
     private var hasUsableForecast: Bool {
         guard let prediction = prediction else { return false }
@@ -44,12 +34,24 @@ struct SmartSummaryBar: View {
         return weeklyMin <= sessionMin
     }
 
+    private var sessionResetUrgent: Bool {
+        let now = Date()
+        let interval = usage.sessionResetTime.timeIntervalSince(now)
+        return interval > 0 && interval < 24 * 3600
+    }
+
+    private var weeklyResetUrgent: Bool {
+        let now = Date()
+        let interval = usage.weeklyResetTime.timeIntervalSince(now)
+        return interval > 0 && interval < 24 * 3600
+    }
+
     var body: some View {
-        HStack(alignment: .center, spacing: AppTheme.Spacing.sm) {
+        HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
             resetColumn
             Rectangle()
                 .fill(AppTheme.Colors.divider)
-                .frame(width: 1, height: 24)
+                .frame(width: 1, height: 44)
             paceColumn
         }
         .padding(AppTheme.Spacing.sm)
@@ -69,52 +71,73 @@ struct SmartSummaryBar: View {
     }
 
     private var resetColumn: some View {
-        HStack(spacing: 6) {
+        HStack(alignment: .top, spacing: 6) {
             Image(systemName: "clock.fill")
                 .font(AppTheme.Typography.tinySemibold)
-                .foregroundColor(resetIsUrgent ? AppTheme.Colors.warning : AppTheme.Colors.textMuted)
+                .foregroundColor(AppTheme.Colors.textMuted)
+                .padding(.top, 3)
 
-            VStack(alignment: .leading, spacing: 0) {
-                Text("Resets in \(nearestReset.timeRemainingString())")
-                    .font(AppTheme.Typography.captionMedium)
-                    .foregroundColor(resetIsUrgent ? AppTheme.Colors.warning : AppTheme.Colors.textPrimary)
-                Text(nearestResetLabel)
-                    .font(AppTheme.Typography.tiny)
-                    .foregroundColor(AppTheme.Colors.textMuted)
-                    .lineLimit(1)
+            VStack(alignment: .leading, spacing: 4) {
+                resetRow(label: "Session", resetTime: usage.sessionResetTime, urgent: sessionResetUrgent)
+                resetRow(label: "Weekly", resetTime: usage.weeklyResetTime, urgent: weeklyResetUrgent)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var nearestResetLabel: String {
-        let now = Date()
-        let sessionOk = usage.sessionResetTime > now
-        let weeklyOk = usage.weeklyResetTime > now
-        let sessionInterval = sessionOk ? usage.sessionResetTime.timeIntervalSince(now) : .greatestFiniteMagnitude
-        let weeklyInterval = weeklyOk ? usage.weeklyResetTime.timeIntervalSince(now) : .greatestFiniteMagnitude
-
-        if sessionInterval < weeklyInterval {
-            return "Session · \(usage.sessionResetTime.resetTimeString())"
-        } else if weeklyOk {
-            return "Weekly · \(usage.weeklyResetTime.resetTimeString())"
+    @ViewBuilder
+    private func resetRow(label: String, resetTime: Date, urgent: Bool) -> some View {
+        if resetTime > Date() {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: 4) {
+                    Text(label)
+                        .font(AppTheme.Typography.tinySemibold)
+                        .foregroundColor(urgent ? AppTheme.Colors.warning : AppTheme.Colors.textMuted)
+                    Text(resetTime.timeRemainingString())
+                        .font(AppTheme.Typography.captionMedium)
+                        .foregroundColor(urgent ? AppTheme.Colors.warning : AppTheme.Colors.textPrimary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                }
+                Text(resetTime.resetTimeString())
+                    .font(AppTheme.Typography.tiny)
+                    .foregroundColor(AppTheme.Colors.textMuted)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+            }
         } else {
-            return "Reset passed"
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: 4) {
+                    Text(label)
+                        .font(AppTheme.Typography.tinySemibold)
+                        .foregroundColor(AppTheme.Colors.textMuted)
+                    Text("passed")
+                        .font(AppTheme.Typography.captionMedium)
+                        .foregroundColor(AppTheme.Colors.textSecondary)
+                        .lineLimit(1)
+                }
+                Text("—")
+                    .font(AppTheme.Typography.tiny)
+                    .foregroundColor(AppTheme.Colors.textMuted)
+            }
         }
     }
 
     @ViewBuilder
     private var paceColumn: some View {
         if hasUsableForecast, let minutes = limitingMinutes {
-            HStack(spacing: 6) {
+            HStack(alignment: .top, spacing: 6) {
                 Image(systemName: minutes < 15 ? "exclamationmark.triangle.fill" : "chart.line.uptrend.xyaxis")
                     .font(AppTheme.Typography.tinySemibold)
                     .foregroundColor(paceColor(minutes: minutes))
+                    .padding(.top, 3)
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 4) {
                         Text(paceHeadline(minutes: minutes))
                             .font(AppTheme.Typography.captionMedium)
                             .foregroundColor(paceColor(minutes: minutes))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
                         Text(limitingIsWeekly ? "weekly" : "session")
                             .font(AppTheme.Typography.tinySemibold)
                             .foregroundColor(paceColor(minutes: minutes))
@@ -123,18 +146,21 @@ struct SmartSummaryBar: View {
                     Text("at current pace")
                         .font(AppTheme.Typography.tiny)
                         .foregroundColor(AppTheme.Colors.textMuted)
+                        .lineLimit(1)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {
-            HStack(spacing: 6) {
+            HStack(alignment: .top, spacing: 6) {
                 Image(systemName: "clock.arrow.circlepath")
                     .font(AppTheme.Typography.tinySemibold)
                     .foregroundColor(AppTheme.Colors.textMuted)
+                    .padding(.top, 3)
                 Text("Need more usage to forecast")
                     .font(AppTheme.Typography.tiny)
                     .foregroundColor(AppTheme.Colors.textMuted)
                     .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -167,14 +193,14 @@ struct SmartSummaryBar: View {
 #Preview {
     SmartSummaryBar(
         usage: ClaudeUsage(
-            sessionTokensUsed: 1_750,
+            sessionTokensUsed: 2_300,
             sessionLimit: 10_000,
-            sessionPercentage: 17.5,
-            sessionResetTime: Date().addingTimeInterval(4 * 3600 + 35 * 60),
-            weeklyTokensUsed: 410_000,
+            sessionPercentage: 23,
+            sessionResetTime: Date().addingTimeInterval(1 * 3600 + 59 * 60),
+            weeklyTokensUsed: 10_000,
             weeklyLimit: 1_000_000,
-            weeklyPercentage: 41,
-            weeklyResetTime: Date().nextMonday1259pm(),
+            weeklyPercentage: 1,
+            weeklyResetTime: Date().addingTimeInterval(6 * 86400 + 21 * 3600),
             opusWeeklyTokensUsed: 0,
             opusWeeklyPercentage: 0,
             sonnetWeeklyTokensUsed: 0,

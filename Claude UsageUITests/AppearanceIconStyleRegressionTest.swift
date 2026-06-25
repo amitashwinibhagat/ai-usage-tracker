@@ -2,18 +2,17 @@
 //  AppearanceIconStyleRegressionTest.swift
 //  Claude UsageUITests
 //
-//  Pins the bug found in the click-test audit (BUG 1):
-//  `selectIconStyle(_:)` in `AppearanceSettingsView.swift` is an empty
-//  function and `currentIconStyle` is hard-coded to "ring". The icon
-//  style buttons (Ring / Bar / Numeric) are clickable but the tap
-//  produces no visible change.
+//  Verifies that the Icon Style picker (Ring / Bar / Numeric) in
+//  AppearanceSettingsView is actually wired up. Originally pinned
+//  BUG 1 (empty `selectIconStyle` body, hard-coded `currentIconStyle`).
+//  BUG 1 is now fixed: `selectIconStyle` mutates the configuration and
+//  `currentIconStyle` derives from `selectedIconStyleKey`. The tests
+//  below assert the *correct* behavior — they will fail loudly if the
+//  fix is regressed.
 //
 //  This is a *static analysis* regression test — it does not require
 //  XCUITest to attach to the host (see BaseUITest header for the
-//  LSUIElement explanation). It reads the source file from disk and
-//  asserts on its content. When the bug is fixed, the assertions must
-//  be inverted, at which point the test starts failing loudly until
-//  the engineer updates the expected value to the new correct value.
+//  LSUIElement explanation).
 //
 
 import XCTest
@@ -22,15 +21,12 @@ final class AppearanceIconStyleRegressionTest: BaseUITest {
 
     private let appearanceViewPath = "/Users/amitashwini/Projects/Claude Usage Optimizer/Claude-Usage-Optimizer/Claude Usage/Views/Settings/AppearanceSettingsView.swift"
 
-    func test_selectIconStyle_is_not_empty() throws {
+    func test_selectIconStyle_has_real_body() throws {
         let source = try String(contentsOfFile: appearanceViewPath, encoding: .utf8)
 
-        // Find the body of selectIconStyle. The current code has:
-        //   private func selectIconStyle(_ style: String) {
-        //   }
-        // i.e. an empty function body. We assert that the function
-        // contains at least one statement (something between { and }).
-        let pattern = #"private func selectIconStyle\(_ style: String\) \{([^}]*)\}"#
+        // Find the body of selectIconStyle. Use [\s\S] to match across
+        // lines and accept nested braces (e.g. `else { return }`).
+        let pattern = "private func selectIconStyle\\(_ style: String\\) \\{([\\s\\S]+?\\})\\s*\\n\\s*\\}"
         guard let regex = try? NSRegularExpression(pattern: pattern, options: [.dotMatchesLineSeparators]) else {
             XCTFail("Failed to build regex")
             return
@@ -45,45 +41,35 @@ final class AppearanceIconStyleRegressionTest: BaseUITest {
             XCTFail("Could not extract selectIconStyle body")
             return
         }
-        let body = String(source[bodyRange])
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        var captured = String(source[bodyRange]).trimmingCharacters(in: .whitespacesAndNewlines)
+        if captured.hasPrefix("{") { captured.removeFirst() }
+        if captured.hasSuffix("}") { captured.removeLast() }
+        let body = captured.trimmingCharacters(in: .whitespacesAndNewlines)
 
         XCTAssertFalse(body.isEmpty, """
-        BUG 1 PIN — REGRESSION DETECTED.
+        REGRESSION: selectIconStyle(_:) in AppearanceSettingsView.swift has an empty body.
+        Tapping the Ring / Bar / Numeric buttons does not change the icon style.
 
-        selectIconStyle(_:) in AppearanceSettingsView.swift has an empty body.
-        Tapping the Ring / Bar / Numeric buttons in Appearance settings does
-        not change the icon style.
-
-        To fix:
-          1. Add a @State var currentIconStyle in AppearanceSettingsView
-          2. In selectIconStyle(_:), set it: self.currentIconStyle = style
-          3. Persist the change via profileManager.updateIconConfig(...)
-          4. Update iconStylePickerRow to use the binding state
-
-        This test will fail loudly the moment a real implementation is
-        committed, which is the correct behaviour for a regression pin.
+        (Originally pinned as BUG 1 — fixed by selecting from ProfileManager config.)
         """)
+        XCTAssertTrue(body.contains("saveConfiguration"),
+                      "selectIconStyle must persist via saveConfiguration() so the change reaches ProfileManager.")
     }
 
     func test_currentIconStyle_is_not_hardcoded() throws {
         let source = try String(contentsOfFile: appearanceViewPath, encoding: .utf8)
 
-        // Find the getter for currentIconStyle. The current bug has:
+        // The original bug was a getter that returned the literal "ring":
         //   private var currentIconStyle: String {
         //       return "ring"
         //   }
-        // A fixed version would derive it from `configuration` or a
-        // @State property.
+        // That would make the picker highlight "ring" forever.
         let hardCoded = "private var currentIconStyle: String {\n        return \"ring\"\n    }"
         XCTAssertFalse(source.contains(hardCoded), """
-        BUG 1 PIN — REGRESSION DETECTED.
-
-        currentIconStyle in AppearanceSettingsView.swift is hard-coded
+        REGRESSION: currentIconStyle in AppearanceSettingsView.swift is hard-coded
         to return "ring", so the icon-style selection can never change.
 
-        Fix: replace the hard-coded return with a derived value from
-        configuration or a @State binding.
+        (Originally pinned as BUG 1 — now derives from selectedIconStyleKey.)
         """)
     }
 }
